@@ -12,9 +12,9 @@ async function bootstrap() {
     const testEmail = 'raza8r@gmail.com';
     logger.log(`Attempting to send test email to ${testEmail}...`);
 
-    // Using sendVerificationEmail as a test case since it's a public method
+    // Using sendPasswordSetupEmail as a test case since it's a public method
     // We pass a dummy token "TEST-TOKEN-123"
-    await emailService.sendVerificationEmail(testEmail, 'TEST-TOKEN-123');
+    await emailService.sendPasswordSetupEmail(testEmail, 'TEST-TOKEN-123');
 
     logger.log('Email sent successfully!');
     await app.close();

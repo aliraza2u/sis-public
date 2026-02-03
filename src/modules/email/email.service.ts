@@ -56,24 +56,6 @@ export class EmailService {
     }
   }
 
-  async sendVerificationEmail(to: string, token: string) {
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
-
-    const templatePath = path.join(__dirname, 'templates', 'confirmation.hbs');
-    const templateSource = fs.readFileSync(templatePath, 'utf8');
-    const template = handlebars.compile(templateSource);
-
-    const html = template({
-      confirmationUrl: verificationUrl,
-      code: token,
-    });
-
-    const subject = await this.translation.translate('messages.email.verifyEmailSubject');
-
-    return this.sendEmail(to, subject, html);
-  }
-
   async sendPasswordResetEmail(to: string, token: string) {
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
@@ -88,6 +70,25 @@ export class EmailService {
     });
 
     const subject = await this.translation.translate('messages.email.resetPasswordSubject');
+
+    return this.sendEmail(to, subject, html);
+  }
+
+  async sendPasswordSetupEmail(to: string, token: string) {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    const setupUrl = `${frontendUrl}/setup-password?token=${token}`;
+
+    const templatePath = path.join(__dirname, 'templates', 'reset-password.hbs');
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+    const template = handlebars.compile(templateSource);
+
+    const html = template({
+      resetUrl: setupUrl, // Reusing template variable
+      token,
+      isSetup: true,
+    });
+
+    const subject = await this.translation.translate('messages.email.setupAccountSubject');
 
     return this.sendEmail(to, subject, html);
   }

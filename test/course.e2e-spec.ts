@@ -75,6 +75,7 @@ describe('CourseController (e2e)', () => {
         tenantId: tenant.id,
         role: 'admin',
         emailVerified: true,
+        isPasswordCreated: true,
       },
     });
     userId = user.id;

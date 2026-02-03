@@ -23,7 +23,8 @@
     "prisma:studio": "prisma studio",
     "seed:tenant": "ts-node src/scripts/seed-tenant.ts",
     "seed:courses": "ts-node -r tsconfig-paths/register src/scripts/seed-courses.ts",
-    "create:admin": "ts-node src/scripts/create-admin.ts"
+    "create:admin": "ts-node src/scripts/create-admin.ts",
+    "seed:users": "ts-node -r tsconfig-paths/register src/scripts/seed-users.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
