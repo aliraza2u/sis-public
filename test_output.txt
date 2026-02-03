@@ -1,0 +1,1051 @@
+
+> sis-backend@0.0.1 test:e2e /Users/aliraza/PercevioLabs/sis-backend
+> jest --config ./test/jest-e2e.json
+
+[07:21:57.081] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":94}
+[31m[Nest] 7868  - [39m02/03/2026, 7:21:57 AM [31m  ERROR[39m [38;5;3m[AllExceptionsFilter] [39mPrismaClientValidationError: 
+Invalid `client[model].findFirst()` invocation in
+/Users/aliraza/PercevioLabs/sis-backend/src/infrastructure/prisma/extensions/multi-tenant.extension.ts:52:36
+
+  49 
+  50 // 6. Special handling for findUnique: Convert to findFirst to enforce tenant filtering
+  51 if (operation === 'findUnique') {
+→ 52   return client[model].findFirst({
+         where: {
+           tenantId_slug: {
+           ~~~~~~~~~~~~~
+             tenantId: "TNT-b04ecc48-1ae2-4bba-8006-dccfa42645b3",
+             slug: "e2e-category-islamic-studies"
+           },
+           tenantId: "TNT-b04ecc48-1ae2-4bba-8006-dccfa42645b3",
+       ?   AND?: CategoryWhereInput | CategoryWhereInput[],
+       ?   OR?: CategoryWhereInput[],
+       ?   NOT?: CategoryWhereInput | CategoryWhereInput[],
+       ?   id?: StringFilter | String,
+       ?   name?: JsonFilter,
+       ?   slug?: StringFilter | String,
+       ?   isActive?: BoolFilter | Boolean,
+       ?   sortOrder?: IntFilter | Int,
+       ?   createdAt?: DateTimeFilter | DateTime,
+       ?   updatedAt?: DateTimeFilter | DateTime,
+       ?   createdBy?: StringNullableFilter | String | Null,
+       ?   updatedBy?: StringNullableFilter | String | Null,
+       ?   deletedAt?: DateTimeNullableFilter | DateTime | Null,
+       ?   deletedBy?: StringNullableFilter | String | Null,
+       ?   tenant?: TenantScalarRelationFilter | TenantWhereInput,
+       ?   courses?: CourseListRelationFilter
+         }
+       })
+
+Unknown argument `tenantId_slug`. Available options are marked with ?.
+    at rr [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/core/errorRendering/throwValidationException.ts:46:9[90m)[39m
+    at Vr.throwValidationException [as handleRequestError] [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:202:7[90m)[39m
+    at Vr.handleAndLogRequestError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:174:12[90m)[39m
+    at Vr.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:143:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at CategoryService.create [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/modules/category/category.service.ts:19:22[90m)[39m {
+  clientVersion: [32m'7.3.0'[39m
+}
+[07:21:57.194] INFO (7868 on Alis-MacBook-Pro.local): request errored {"responseTime":105}
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:115:39)
+              at ServerResponse.onResponseComplete (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:178:14)
+              at ServerResponse.emit (node:events:536:35)
+              at onFinish (node:_http_outgoing:1077:10)
+              at callback (node:internal/streams/writable:766:21)
+              at afterWrite (node:internal/streams/writable:710:5)
+              at afterWriteTick (node:internal/streams/writable:696:10)
+              at processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+[31m[Nest] 7868  - [39m02/03/2026, 7:21:57 AM [31m  ERROR[39m [38;5;3m[AllExceptionsFilter] [39mPrismaClientValidationError: 
+Invalid `client[model].findFirst()` invocation in
+/Users/aliraza/PercevioLabs/sis-backend/src/infrastructure/prisma/extensions/multi-tenant.extension.ts:52:36
+
+  49 
+  50 // 6. Special handling for findUnique: Convert to findFirst to enforce tenant filtering
+  51 if (operation === 'findUnique') {
+→ 52   return client[model].findFirst({
+         where: {
+           tenantId_slug: {
+           ~~~~~~~~~~~~~
+             tenantId: "TNT-b04ecc48-1ae2-4bba-8006-dccfa42645b3",
+             slug: "e2e-category-islamic-studies"
+           },
+           tenantId: "TNT-b04ecc48-1ae2-4bba-8006-dccfa42645b3",
+       ?   AND?: CategoryWhereInput | CategoryWhereInput[],
+       ?   OR?: CategoryWhereInput[],
+       ?   NOT?: CategoryWhereInput | CategoryWhereInput[],
+       ?   id?: StringFilter | String,
+       ?   name?: JsonFilter,
+       ?   slug?: StringFilter | String,
+       ?   isActive?: BoolFilter | Boolean,
+       ?   sortOrder?: IntFilter | Int,
+       ?   createdAt?: DateTimeFilter | DateTime,
+       ?   updatedAt?: DateTimeFilter | DateTime,
+       ?   createdBy?: StringNullableFilter | String | Null,
+       ?   updatedBy?: StringNullableFilter | String | Null,
+       ?   deletedAt?: DateTimeNullableFilter | DateTime | Null,
+       ?   deletedBy?: StringNullableFilter | String | Null,
+       ?   tenant?: TenantScalarRelationFilter | TenantWhereInput,
+       ?   courses?: CourseListRelationFilter
+         }
+       })
+
+Unknown argument `tenantId_slug`. Available options are marked with ?.
+    at rr [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/core/errorRendering/throwValidationException.ts:46:9[90m)[39m
+    at Vr.throwValidationException [as handleRequestError] [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:202:7[90m)[39m
+    at Vr.handleAndLogRequestError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:174:12[90m)[39m
+    at Vr.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:143:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at CategoryService.create [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/modules/category/category.service.ts:19:22[90m)[39m {
+  clientVersion: [32m'7.3.0'[39m
+}
+[07:21:57.208] INFO (7868 on Alis-MacBook-Pro.local): request errored {"responseTime":8}
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:115:39)
+              at ServerResponse.onResponseComplete (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:178:14)
+              at ServerResponse.emit (node:events:536:35)
+              at onFinish (node:_http_outgoing:1077:10)
+              at callback (node:internal/streams/writable:766:21)
+              at afterWrite (node:internal/streams/writable:710:5)
+              at afterWriteTick (node:internal/streams/writable:696:10)
+              at processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+[07:21:57.212] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":1}
+[07:21:57.222] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":7}
+[07:21:57.235] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":8}
+[07:21:57.242] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":3}
+[07:21:57.252] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":7}
+[31m[Nest] 7868  - [39m02/03/2026, 7:21:57 AM [31m  ERROR[39m [38;5;3m[AllExceptionsFilter] [39mPrismaClientValidationError: 
+Invalid `client[model].findFirst()` invocation in
+/Users/aliraza/PercevioLabs/sis-backend/src/infrastructure/prisma/extensions/multi-tenant.extension.ts:52:36
+
+  49 
+  50 // 6. Special handling for findUnique: Convert to findFirst to enforce tenant filtering
+  51 if (operation === 'findUnique') {
+→ 52   return client[model].findFirst({
+         where: {
+           tenantId_slug: {
+           ~~~~~~~~~~~~~
+             tenantId: "TNT-b04ecc48-1ae2-4bba-8006-dccfa42645b3",
+             slug: "e2e-category-another"
+           },
+           tenantId: "TNT-b04ecc48-1ae2-4bba-8006-dccfa42645b3",
+       ?   AND?: CategoryWhereInput | CategoryWhereInput[],
+       ?   OR?: CategoryWhereInput[],
+       ?   NOT?: CategoryWhereInput | CategoryWhereInput[],
+       ?   id?: StringFilter | String,
+       ?   name?: JsonFilter,
+       ?   slug?: StringFilter | String,
+       ?   isActive?: BoolFilter | Boolean,
+       ?   sortOrder?: IntFilter | Int,
+       ?   createdAt?: DateTimeFilter | DateTime,
+       ?   updatedAt?: DateTimeFilter | DateTime,
+       ?   createdBy?: StringNullableFilter | String | Null,
+       ?   updatedBy?: StringNullableFilter | String | Null,
+       ?   deletedAt?: DateTimeNullableFilter | DateTime | Null,
+       ?   deletedBy?: StringNullableFilter | String | Null,
+       ?   tenant?: TenantScalarRelationFilter | TenantWhereInput,
+       ?   courses?: CourseListRelationFilter
+         }
+       })
+
+Unknown argument `tenantId_slug`. Available options are marked with ?.
+    at rr [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/core/errorRendering/throwValidationException.ts:46:9[90m)[39m
+    at Vr.throwValidationException [as handleRequestError] [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:202:7[90m)[39m
+    at Vr.handleAndLogRequestError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:174:12[90m)[39m
+    at Vr.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:143:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at CategoryService.create [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/modules/category/category.service.ts:19:22[90m)[39m {
+  clientVersion: [32m'7.3.0'[39m
+}
+[07:21:57.264] INFO (7868 on Alis-MacBook-Pro.local): request errored {"responseTime":7}
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:115:39)
+              at ServerResponse.onResponseComplete (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:178:14)
+              at ServerResponse.emit (node:events:536:35)
+              at onFinish (node:_http_outgoing:1077:10)
+              at callback (node:internal/streams/writable:766:21)
+              at afterWrite (node:internal/streams/writable:710:5)
+              at afterWriteTick (node:internal/streams/writable:696:10)
+              at processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+[07:21:57.277] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":8}
+[07:21:57.281] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":1}
+[31m[Nest] 7868  - [39m02/03/2026, 7:21:57 AM [31m  ERROR[39m [38;5;3m[AllExceptionsFilter] [39mPrismaClientValidationError: 
+Invalid `client[model].findFirst()` invocation in
+/Users/aliraza/PercevioLabs/sis-backend/src/infrastructure/prisma/extensions/multi-tenant.extension.ts:52:36
+
+  49 
+  50 // 6. Special handling for findUnique: Convert to findFirst to enforce tenant filtering
+  51 if (operation === 'findUnique') {
+→ 52   return client[model].findFirst({
+         where: {
+           tenantId_slug: {
+           ~~~~~~~~~~~~~
+             tenantId: "TNT-b04ecc48-1ae2-4bba-8006-dccfa42645b3",
+             slug: "e2e-category-quran-studies"
+           },
+           tenantId: "TNT-b04ecc48-1ae2-4bba-8006-dccfa42645b3",
+       ?   AND?: CategoryWhereInput | CategoryWhereInput[],
+       ?   OR?: CategoryWhereInput[],
+       ?   NOT?: CategoryWhereInput | CategoryWhereInput[],
+       ?   id?: StringFilter | String,
+       ?   name?: JsonFilter,
+       ?   slug?: StringFilter | String,
+       ?   isActive?: BoolFilter | Boolean,
+       ?   sortOrder?: IntFilter | Int,
+       ?   createdAt?: DateTimeFilter | DateTime,
+       ?   updatedAt?: DateTimeFilter | DateTime,
+       ?   createdBy?: StringNullableFilter | String | Null,
+       ?   updatedBy?: StringNullableFilter | String | Null,
+       ?   deletedAt?: DateTimeNullableFilter | DateTime | Null,
+       ?   deletedBy?: StringNullableFilter | String | Null,
+       ?   tenant?: TenantScalarRelationFilter | TenantWhereInput,
+       ?   courses?: CourseListRelationFilter
+         }
+       })
+
+Unknown argument `tenantId_slug`. Available options are marked with ?.
+    at rr [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/core/errorRendering/throwValidationException.ts:46:9[90m)[39m
+    at Vr.throwValidationException [as handleRequestError] [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:202:7[90m)[39m
+    at Vr.handleAndLogRequestError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:174:12[90m)[39m
+    at Vr.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:143:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at CategoryService.create [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/modules/category/category.service.ts:19:22[90m)[39m {
+  clientVersion: [32m'7.3.0'[39m
+}
+[07:21:57.291] INFO (7868 on Alis-MacBook-Pro.local): request errored {"responseTime":8}
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:115:39)
+              at ServerResponse.onResponseComplete (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:178:14)
+              at ServerResponse.emit (node:events:536:35)
+              at onFinish (node:_http_outgoing:1077:10)
+              at callback (node:internal/streams/writable:766:21)
+              at afterWrite (node:internal/streams/writable:710:5)
+              at afterWriteTick (node:internal/streams/writable:696:10)
+              at processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+[07:21:57.299] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":5}
+[07:21:57.308] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":6}
+FAIL test/category.e2e-spec.ts
+  ● CategoryController (e2e) › Category CRUD Operations › /categories (POST) - Create category as admin
+
+    expected 201 "Created", got 500 "Internal Server Error"
+
+      124 |         .set('Authorization', `Bearer ${adminToken}`)
+      125 |         .send(categoryData)
+    > 126 |         .expect(201);
+          |          ^
+      127 |
+      128 |       expect(response.body.data).toBeDefined();
+      129 |       expect(response.body.data.id).toBeDefined();
+
+      at Object.<anonymous> (category.e2e-spec.ts:126:10)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CategoryController (e2e) › Category CRUD Operations › /categories (POST) - Duplicate slug should fail
+
+    expected 409 "Conflict", got 500 "Internal Server Error"
+
+      148 |         .set('Authorization', `Bearer ${adminToken}`)
+      149 |         .send(categoryData)
+    > 150 |         .expect(409); // Conflict
+          |          ^
+      151 |     });
+      152 |
+      153 |     it('/categories (POST) - Unauthorized without token', async () => {
+
+      at Object.<anonymous> (category.e2e-spec.ts:150:10)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CategoryController (e2e) › Category CRUD Operations › /categories (GET) - List all categories (public)
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      165 |       expect(response.body.data).toBeDefined();
+      166 |       expect(Array.isArray(response.body.data)).toBe(true);
+    > 167 |       expect(response.body.data.length).toBeGreaterThan(0);
+          |                                         ^
+      168 |
+      169 |       const category = response.body.data.find((c: any) => c.id === createdCategoryId);
+      170 |       expect(category).toBeDefined();
+
+      at Object.<anonymous> (category.e2e-spec.ts:167:41)
+
+  ● CategoryController (e2e) › Category CRUD Operations › /categories/:id (GET) - Get category by ID (public)
+
+    expected 200 "OK", got 404 "Not Found"
+
+      175 |       const response = await request(app.getHttpServer())
+      176 |         .get(`/api/categories/${createdCategoryId}`)
+    > 177 |         .expect(200);
+          |          ^
+      178 |
+      179 |       expect(response.body.data).toBeDefined();
+      180 |       expect(response.body.data.id).toBe(createdCategoryId);
+
+      at Object.<anonymous> (category.e2e-spec.ts:177:10)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CategoryController (e2e) › Category CRUD Operations › /categories/:id (PATCH) - Update category as admin
+
+    expected 200 "OK", got 404 "Not Found"
+
+      198 |         .set('Authorization', `Bearer ${adminToken}`)
+      199 |         .send(updateData)
+    > 200 |         .expect(200);
+          |          ^
+      201 |
+      202 |       expect(response.body.data.name.en).toBe('Islamic Studies Updated');
+      203 |       expect(response.body.data.name.ar).toBe('الدراسات الإسلامية المحدثة');
+
+      at Object.<anonymous> (category.e2e-spec.ts:200:10)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CategoryController (e2e) › Category CRUD Operations › /categories/:id (PATCH) - Update with duplicate slug should fail
+
+    expected 201 "Created", got 500 "Internal Server Error"
+
+      217 |         .set('Authorization', `Bearer ${adminToken}`)
+      218 |         .send(anotherCategory)
+    > 219 |         .expect(201);
+          |          ^
+      220 |
+      221 |       // Try to update with existing slug
+      222 |       await request(app.getHttpServer())
+
+      at Object.<anonymous> (category.e2e-spec.ts:219:10)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CategoryController (e2e) › Category CRUD Operations › /categories/:id (DELETE) - Soft delete category as admin
+
+    expected 200 "OK", got 404 "Not Found"
+
+      237 |         .delete(`/api/categories/${createdCategoryId}`)
+      238 |         .set('Authorization', `Bearer ${adminToken}`)
+    > 239 |         .expect(200);
+          |          ^
+      240 |
+      241 |       // Verify it's soft deleted (shouldn't appear in list)
+      242 |       const listResponse = await request(app.getHttpServer()).get('/api/categories').expect(200);
+
+      at Object.<anonymous> (category.e2e-spec.ts:239:10)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CategoryController (e2e) › Category-Course Integration › Should create category and course with category reference
+
+    expected 201 "Created", got 500 "Internal Server Error"
+
+      264 |           slug: 'e2e-category-quran-studies',
+      265 |         })
+    > 266 |         .expect(201);
+          |          ^
+      267 |
+      268 |       categoryId = categoryResponse.body.data.id;
+      269 |
+
+      at Object.<anonymous> (category.e2e-spec.ts:266:10)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CategoryController (e2e) › Category-Course Integration › Should retrieve course with category details
+
+    expected 200 "OK", got 404 "Not Found"
+
+      286 |       const response = await request(app.getHttpServer())
+      287 |         .get(`/api/courses/${courseId}`)
+    > 288 |         .expect(200);
+          |          ^
+      289 |
+      290 |       expect(response.body.data.category).toBeDefined();
+      291 |       expect(response.body.data.category.id).toBe(categoryId);
+
+      at Object.<anonymous> (category.e2e-spec.ts:288:10)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CategoryController (e2e) › Category-Course Integration › Should list all courses with category data
+
+    expect(received).toBeDefined()
+
+    Received: undefined
+
+      297 |
+      298 |       const course = response.body.data.find((c: any) => c.id === courseId);
+    > 299 |       expect(course).toBeDefined();
+          |                      ^
+      300 |       expect(course.category).toBeDefined();
+      301 |       expect(course.category.name.en).toBe('Quran Studies');
+      302 |     });
+
+      at Object.<anonymous> (category.e2e-spec.ts:299:22)
+
+[07:21:58.396] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":79}
+[07:21:58.400] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":1}
+[07:21:58.480] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":73}
+[07:21:58.482] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":1}
+FAIL test/rbac.e2e-spec.ts
+  ● RBAC (e2e) › 3. Access admin-only endpoint as applicant -> 403 Forbidden
+
+    expected 403 "Forbidden", got 404 "Not Found"
+
+      109 |       .get('/api/auth/admin-only')
+      110 |       .set('Authorization', `Bearer ${accessToken}`)
+    > 111 |       .expect(403);
+          |        ^
+      112 |   });
+      113 |
+      114 |   it('4. Promote user to admin', async () => {
+
+      at Object.<anonymous> (rbac.e2e-spec.ts:111:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● RBAC (e2e) › 6. Access admin-only endpoint as admin -> 200 OK
+
+    expected 200 "OK", got 404 "Not Found"
+
+      132 |       .get('/api/auth/admin-only')
+      133 |       .set('Authorization', `Bearer ${accessToken}`)
+    > 134 |       .expect(200);
+          |        ^
+      135 |
+      136 |     expect(response.body.data.message).toEqual('Hello Admin');
+      137 |   });
+
+      at Object.<anonymous> (rbac.e2e-spec.ts:134:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+[07:21:59.139] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":82}
+[07:21:59.149] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":4}
+[07:21:59.159] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":7}
+[07:21:59.167] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":4}
+[07:21:59.174] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":4}
+[07:21:59.181] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":4}
+FAIL test/course.e2e-spec.ts
+  ● CourseController (e2e) › /courses (POST) - Create Course
+
+    expected 201 "Created", got 403 "Forbidden"
+
+      111 |       .set('Authorization', `Bearer ${accessToken}`)
+      112 |       .send(createDto)
+    > 113 |       .expect(201);
+          |        ^
+      114 |
+      115 |     expect(response.body.data.id).toBeDefined();
+      116 |     expect(response.body.data.title.en).toBe(createDto.title.en);
+
+      at Object.<anonymous> (course.e2e-spec.ts:113:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CourseController (e2e) › /courses (GET) - List Courses
+
+    expect(received).toBeDefined()
+
+    Received: undefined
+
+      131 |     expect(Array.isArray(response.body.data)).toBe(true);
+      132 |     const found = response.body.data.find((c: any) => c.id === courseId);
+    > 133 |     expect(found).toBeDefined();
+          |                   ^
+      134 |   });
+      135 |
+      136 |   it('/courses/:id (GET) - Get Course', async () => {
+
+      at Object.<anonymous> (course.e2e-spec.ts:133:19)
+
+  ● CourseController (e2e) › /courses/:id (GET) - Get Course
+
+    expected 200 "OK", got 404 "Not Found"
+
+      138 |       .get(`/api/courses/${courseId}`)
+      139 |       .set('Authorization', `Bearer ${accessToken}`)
+    > 140 |       .expect(200);
+          |        ^
+      141 |
+      142 |     expect(response.body.data.id).toBe(courseId);
+      143 |   });
+
+      at Object.<anonymous> (course.e2e-spec.ts:140:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CourseController (e2e) › /courses/:id (PATCH) - Update Course
+
+    expected 200 "OK", got 403 "Forbidden"
+
+      152 |       .set('Authorization', `Bearer ${accessToken}`)
+      153 |       .send(updateDto)
+    > 154 |       .expect(200);
+          |        ^
+      155 |
+      156 |     expect(response.body.data.level).toBe('intermediate');
+      157 |
+
+      at Object.<anonymous> (course.e2e-spec.ts:154:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● CourseController (e2e) › /courses/:id (DELETE) - Soft Delete Course
+
+    expected 200 "OK", got 403 "Forbidden"
+
+      165 |       .delete(`/api/courses/${courseId}`)
+      166 |       .set('Authorization', `Bearer ${accessToken}`)
+    > 167 |       .expect(200);
+          |        ^
+      168 |
+      169 |     // Verify via Get -> Should be 404
+      170 |     await request(app.getHttpServer())
+
+      at Object.<anonymous> (course.e2e-spec.ts:167:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+[07:21:59.837] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":10}
+[07:21:59.845] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":4}
+[07:21:59.856] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":4}
+FAIL test/resend-email.e2e-spec.ts
+  ● Resend Verification (e2e) › 2. Resend verification email (Success)
+
+    expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+    Expected number of calls: 2
+    Received number of calls: 1
+
+      104 |
+      105 |     // Verify email service was called twice (once for register, once for resend)
+    > 106 |     expect(emailService.sendVerificationEmail).toHaveBeenCalledTimes(2);
+          |                                                ^
+      107 |   });
+      108 |
+      109 |   it('3. Resend for non-existent user (401)', async () => {
+
+      at Object.<anonymous> (resend-email.e2e-spec.ts:106:48)
+
+FAIL test/audit-soft-delete.e2e-spec.ts
+  ● Audit & Soft Delete (e2e) › 1. Create Tenant -> Should have createdBy and updatedBy set
+
+    PrismaClientKnownRequestError: 
+    Invalid `prismaService.tenant.create()` invocation in
+    /Users/aliraza/PercevioLabs/sis-backend/test/audit-soft-delete.e2e-spec.ts:47:47
+
+      44 let tenantId: string;
+      45 
+      46 it('1. Create Tenant -> Should have createdBy and updatedBy set', async () => {
+    → 47   const tenant = await prismaService.tenant.create(
+    Unique constraint failed on the fields: (`slug`)
+
+      45 |
+      46 |   it('1. Create Tenant -> Should have createdBy and updatedBy set', async () => {
+    > 47 |     const tenant = await prismaService.tenant.create({
+         |                    ^
+      48 |       data: {
+      49 |         name: { en: 'Audit Test' },
+      50 |         slug: 'audit-test-tenant',
+
+      at Vr.handleRequestError (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13)
+      at Vr.handleAndLogRequestError (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+      at Vr.request (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+      at a (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:805:24)
+      at Object.<anonymous> (audit-soft-delete.e2e-spec.ts:47:20)
+
+  ● Audit & Soft Delete (e2e) › 2. Update Tenant -> Should update updatedBy
+
+    PrismaClientValidationError: 
+    Invalid `prismaService.tenant.update()` invocation in
+    /Users/aliraza/PercevioLabs/sis-backend/test/audit-soft-delete.e2e-spec.ts:63:48
+
+      60 
+      61 it('2. Update Tenant -> Should update updatedBy', async () => {
+      62   // wait a bit to ensure updatedAt changes if we were checking time, but checking userId is enough
+    → 63   const updated = await prismaService.tenant.update({
+             where: {
+               id: undefined,
+           ?   slug?: String,
+           ?   AND?: TenantWhereInput | TenantWhereInput[],
+           ?   OR?: TenantWhereInput[],
+           ?   NOT?: TenantWhereInput | TenantWhereInput[],
+           ?   name?: JsonFilter,
+           ?   alias?: StringNullableFilter | String | Null,
+           ?   logoUrl?: StringNullableFilter | String | Null,
+           ?   primaryColor?: StringNullableFilter | String | Null,
+           ?   secondaryColor?: StringNullableFilter | String | Null,
+           ?   contactEmail?: StringFilter | String,
+           ?   contactPhone?: StringNullableFilter | String | Null,
+           ?   address?: JsonNullableFilter,
+           ?   website?: StringNullableFilter | String | Null,
+           ?   defaultLanguageCode?: StringNullableFilter | String | Null,
+           ?   enabledLanguages?: StringNullableListFilter,
+           ?   timezone?: StringNullableFilter | String | Null,
+           ?   isActive?: BoolFilter | Boolean,
+           ?   settings?: JsonNullableFilter,
+           ?   createdAt?: DateTimeFilter | DateTime,
+           ?   updatedAt?: DateTimeFilter | DateTime,
+           ?   createdBy?: StringNullableFilter | String | Null,
+           ?   updatedBy?: StringNullableFilter | String | Null,
+           ?   deletedAt?: DateTimeNullableFilter | DateTime | Null,
+           ?   deletedBy?: StringNullableFilter | String | Null,
+           ?   defaultLanguage?: SupportedLanguageNullableScalarRelationFilter | SupportedLanguageWhereInput | Null,
+           ?   users?: UserListRelationFilter,
+           ?   courses?: CourseListRelationFilter,
+           ?   categories?: CategoryListRelationFilter,
+           ?   batches?: BatchListRelationFilter,
+           ?   applications?: ApplicationListRelationFilter,
+           ?   studentIdCounters?: StudentIdCounterListRelationFilter
+             },
+             data: {
+               contactPhone: "123456",
+               updatedBy: "mock-user-uuid-123"
+             }
+           })
+
+    Argument `where` of type TenantWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+
+      61 |   it('2. Update Tenant -> Should update updatedBy', async () => {
+      62 |     // wait a bit to ensure updatedAt changes if we were checking time, but checking userId is enough
+    > 63 |     const updated = await prismaService.tenant.update({
+         |                     ^
+      64 |       where: { id: tenantId },
+      65 |       data: {
+      66 |         contactPhone: '123456',
+
+      at rr (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:46:9)
+      at Vr.throwValidationException [as handleRequestError] (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+      at Vr.handleAndLogRequestError (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+      at Vr.request (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+      at a (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:805:24)
+      at Object.<anonymous> (audit-soft-delete.e2e-spec.ts:63:21)
+
+  ● Audit & Soft Delete (e2e) › 3. Soft Delete Tenant -> Should set deletedAt and existing record should be hidden
+
+    PrismaClientValidationError: 
+    Invalid `prismaService.tenant.delete()` invocation in
+    /Users/aliraza/PercevioLabs/sis-backend/test/audit-soft-delete.e2e-spec.ts:75:54
+
+      72 });
+      73 
+      74 it('3. Soft Delete Tenant -> Should set deletedAt and existing record should be hidden', async () => {
+    → 75   const deleted = await prismaService.tenant.delete({
+             where: {
+               id: undefined,
+           ?   slug?: String,
+           ?   AND?: TenantWhereInput | TenantWhereInput[],
+           ?   OR?: TenantWhereInput[],
+           ?   NOT?: TenantWhereInput | TenantWhereInput[],
+           ?   name?: JsonFilter,
+           ?   alias?: StringNullableFilter | String | Null,
+           ?   logoUrl?: StringNullableFilter | String | Null,
+           ?   primaryColor?: StringNullableFilter | String | Null,
+           ?   secondaryColor?: StringNullableFilter | String | Null,
+           ?   contactEmail?: StringFilter | String,
+           ?   contactPhone?: StringNullableFilter | String | Null,
+           ?   address?: JsonNullableFilter,
+           ?   website?: StringNullableFilter | String | Null,
+           ?   defaultLanguageCode?: StringNullableFilter | String | Null,
+           ?   enabledLanguages?: StringNullableListFilter,
+           ?   timezone?: StringNullableFilter | String | Null,
+           ?   isActive?: BoolFilter | Boolean,
+           ?   settings?: JsonNullableFilter,
+           ?   createdAt?: DateTimeFilter | DateTime,
+           ?   updatedAt?: DateTimeFilter | DateTime,
+           ?   createdBy?: StringNullableFilter | String | Null,
+           ?   updatedBy?: StringNullableFilter | String | Null,
+           ?   deletedAt?: DateTimeNullableFilter | DateTime | Null,
+           ?   deletedBy?: StringNullableFilter | String | Null,
+           ?   defaultLanguage?: SupportedLanguageNullableScalarRelationFilter | SupportedLanguageWhereInput | Null,
+           ?   users?: UserListRelationFilter,
+           ?   courses?: CourseListRelationFilter,
+           ?   categories?: CategoryListRelationFilter,
+           ?   batches?: BatchListRelationFilter,
+           ?   applications?: ApplicationListRelationFilter,
+           ?   studentIdCounters?: StudentIdCounterListRelationFilter
+             },
+             data: {
+               deletedAt: new Date("2026-02-03T02:22:00.395Z"),
+               deletedBy: "mock-user-uuid-123",
+               isActive: false,
+               updatedBy: "mock-user-uuid-123"
+             }
+           })
+
+    Argument `where` of type TenantWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+
+      73 |
+      74 |   it('3. Soft Delete Tenant -> Should set deletedAt and existing record should be hidden', async () => {
+    > 75 |     const deleted = await prismaService.tenant.delete({
+         |                     ^
+      76 |       where: { id: tenantId },
+      77 |     });
+      78 |
+
+      at rr (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:46:9)
+      at Vr.throwValidationException [as handleRequestError] (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+      at Vr.handleAndLogRequestError (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+      at Vr.request (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+      at a (../node_modules/.pnpm/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:805:24)
+      at Object.<anonymous> (audit-soft-delete.e2e-spec.ts:75:21)
+
+  ● Audit & Soft Delete (e2e) › 4. Verify record still exists in DB (Raw Query)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+      92 |     // Since PrismaService is extended, we can use $queryRaw to check raw DB
+      93 |     const raw: any[] = await prismaService.$queryRaw`SELECT * FROM tenants WHERE id = ${tenantId}`;
+    > 94 |     expect(raw.length).toBe(1);
+         |                        ^
+      95 |     expect(raw[0].deleted_at).not.toBeNull();
+      96 |     expect(raw[0].deleted_by).toBe(mockUserId);
+      97 |   });
+
+      at Object.<anonymous> (audit-soft-delete.e2e-spec.ts:94:24)
+
+[07:22:01.079] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":74}
+[07:22:01.090] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":8}
+[07:22:01.100] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":7}
+[07:22:01.347] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":242}
+[07:22:01.594] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":245}
+[07:22:01.852] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":253}
+PASS test/auth-reset-password.e2e-spec.ts
+[07:22:02.480] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":79}
+[07:22:02.567] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":71}
+[07:22:02.587] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":11}
+[07:22:02.605] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":15}
+[07:22:02.626] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":17}
+[07:22:02.656] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":27}
+[31m[Nest] 7868  - [39m02/03/2026, 7:22:02 AM [31m  ERROR[39m [38;5;3m[StudentIdService] [39m[31mFailed to generate student ID for STU-BT-FSD-01[39m
+[31m[Nest] 7868  - [39m02/03/2026, 7:22:02 AM [31m  ERROR[39m [38;5;3m[StudentIdService] [39mPrismaClientKnownRequestError: 
+Invalid `this.prisma.studentIdCounter.upsert()` invocation in
+/Users/aliraza/PercevioLabs/sis-backend/src/common/services/student-id.service.ts:36:58
+
+  33 const contextKey = `STU-${tAlias}-${cCode}-${batchNumber}`;
+  34 
+  35 try {
+→ 36   const counter = await this.prisma.studentIdCounter.upsert(
+Unique constraint failed on the fields: (`context_key`)
+    at Vr.handleRequestError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:228:13[90m)[39m
+    at Vr.handleAndLogRequestError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:174:12[90m)[39m
+    at Vr.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:143:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at StudentIdService.generateNextId [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/common/services/student-id.service.ts:36:23[90m)[39m
+    at ApplicationService.updateStatus [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/modules/application/application.service.ts:131:20[90m)[39m {
+  code: [32m'P2002'[39m,
+  meta: {
+    modelName: [32m'StudentIdCounter'[39m,
+    driverAdapterError: DriverAdapterError: UniqueConstraintViolation
+        at PgTransaction.onError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+adapter-pg@7.3.0/node_modules/[4m@prisma[24m/adapter-pg/dist/index.js:687:11[90m)[39m
+        at PgTransaction.performIO [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+adapter-pg@7.3.0/node_modules/[4m@prisma[24m/adapter-pg/dist/index.js:682:12[90m)[39m
+    [90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+        at PgTransaction.queryRaw [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+adapter-pg@7.3.0/node_modules/[4m@prisma[24m/adapter-pg/dist/index.js:602:30[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:182:26[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:209:41[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:124:29[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:124:29[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:284:18[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:124:29[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:268:41[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:258:25[90m)[39m
+        at e.run [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:93:23[90m)[39m
+        at execute [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/core/engines/client/LocalExecutor.ts:81:12[90m)[39m
+        at Dt.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/core/engines/client/ClientEngine.ts:461:22[90m)[39m
+        at Object.singleLoader [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:112:26[90m)[39m
+        at Vr.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:140:14[90m)[39m
+        at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+        at StudentIdService.generateNextId [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/common/services/student-id.service.ts:36:23[90m)[39m
+        at ApplicationService.updateStatus [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/modules/application/application.service.ts:131:20[90m)[39m {
+      cause: {
+        originalCode: [32m'23505'[39m,
+        originalMessage: [32m'duplicate key value violates unique constraint "student_id_counters_context_key_key"'[39m,
+        kind: [32m'UniqueConstraintViolation'[39m,
+        constraint: {
+          fields: [
+            [32m'context_key'[39m
+          ]
+        }
+      }
+    }
+  },
+  clientVersion: [32m'7.3.0'[39m
+}
+[07:22:02.773] INFO (7868 on Alis-MacBook-Pro.local): request errored {"responseTime":114}
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:115:39)
+              at ServerResponse.onResponseComplete (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:178:14)
+              at ServerResponse.emit (node:events:536:35)
+              at onFinish (node:_http_outgoing:1077:10)
+              at callback (node:internal/streams/writable:766:21)
+              at afterWrite (node:internal/streams/writable:710:5)
+              at afterWriteTick (node:internal/streams/writable:696:10)
+              at processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+[07:22:02.928] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":81}
+[07:22:02.947] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":16}
+[31m[Nest] 7868  - [39m02/03/2026, 7:22:02 AM [31m  ERROR[39m [38;5;3m[StudentIdService] [39m[31mFailed to generate student ID for STU-BT-FSD-01[39m
+[31m[Nest] 7868  - [39m02/03/2026, 7:22:02 AM [31m  ERROR[39m [38;5;3m[StudentIdService] [39mPrismaClientKnownRequestError: 
+Invalid `this.prisma.studentIdCounter.upsert()` invocation in
+/Users/aliraza/PercevioLabs/sis-backend/src/common/services/student-id.service.ts:36:58
+
+  33 const contextKey = `STU-${tAlias}-${cCode}-${batchNumber}`;
+  34 
+  35 try {
+→ 36   const counter = await this.prisma.studentIdCounter.upsert(
+Unique constraint failed on the fields: (`context_key`)
+    at Vr.handleRequestError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:228:13[90m)[39m
+    at Vr.handleAndLogRequestError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:174:12[90m)[39m
+    at Vr.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:143:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+    at StudentIdService.generateNextId [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/common/services/student-id.service.ts:36:23[90m)[39m
+    at ApplicationService.updateStatus [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/modules/application/application.service.ts:131:20[90m)[39m {
+  code: [32m'P2002'[39m,
+  meta: {
+    modelName: [32m'StudentIdCounter'[39m,
+    driverAdapterError: DriverAdapterError: UniqueConstraintViolation
+        at PgTransaction.onError [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+adapter-pg@7.3.0/node_modules/[4m@prisma[24m/adapter-pg/dist/index.js:687:11[90m)[39m
+        at PgTransaction.performIO [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+adapter-pg@7.3.0/node_modules/[4m@prisma[24m/adapter-pg/dist/index.js:682:12[90m)[39m
+    [90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+        at PgTransaction.queryRaw [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+adapter-pg@7.3.0/node_modules/[4m@prisma[24m/adapter-pg/dist/index.js:602:30[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:182:26[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:209:41[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:124:29[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:124:29[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:284:18[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:124:29[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:268:41[90m)[39m
+        at e.interpretNode [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:258:25[90m)[39m
+        at e.run [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client-engine-runtime/src/interpreter/query-interpreter.ts:93:23[90m)[39m
+        at execute [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/core/engines/client/LocalExecutor.ts:81:12[90m)[39m
+        at Dt.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/core/engines/client/ClientEngine.ts:461:22[90m)[39m
+        at Object.singleLoader [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:112:26[90m)[39m
+        at Vr.request [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/RequestHandler.ts:140:14[90m)[39m
+        at a [90m(/Users/aliraza/PercevioLabs/sis-backend/[39mnode_modules/[4m.pnpm[24m/@prisma+client@7.3.0_prisma@7.3.0_@types+react@19.2.9_react-dom@19.2.3_react@19.2.3__re_ad499f351a7b7e0487b50331b8717100/node_modules/[4m@prisma[24m/client/src/runtime/getPrismaClient.ts:805:24[90m)[39m
+        at StudentIdService.generateNextId [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/common/services/student-id.service.ts:36:23[90m)[39m
+        at ApplicationService.updateStatus [90m(/Users/aliraza/PercevioLabs/sis-backend/[39msrc/modules/application/application.service.ts:131:20[90m)[39m {
+      cause: {
+        originalCode: [32m'23505'[39m,
+        originalMessage: [32m'duplicate key value violates unique constraint "student_id_counters_context_key_key"'[39m,
+        kind: [32m'UniqueConstraintViolation'[39m,
+        constraint: {
+          fields: [
+            [32m'context_key'[39m
+          ]
+        }
+      }
+    }
+  },
+  clientVersion: [32m'7.3.0'[39m
+}
+[07:22:02.974] INFO (7868 on Alis-MacBook-Pro.local): request errored {"responseTime":25}
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:115:39)
+              at ServerResponse.onResponseComplete (/Users/aliraza/PercevioLabs/sis-backend/node_modules/.pnpm/pino-http@11.0.0/node_modules/pino-http/logger.js:178:14)
+              at ServerResponse.emit (node:events:536:35)
+              at onFinish (node:_http_outgoing:1077:10)
+              at callback (node:internal/streams/writable:766:21)
+              at afterWrite (node:internal/streams/writable:710:5)
+              at afterWriteTick (node:internal/streams/writable:696:10)
+              at processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+FAIL test/batch-application.e2e-spec.ts
+  ● Console
+
+    console.log
+      SETUP - Admin Token Payload TenantID: TNT-957079fc-f396-4cc4-9dd4-fd962bf57b67
+
+      at Object.<anonymous> (batch-application.e2e-spec.ts:89:13)
+
+    console.log
+      TEST - Batch TenantID: TNT-957079fc-f396-4cc4-9dd4-fd962bf57b67
+
+      at Object.<anonymous> (batch-application.e2e-spec.ts:165:13)
+
+  ● Batch & Application Flow (e2e) › 5. Approve Application (Admin) & Check Roll Number
+
+    expected 200 "OK", got 500 "Internal Server Error"
+
+      211 |       .set('Authorization', `Bearer ${adminToken}`)
+      212 |       .send(updateDto)
+    > 213 |       .expect(200);
+          |        ^
+      214 |
+      215 |     expect(res.body.data.status).toBe('approved');
+      216 |     expect(res.body.data.rollNumber).toBeDefined();
+
+      at Object.<anonymous> (batch-application.e2e-spec.ts:213:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+  ● Batch & Application Flow (e2e) › 6. Approve Second Application (Verify Sequence)
+
+    expected 200 "OK", got 500 "Internal Server Error"
+
+      258 |       .set('Authorization', `Bearer ${adminToken}`)
+      259 |       .send({ status: 'approved' })
+    > 260 |       .expect(200);
+          |        ^
+      261 |
+      262 |     const rollNumber = approveRes.body.data.rollNumber;
+      263 |     expect(rollNumber).toContain('STU-BT-FSD-01-');
+
+      at Object.<anonymous> (batch-application.e2e-spec.ts:260:8)
+      ----
+      at Test._assertStatus (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:309:14)
+      at ../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../node_modules/.pnpm/supertest@7.2.2/node_modules/supertest/lib/test.js:152:11)
+
+[07:22:03.625] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":73}
+[07:22:03.642] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":11}
+[07:22:03.652] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":8}
+[07:22:03.657] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":4}
+[07:22:03.727] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":67}
+PASS test/auth.e2e-spec.ts
+[07:22:04.222] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":10}
+[07:22:04.232] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":6}
+[07:22:04.240] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":5}
+[07:22:04.244] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":2}
+[07:22:04.254] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":5}
+[07:22:04.265] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":7}
+PASS test/i18n.e2e-spec.ts
+PASS test/soft-delete-scope.e2e-spec.ts
+[07:22:05.182] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":2}
+[07:22:05.191] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":6}
+[07:22:05.199] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":5}
+PASS test/tenancy.e2e-spec.ts
+PASS test/app.e2e-spec.ts
+
+Test Suites: 6 failed, 6 passed, 12 total
+Tests:       24 failed, 35 passed, 59 total
+Snapshots:   0 total
+Time:        11.158 s, estimated 12 s
+Ran all test suites.
+[07:22:05.661] INFO (7868 on Alis-MacBook-Pro.local): request completed {"responseTime":2}
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.
+ ELIFECYCLE  Command failed with exit code 1.

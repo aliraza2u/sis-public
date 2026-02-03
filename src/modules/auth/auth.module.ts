@@ -6,6 +6,8 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaModule } from '@/infrastructure/prisma/prisma.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { EmailModule } from '../email/email.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         signOptions: { expiresIn: configService.get<string>('jwt.expiresIn') as any },
       }),
     }),
+    EmailModule,
+    UserModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

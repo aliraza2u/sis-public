@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: sis-backend
+    runtime: docker
+    region: oregon
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDGRID_FROM_EMAIL
+        sync: false
+      - key: FROM_EMAIL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: APP_NAME
+        value: "Student Information System"
+      - key: APP_PREFIX
+        value: "api"
+      - key: AUTH_EMAIL_VERIFICATION_EXPIRY
+        value: "24"
+      - key: AUTH_PASSWORD_RESET_EXPIRY
+        value: "1"
+      - key: AUTH_REFRESH_TOKEN_EXPIRY_DAYS
+        value: "7"
+      - key: APP_SALT_ROUNDS
+        value: "12"
+      - key: SWAGGER_ENABLED
+        value: "true"

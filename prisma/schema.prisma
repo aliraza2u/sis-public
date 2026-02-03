@@ -28,6 +28,7 @@ model Tenant {
   id             String  @id @default(dbgenerated("generate_prefixed_uuid('TNT')")) @db.VarChar(50)
   name           Json    @default("{}")
   slug           String  @unique @db.VarChar(100)
+  alias          String? @db.VarChar(10) // e.g. "AM"
   logoUrl        String? @map("logo_url") @db.VarChar(500)
   primaryColor   String? @default("#1B4F72") @map("primary_color") @db.VarChar(7)
   secondaryColor String? @default("#2E86AB") @map("secondary_color") @db.VarChar(7)
@@ -49,7 +50,20 @@ model Tenant {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  users User[]
+  // Audit
+  createdBy String? @map("created_by") @db.VarChar(50)
+  updatedBy String? @map("updated_by") @db.VarChar(50)
+
+  // Soft Delete
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  deletedBy String?   @map("deleted_by") @db.VarChar(50)
+
+  users             User[]
+  courses           Course[]
+  categories        Category[]
+  batches           Batch[]
+  applications      Application[]
+  studentIdCounters StudentIdCounter[]
 
   @@map("tenants")
 }
@@ -68,6 +82,7 @@ model User {
 
   email        String @db.VarChar(255)
   passwordHash String @map("password_hash") @db.VarChar(255)
+  isPasswordCreated Boolean @default(false) @map("is_password_created")
 
   firstName Json    @default("{}") @map("first_name")
   lastName  Json    @default("{}") @map("last_name")
@@ -77,9 +92,10 @@ model User {
 
   avatarUrl String? @map("avatar_url") @db.VarChar(500)
 
-  emailVerified     Boolean   @default(false) @map("email_verified")
-  emailVerifiedAt   DateTime? @map("email_verified_at") @db.Timestamptz
-  verificationToken String?   @map("verification_token") @db.VarChar(255)
+  emailVerified            Boolean   @default(false) @map("email_verified")
+  emailVerifiedAt          DateTime? @map("email_verified_at") @db.Timestamptz
+  verificationToken        String?   @map("verification_token") @db.VarChar(255)
+  verificationTokenExpires DateTime? @map("verification_token_expires") @db.Timestamptz
 
   passwordResetToken   String?   @map("password_reset_token") @db.VarChar(255)
   passwordResetExpires DateTime? @map("password_reset_expires") @db.Timestamptz
@@ -93,6 +109,232 @@ model User {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
+  // Audit
+  createdBy String? @map("created_by") @db.VarChar(50)
+  updatedBy String? @map("updated_by") @db.VarChar(50)
+
+  // Soft Delete
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  deletedBy String?   @map("deleted_by") @db.VarChar(50)
+
+  refreshTokens  RefreshToken[]
+  createdCourses Course[]       @relation("CourseCreator")
+
+  applications         Application[]
+  reviewedApplications Application[] @relation("ApplicationReviewer")
+
   @@unique([tenantId, email])
+  @@index([tenantId])
   @@map("users")
+}
+
+model RefreshToken {
+  id              String   @id @default(uuid())
+  token           String   @unique
+  userId          String   @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt       DateTime @map("expires_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  revoked         Boolean  @default(false)
+  replacedByToken String?  @map("replaced_by_token")
+
+  @@map("refresh_tokens")
+}
+
+// Course Category
+model Category {
+  id       String @id @default(dbgenerated("generate_prefixed_uuid('CAT')")) @db.VarChar(50)
+  tenantId String @map("tenant_id") @db.VarChar(50)
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  name Json @default("{}")
+  slug String @db.VarChar(100)
+
+  isActive  Boolean @default(true) @map("is_active")
+  sortOrder Int     @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Audit
+  createdBy String? @map("created_by") @db.VarChar(50)
+  updatedBy String? @map("updated_by") @db.VarChar(50)
+
+  // Soft Delete
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  deletedBy String?   @map("deleted_by") @db.VarChar(50)
+
+  courses Course[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("categories")
+}
+
+model Course {
+  id       String @id @default(dbgenerated("generate_prefixed_uuid('CRS')")) @db.VarChar(50)
+  tenantId String @map("tenant_id") @db.VarChar(50)
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  title            Json    @default("{}")
+  description      Json?   @default("{}")
+  shortDescription Json?   @default("{}") @map("short_description")
+  thumbnailUrl     String? @map("thumbnail_url") @db.VarChar(500)
+
+  categoryId String?   @map("category_id") @db.VarChar(50)
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  level      String?   @db.VarChar(50)
+  durationWeeks Int?    @map("duration_weeks")
+
+  prerequisites    Json? @default("[]")
+  learningOutcomes Json? @default("[]") @map("learning_outcomes")
+  syllabus         Json? @default("{}")
+
+  requiredDocuments Json? @default("[]") @map("required_documents")
+
+  isPublished Boolean @default(false) @map("is_published")
+  isFeatured  Boolean @default(false) @map("is_featured")
+  isActive    Boolean @default(true) @map("is_active")
+  sortOrder   Int     @default(0) @map("sort_order")
+
+  code String? @db.VarChar(10) // e.g. "SD"
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Audit
+  createdBy String? @map("created_by") @db.VarChar(50)
+  updatedBy String? @map("updated_by") @db.VarChar(50)
+  creator   User?   @relation("CourseCreator", fields: [createdBy], references: [id])
+
+  // Soft Delete
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  deletedBy String?   @map("deleted_by") @db.VarChar(50)
+
+  batches      Batch[]
+  applications Application[]
+
+  @@index([tenantId])
+  @@map("courses")
+}
+
+model Batch {
+  id       String @id @default(dbgenerated("generate_prefixed_uuid('BAT')")) @db.VarChar(50)
+  tenantId String @map("tenant_id") @db.VarChar(50)
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  courseId String @map("course_id") @db.VarChar(50)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // Descriptors
+  name        Json    @default("{}") // "Fall 2025"
+  code        String? @db.VarChar(50) // "WEB-2025-01"
+  batchNumber String  @map("batch_number") @db.VarChar(10) // "01"
+
+  // Schedule (Moved from Course)
+  enrollmentStartDate DateTime  @map("enrollment_start_date") @db.Date
+  enrollmentEndDate   DateTime  @map("enrollment_end_date") @db.Date
+  startDate           DateTime  @map("start_date") @db.Date
+  endDate             DateTime? @map("end_date") @db.Date
+
+  // Capacity (Moved from Course)
+  maxStudents Int @map("max_students")
+
+  // Status
+  isActive Boolean @default(true) @map("is_active")
+
+  // Standard Audit & Soft Delete
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  createdBy String?   @map("created_by") @db.VarChar(50)
+  updatedBy String?   @map("updated_by") @db.VarChar(50)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  deletedBy String?   @map("deleted_by") @db.VarChar(50)
+
+  applications Application[]
+
+  @@index([tenantId])
+  @@index([courseId])
+  @@map("batches")
+}
+
+enum ApplicationStatus {
+  draft
+  submitted
+  under_review
+  approved
+  rejected
+  withdrawn
+}
+
+model Application {
+  id       String @id @default(dbgenerated("generate_prefixed_uuid('APP')")) @db.VarChar(50)
+  tenantId String @map("tenant_id") @db.VarChar(50)
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Link to specific Batch
+  batchId String @map("batch_id") @db.VarChar(50)
+  batch   Batch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  // Optional link to Course for easier querying, though inferable from Batch
+  courseId String @map("course_id") @db.VarChar(50)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  applicantId String @map("applicant_id") @db.VarChar(50)
+  applicant   User   @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  applicationNumber String @map("application_number") @db.VarChar(20) // Internal App #
+
+  // Generated Roll Number (after approval)
+  rollNumber String? @map("roll_number") @db.VarChar(50) // STU-AM-SD-01-001
+
+  personalInfo  Json  @default("{}") @map("personal_info")
+  guardianInfo  Json? @default("{}") @map("guardian_info")
+  educationInfo Json? @default("{}") @map("education_info")
+
+  status ApplicationStatus @default(draft)
+
+  submittedAt DateTime? @map("submitted_at") @db.Timestamptz
+
+  reviewedBy      String?   @map("reviewed_by") @db.VarChar(50)
+  reviewer        User?     @relation("ApplicationReviewer", fields: [reviewedBy], references: [id])
+  reviewedAt      DateTime? @map("reviewed_at") @db.Timestamptz
+  reviewNotes     String?   @map("review_notes") @db.Text
+  rejectionReason Json?     @default("{}") @map("rejection_reason")
+
+  ipAddress String? @map("ip_address") @db.Inet
+  userAgent String? @map("user_agent")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Audit
+  createdBy String?   @map("created_by") @db.VarChar(50)
+  updatedBy String?   @map("updated_by") @db.VarChar(50)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  deletedBy String?   @map("deleted_by") @db.VarChar(50)
+
+  @@unique([tenantId, applicationNumber])
+  @@unique([batchId, applicantId])
+  @@index([tenantId])
+  @@index([batchId])
+  @@index([applicantId])
+  @@map("applications")
+}
+
+model StudentIdCounter {
+  id String @id @default(dbgenerated("generate_prefixed_uuid('CTR')")) @db.VarChar(50)
+
+  // Format: "STU-{TenantAlias}-{CourseCode}-{BatchNumber}"
+  contextKey String @unique @map("context_key") @db.VarChar(100)
+
+  currentCount Int @default(0) @map("current_count")
+
+  tenantId String @map("tenant_id") @db.VarChar(50)
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("student_id_counters")
+  @@index([tenantId])
 }

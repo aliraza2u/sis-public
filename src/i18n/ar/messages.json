@@ -1,0 +1,50 @@
+{
+  "auth": {
+    "userExists": "المستخدم موجود بالفعل",
+    "userOrOrgExists": "المستخدم أو المنظمة موجودة بالفعل",
+    "invalidCredentials": "بيانات اعتماد غير صالحة",
+    "invalidVerificationToken": "رمز التحقق غير صالح أو منتهي الصلاحية",
+    "invalidResetToken": "رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية",
+    "invalidRefreshToken": "رمز التحديث غير صالح أو منتهي الصلاحية",
+    "noTenantFound": "لم يتم العثور على المستأجر. يرجى الاتصال بالدعم.",
+    "emailVerified": "تم التحقق من البريد الإلكتروني بنجاح",
+    "passwordResetLinkSent": "إذا كان هذا البريد الإلكتروني موجوداً، فقد تم إرسال رابط إعادة تعيين كلمة المرور.",
+    "passwordResetSuccess": "تم إعادة تعيين كلمة المرور بنجاح",
+    "loggedOut": "تم تسجيل الخروج بنجاح",
+    "alreadyVerified": "البريد الإلكتروني تم التحقق منه بالفعل",
+    "verificationEmailSent": "تم إرسال بريد التحقق الإلكتروني",
+    "emailNotVerified": "البريد الإلكتروني غير مؤكد. يرجى التحقق من صندوق الوارد."
+  },
+  "user": {
+    "userNotFound": "المستخدم غير موجود"
+  },
+  "email": {
+    "transporterNotInitialized": "لم يتم تهيئة ناقل البريد الإلكتروني",
+    "verifyEmailSubject": "تحقق من عنوان بريدك الإلكتروني",
+    "resetPasswordSubject": "إعادة تعيين كلمة المرور",
+    "applicationApprovedSubject": "تهانينا! تم قبول طلبك"
+  },
+  "batch": {
+    "notFound": "الدفعة غير موجودة",
+    "enrollmentClosed": "فترة التسجيل مغلقة"
+  },
+  "course": {
+    "notFound": "الدورة غير موجودة"
+  },
+  "category": {
+    "notFound": "الفئة غير موجودة",
+    "slugExists": "الفئة مع هذا الاسم المختصر موجودة بالفعل"
+  },
+  "application": {
+    "notFound": "الطلب غير موجود",
+    "alreadyExists": "الطلب موجود بالفعل لهذه الدفعة"
+  },
+  "tenant": {
+    "notFound": "المستأجر '{slug}' غير موجود",
+    "inactive": "المستأجر '{slug}' غير نشط",
+    "contextRequired": "سياق المستأجر مطلوب"
+  },
+  "student": {
+    "idGenerationFailed": "فشل في إنشاء معرف الطالب"
+  }
+}

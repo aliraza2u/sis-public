@@ -11,6 +11,9 @@ export class TenantEntity implements Tenant {
   @ApiProperty({ example: 'tech-corp' })
   slug: string;
 
+  @ApiProperty({ example: 'TC', required: false, nullable: true })
+  alias: string | null;
+
   @ApiProperty({ required: false, nullable: true })
   logoUrl: string | null;
 
@@ -52,4 +55,16 @@ export class TenantEntity implements Tenant {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty({ required: false, nullable: true })
+  createdBy: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  updatedBy: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  deletedAt: Date | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  deletedBy: string | null;
 }

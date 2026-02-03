@@ -1,0 +1,50 @@
+{
+  "auth": {
+    "userExists": "User already exists",
+    "userOrOrgExists": "User or Organization already exists",
+    "invalidCredentials": "Invalid credentials",
+    "invalidVerificationToken": "Invalid or expired verification token",
+    "invalidResetToken": "Invalid or expired password reset token",
+    "invalidRefreshToken": "Invalid or expired refresh token",
+    "noTenantFound": "No tenant found. Please contact support.",
+    "emailVerified": "Email verified successfully",
+    "passwordResetLinkSent": "If this email exists, a password reset link has been sent.",
+    "passwordResetSuccess": "Password has been reset successfully",
+    "loggedOut": "Logged out successfully",
+    "alreadyVerified": "Email is already verified",
+    "verificationEmailSent": "Verification email sent",
+    "emailNotVerified": "Email address is not verified. Please check your inbox."
+  },
+  "user": {
+    "userNotFound": "User not found"
+  },
+  "email": {
+    "transporterNotInitialized": "Email transporter not initialized",
+    "verifyEmailSubject": "Verify your email address",
+    "resetPasswordSubject": "Reset your password",
+    "applicationApprovedSubject": "Congratulations! Your Application Has Been Approved"
+  },
+  "batch": {
+    "notFound": "Batch not found",
+    "enrollmentClosed": "Enrollment window is closed"
+  },
+  "course": {
+    "notFound": "Course not found"
+  },
+  "category": {
+    "notFound": "Category not found",
+    "slugExists": "Category with this slug already exists"
+  },
+  "application": {
+    "notFound": "Application not found",
+    "alreadyExists": "Application already exists for this batch"
+  },
+  "tenant": {
+    "notFound": "Tenant '{slug}' not found",
+    "inactive": "Tenant '{slug}' is inactive",
+    "contextRequired": "Tenant context required"
+  },
+  "student": {
+    "idGenerationFailed": "Failed to generate Student ID"
+  }
+}

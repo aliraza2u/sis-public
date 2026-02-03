@@ -41,6 +41,9 @@ export class UserEntity implements User {
   verificationToken: string | null;
 
   @Exclude()
+  verificationTokenExpires: Date | null;
+
+  @Exclude()
   passwordResetToken: string | null;
 
   @Exclude()
@@ -63,6 +66,18 @@ export class UserEntity implements User {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty({ required: false, nullable: true })
+  createdBy: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  updatedBy: string | null;
+
+  @Exclude()
+  deletedAt: Date | null;
+
+  @Exclude()
+  deletedBy: string | null;
 
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);

@@ -1,6 +1,6 @@
-# Student Information System
+# Student Information System (SIS)
 
-A production-ready NestJS application for Student Information System (SIS), built with a focus on scalability, security, and maintainability.
+A production-ready NestJS application for managing student information, built with a focus on scalability, security, and maintainability.
 
 ## 🚀 Features
 
@@ -24,7 +24,7 @@ Ensure you have the following installed on your system:
 
 ### ⚡️ Quick Start (Docker - Recommended)
 
-Run the entire application (Database + API) with a single command. The setup is fully automated.
+Run the entire application (Database + API) with a single command. The setup is fully automated and uses a production-ready multi-stage build.
 
 1.  **Clone the repository**
 
@@ -42,7 +42,7 @@ Run the entire application (Database + API) with a single command. The setup is 
     - This will start PostgreSQL and the NestJS API.
     * Database migrations will run automatically.
     * **Seeding runs automatically**: The demo tenant (Al-Mkki) will be created.
-    * The API will start on `http://localhost:3001`.
+    * The API will start on `http://localhost:3000`.
 
 ---
 
@@ -94,9 +94,9 @@ If you prefer to run the application code locally (e.g., for debugging):
 
 Interactive API documentation via Swagger is available at:
 
-[http://localhost:3001/api/docs](http://localhost:3001/api/docs)
+[http://localhost:3000/api/docs](http://localhost:3000/api/docs)
 
-> **Note:** The API is versioned. The base URL for endpoints is `http://localhost:3001/api/v1`.
+> **Note:** The API is versioned. The base URL for endpoints is `http://localhost:3000/api/v1`.
 
 ## 📂 Project Structure
 
@@ -105,7 +105,7 @@ src/
 ├── common/          # Global pipes, guards, filters, interceptors
 ├── config/          # Type-safe configuration modules
 ├── infrastructure/  # Database (Prisma) and external services
-├── modules/         # Feature modules (Auth, etc.)
+├── modules/         # Feature modules (Auth, Admission, etc.)
 └── main.ts          # Application entry point
 ```
 
@@ -118,3 +118,21 @@ pnpm test
 # E2E tests
 pnpm test:e2e
 ```
+
+<!-- You can jump directly into the container and query: -->
+
+# 1. List running containers to get the db container name
+
+docker ps
+
+# 2. Exec into the db container (assuming it's named 'db-1' or similar)
+
+docker exec -it al-mkki-sis-backend-db-1 psql -U postgres -d sis_db
+
+# 3. SQL Query
+
+SELECT \* FROM "users";
+
+<!-- To clear your Docker database completely (wiping all data), use the -v (volumes) flag when taking down the containers. -->
+
+docker compose down -v

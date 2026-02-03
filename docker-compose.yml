@@ -4,12 +4,30 @@ services:
   app:
     build: .
     ports:
-      - "${APP_PORT:-3001}:${APP_PORT:-3001}"
+      - "${APP_PORT:-3000}:${APP_PORT:-3000}"
     environment:
       - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-sis_db}?schema=public
       - NODE_ENV=${NODE_ENV:-development}
-      - APP_PORT=${APP_PORT:-3001}
-    command: /bin/sh -c "npx prisma migrate deploy && node dist/src/scripts/seed-tenant.js && node dist/src/main"
+      - APP_PORT=${APP_PORT:-3000}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - SENDGRID_FROM_EMAIL=${SENDGRID_FROM_EMAIL}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-15m}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN:-7d}
+      - NON_INTERACTIVE=true
+      - APP_SALT_ROUNDS=${APP_SALT_ROUNDS:-12}
+      - AUTH_EMAIL_VERIFICATION_EXPIRY=${AUTH_EMAIL_VERIFICATION_EXPIRY:-24}
+      - AUTH_PASSWORD_RESET_EXPIRY=${AUTH_PASSWORD_RESET_EXPIRY:-1}
+      - AUTH_REFRESH_TOKEN_EXPIRY_DAYS=${AUTH_REFRESH_TOKEN_EXPIRY_DAYS:-7}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_FIRST_NAME=${ADMIN_FIRST_NAME:-Admin}
+      - ADMIN_LAST_NAME=${ADMIN_LAST_NAME:-User}
+      - DEFAULT_TENANT_SLUG=${DEFAULT_TENANT_SLUG:-al-mkki}
+    command: /bin/sh -c "npx prisma migrate deploy && node dist/scripts/seed-tenant.js && node dist/scripts/create-admin.js && node dist/main"
     depends_on:
       db:
         condition: service_healthy
@@ -20,7 +38,7 @@ services:
     image: postgres:15-alpine
     restart: always
     ports:
-      - "${DB_PORT:-5434}:5432"
+      - "${DB_PORT:-5432}:5432"
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}

@@ -34,7 +34,7 @@ async function bootstrap() {
   // Swagger
   if (configService.get<boolean>('swagger.enabled')) {
     const config = new DocumentBuilder()
-      .setTitle(configService.get<string>('swagger.title') ?? 'Student Information System API')
+      .setTitle(configService.get<string>('swagger.title') ?? 'SIS API')
       .setDescription(configService.get<string>('swagger.description') ?? 'API Documentation')
       .setVersion(configService.get<string>('swagger.version') ?? '1.0')
       .addBearerAuth()

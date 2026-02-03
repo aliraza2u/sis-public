@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 export default registerAs('swagger', () => ({
   enabled: process.env.SWAGGER_ENABLED === 'true',
-  title: process.env.SWAGGER_TITLE || 'Student Information System API',
+  title: process.env.SWAGGER_TITLE || 'SIS API',
   description:
     process.env.SWAGGER_DESCRIPTION || 'API Documentation for Student Information System',
   version: process.env.SWAGGER_VERSION || '1.0',
