@@ -88,7 +88,7 @@ export class AuthService {
 
     return {
       status: UserAuthState.LOGIN_REQUIRED,
-      message: t('messages.auth.loginRequired'), // I'll add this key to i18n
+      message: t('messages.auth.loginRequired'),
     };
   }
 
@@ -96,7 +96,6 @@ export class AuthService {
     const user = await this.userService.findByEmail(dto.email);
 
     if (!user) {
-      // Security: Don't reveal if user exists
       return { message: t('messages.auth.passwordSetupLinkSent') };
     }
 
@@ -141,7 +140,7 @@ export class AuthService {
         isPasswordCreated: true,
         passwordResetToken: null,
         passwordResetExpires: null,
-        emailVerified: true, // Auto-verify if they clicked the email link
+        emailVerified: true,
         emailVerifiedAt: user.emailVerifiedAt || new Date(),
       },
     });
@@ -174,7 +173,6 @@ export class AuthService {
     });
 
     if (!tokenRecord) {
-      // Possible reuse detection could go here
       throw new I18nUnauthorizedException('messages.auth.invalidRefreshToken');
     }
 
@@ -188,7 +186,7 @@ export class AuthService {
     }
 
     const tokens = await this.generateTokens(user);
-    await this.updateRefreshToken(user.id, tokens.refresh_token, refreshToken); // Rotate
+    await this.updateRefreshToken(user.id, tokens.refresh_token, refreshToken);
 
     return tokens;
   }

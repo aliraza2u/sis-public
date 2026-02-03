@@ -83,7 +83,7 @@ export class EmailService {
     const template = handlebars.compile(templateSource);
 
     const html = template({
-      resetUrl: setupUrl, // Reusing template variable
+      resetUrl: setupUrl,
       token,
       isSetup: true,
     });
