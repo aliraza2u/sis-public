@@ -114,7 +114,11 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendPasswordSetupEmail(user.email, setupToken);
+    await this.emailService.sendPasswordSetupEmail(
+      user.email,
+      setupToken,
+      user.preferredLanguageCode || 'en',
+    );
 
     return { message: t('messages.auth.passwordSetupLinkSent') };
   }
@@ -217,7 +221,11 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendPasswordResetEmail(user.email, resetToken);
+    await this.emailService.sendPasswordResetEmail(
+      user.email,
+      resetToken,
+      user.preferredLanguageCode || 'en',
+    );
 
     return { message: t('messages.auth.passwordResetLinkSent') };
   }

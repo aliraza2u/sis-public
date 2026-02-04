@@ -1,45 +1,43 @@
-<html>
+<html dir='{{dir}}'>
   <head>
     <meta charset='utf-8' />
-    <title>Application Approved</title>
+    <title>{{subject}}</title>
   </head>
-  <body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
+  <body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; direction: {{dir}}; text-align: {{align}};'>
     <div style='background-color: #f8f9fa; padding: 30px; border-radius: 8px;'>
       <!-- Header -->
       <div style='text-align: center; margin-bottom: 30px;'>
-        <h1 style='color: #10b981; margin-bottom: 10px;'>🎉 Congratulations!</h1>
-        <h2 style='color: #2c3e50; margin-top: 0;'>Your Application Has Been Approved</h2>
+        <h1 style='color: #10b981; margin-bottom: 10px;'>{{header}}</h1>
+        <h2 style='color: #2c3e50; margin-top: 0;'>{{subHeader}}</h2>
       </div>
 
       <!-- Main Content -->
       <div style='background-color: white; padding: 25px; border-radius: 6px; margin-bottom: 20px;'>
         <p style='color: #34495e; font-size: 16px; line-height: 1.6;'>
-          Dear
-          {{applicantName}},
+          {{greeting}}
         </p>
         <p style='color: #34495e; font-size: 16px; line-height: 1.6;'>
-          We are delighted to inform you that your application has been approved! Welcome to
-          <strong>{{courseName}}</strong>.
+          {{approvalBody}}
         </p>
 
         <!-- Application Details -->
         <div style='background-color: #f8f9fa; padding: 20px; border-radius: 4px; margin: 20px 0;'>
-          <h3 style='color: #2c3e50; margin-top: 0; font-size: 18px;'>📋 Your Details</h3>
-          <table style='width: 100%; border-collapse: collapse;'>
+          <h3 style='color: #2c3e50; margin-top: 0; font-size: 18px;'>{{detailsHeader}}</h3>
+          <table style='width: 100%; border-collapse: collapse; text-align: {{align}};'>
             <tr>
-              <td style='padding: 8px 0; color: #7f8c8d; font-weight: bold;'>Student ID:</td>
+              <td style='padding: 8px 0; color: #7f8c8d; font-weight: bold;'>{{studentIdLabel}}</td>
               <td style='padding: 8px 0; color: #2c3e50;'>{{rollNumber}}</td>
             </tr>
             <tr>
-              <td style='padding: 8px 0; color: #7f8c8d; font-weight: bold;'>Course:</td>
+              <td style='padding: 8px 0; color: #7f8c8d; font-weight: bold;'>{{courseLabel}}</td>
               <td style='padding: 8px 0; color: #2c3e50;'>{{courseName}}</td>
             </tr>
             <tr>
-              <td style='padding: 8px 0; color: #7f8c8d; font-weight: bold;'>Batch:</td>
+              <td style='padding: 8px 0; color: #7f8c8d; font-weight: bold;'>{{batchLabel}}</td>
               <td style='padding: 8px 0; color: #2c3e50;'>{{batchName}}</td>
             </tr>
             <tr>
-              <td style='padding: 8px 0; color: #7f8c8d; font-weight: bold;'>Start Date:</td>
+              <td style='padding: 8px 0; color: #7f8c8d; font-weight: bold;'>{{startDateLabel}}</td>
               <td style='padding: 8px 0; color: #2c3e50;'>{{batchStartDate}}</td>
             </tr>
           </table>
@@ -47,11 +45,11 @@
 
         <!-- Next Steps -->
         <div style='margin: 25px 0;'>
-          <h3 style='color: #2c3e50; font-size: 18px;'>📚 Next Steps</h3>
+          <h3 style='color: #2c3e50; font-size: 18px;'>{{nextStepsHeader}}</h3>
           <ol style='color: #34495e; line-height: 1.8;'>
-            <li>Save your Student ID (<strong>{{rollNumber}}</strong>) for future reference</li>
-            <li>Access the Learning Management System (LMS) on the batch start date</li>
-            <li>Check your email regularly for course updates and announcements</li>
+            <li>{{nextStep1}}</li>
+            <li>{{nextStep2}}</li>
+            <li>{{nextStep3}}</li>
           </ol>
         </div>
 
@@ -61,14 +59,12 @@
             <a
               href='{{lmsUrl}}'
               style='background-color: #4F46E5; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; font-size: 16px;'
-            >Access LMS</a>
+            >{{accessLmsButton}}</a>
           </div>
         {{/if}}
 
         <p style='color: #34495e; font-size: 16px; line-height: 1.6;'>
-          We look forward to seeing you on
-          <strong>{{batchStartDate}}</strong>. If you have any questions, please don't hesitate to
-          contact us.
+          {{seeYouOn}}
         </p>
       </div>
 
@@ -76,9 +72,8 @@
       <p
         style='color: #95a5a6; font-size: 13px; text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e1e1e1;'
       >
-        This is an automated message. Please do not reply to this email.<br />
-        For support, contact us at
-        {{supportEmail}}
+        {{footerAutomated}}<br />
+        {{footerSupport}}
       </p>
     </div>
   </body>

@@ -56,41 +56,84 @@ export class EmailService {
     }
   }
 
-  async sendPasswordResetEmail(to: string, token: string) {
+  private async getTemplateContext(lang: string, baseContext: Record<string, any>) {
+    const isRtl = lang === 'ar';
+    return {
+      ...baseContext,
+      dir: isRtl ? 'rtl' : 'ltr',
+      align: isRtl ? 'right' : 'left',
+    };
+  }
+
+  private async translateAll(
+    lang: string,
+    keys: Record<string, string | { key: string; args?: any }>,
+  ) {
+    const results: Record<string, string> = {};
+    for (const [prop, value] of Object.entries(keys)) {
+      if (typeof value === 'string') {
+        results[prop] = await this.i18n.translate(value, { lang });
+      } else {
+        results[prop] = await this.i18n.translate(value.key, { lang, args: value.args });
+      }
+    }
+    return results;
+  }
+
+  async sendPasswordResetEmail(to: string, token: string, lang = 'en') {
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
 
-    const templatePath = path.join(__dirname, 'templates', 'reset-password.hbs');
-    const templateSource = fs.readFileSync(templatePath, 'utf8');
-    const template = handlebars.compile(templateSource);
+    const translations = await this.translateAll(lang, {
+      subject: 'messages.email.resetPasswordSubject',
+      header: 'messages.email.resetPasswordHeader',
+      body: 'messages.email.resetPasswordBody',
+      buttonText: 'messages.email.resetPasswordButton',
+      tokenLabel: 'messages.email.tokenLabel',
+      ignoreMessage: 'messages.email.resetIgnore',
+    });
 
-    const html = template({
+    const context = await this.getTemplateContext(lang, {
+      ...translations,
       resetUrl,
       token,
     });
 
-    const subject = await this.translation.translate('messages.email.resetPasswordSubject');
+    const templatePath = path.join(__dirname, 'templates', 'reset-password.hbs');
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+    const template = handlebars.compile(templateSource);
 
-    return this.sendEmail(to, subject, html);
+    const html = template(context);
+
+    return this.sendEmail(to, translations.subject, html);
   }
 
-  async sendPasswordSetupEmail(to: string, token: string) {
+  async sendPasswordSetupEmail(to: string, token: string, lang = 'en') {
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const setupUrl = `${frontendUrl}/setup-password?token=${token}`;
+
+    const translations = await this.translateAll(lang, {
+      subject: 'messages.email.setupAccountSubject',
+      header: 'messages.email.setupHeader',
+      body: 'messages.email.setupBody',
+      buttonText: 'messages.email.setupButton',
+      tokenLabel: 'messages.email.tokenLabel',
+      ignoreMessage: 'messages.email.setupIgnore',
+    });
+
+    const context = await this.getTemplateContext(lang, {
+      ...translations,
+      resetUrl: setupUrl,
+      token,
+    });
 
     const templatePath = path.join(__dirname, 'templates', 'reset-password.hbs');
     const templateSource = fs.readFileSync(templatePath, 'utf8');
     const template = handlebars.compile(templateSource);
 
-    const html = template({
-      resetUrl: setupUrl,
-      token,
-      isSetup: true,
-    });
+    const html = template(context);
 
-    const subject = await this.translation.translate('messages.email.setupAccountSubject');
-
-    return this.sendEmail(to, subject, html);
+    return this.sendEmail(to, translations.subject, html);
   }
 
   async sendApplicationApprovalEmail(
@@ -104,18 +147,44 @@ export class EmailService {
       lmsUrl?: string;
       supportEmail?: string;
     },
+    lang = 'en',
   ) {
-    const templatePath = path.join(__dirname, 'templates', 'approval-notification.hbs');
-    const templateSource = fs.readFileSync(templatePath, 'utf8');
-    const template = handlebars.compile(templateSource);
+    const translations = await this.translateAll(lang, {
+      subject: 'messages.email.applicationApprovedSubject',
+      header: 'messages.email.approvalHeader',
+      subHeader: 'messages.email.approvalSubHeader',
+      greeting: { key: 'messages.email.greeting', args: { name: data.applicantName } },
+      approvalBody: { key: 'messages.email.approvalBody', args: { courseName: data.courseName } },
+      detailsHeader: 'messages.email.detailsHeader',
+      studentIdLabel: 'messages.email.studentIdLabel',
+      courseLabel: 'messages.email.courseLabel',
+      batchLabel: 'messages.email.batchLabel',
+      startDateLabel: 'messages.email.startDateLabel',
+      nextStepsHeader: 'messages.email.nextStepsHeader',
+      nextStep1: { key: 'messages.email.nextStep1', args: { rollNumber: data.rollNumber } },
+      nextStep2: 'messages.email.nextStep2',
+      nextStep3: 'messages.email.nextStep3',
+      accessLmsButton: 'messages.email.accessLmsButton',
+      seeYouOn: { key: 'messages.email.seeYouOn', args: { batchStartDate: data.batchStartDate } },
+      footerAutomated: 'messages.email.footerAutomated',
+      footerSupport: {
+        key: 'messages.email.footerSupport',
+        args: { supportEmail: data.supportEmail || this.fromEmail },
+      },
+    });
 
-    const html = template({
+    const context = await this.getTemplateContext(lang, {
+      ...translations,
       ...data,
       supportEmail: data.supportEmail || this.fromEmail,
     });
 
-    const subject = await this.translation.translate('messages.email.applicationApprovedSubject');
+    const templatePath = path.join(__dirname, 'templates', 'approval-notification.hbs');
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+    const template = handlebars.compile(templateSource);
 
-    return this.sendEmail(to, subject, html);
+    const html = template(context);
+
+    return this.sendEmail(to, translations.subject, html);
   }
 }
