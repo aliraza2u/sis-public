@@ -16,6 +16,9 @@ export class UserEntity implements User {
   @Exclude()
   passwordHash: string;
 
+  @ApiProperty()
+  isPasswordCreated: boolean;
+
   @ApiProperty({ example: { en: 'John' } })
   firstName: any;
 

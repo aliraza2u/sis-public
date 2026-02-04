@@ -1,0 +1,5 @@
+export enum UserAuthState {
+  NOT_FOUND = 'NOT_FOUND',
+  SETUP_REQUIRED = 'SETUP_REQUIRED',
+  LOGIN_REQUIRED = 'LOGIN_REQUIRED',
+}

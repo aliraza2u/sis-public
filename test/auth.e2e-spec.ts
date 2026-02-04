@@ -70,6 +70,7 @@ describe('AuthController (e2e)', () => {
         tenantId: tenant.id,
         role: 'applicant',
         emailVerified: true, // Auto-verify for login tests
+        isPasswordCreated: true,
       },
     });
   });

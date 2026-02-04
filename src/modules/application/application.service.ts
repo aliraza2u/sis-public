@@ -147,7 +147,14 @@ export class ApplicationService {
         rollNumber: rollNumber, // Will be null if rejected or no change, or new ID if approved
       },
       include: {
-        applicant: { select: { email: true, firstName: true, lastName: true } },
+        applicant: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+            preferredLanguageCode: true,
+          },
+        },
         batch: { include: { course: { select: { title: true } } } },
       },
     });
@@ -155,34 +162,55 @@ export class ApplicationService {
     // Send approval email if status is approved
     if (dto.status === ApplicationStatus.APPROVED) {
       try {
-        // Format applicant name
-        const firstName =
-          (updatedApp.applicant.firstName as any)?.en || updatedApp.applicant.firstName;
-        const lastName =
-          (updatedApp.applicant.lastName as any)?.en || updatedApp.applicant.lastName;
-        const applicantName = `${firstName} ${lastName}`;
+        const lang = updatedApp.applicant.preferredLanguageCode || 'en';
 
-        // Format course name
+        // Format applicant name
+        const getName = (nameField: any, l: string) => {
+          if (!nameField) return '';
+          if (typeof nameField === 'string') return nameField;
+          return nameField[l] || nameField.en || '';
+        };
+
+        const firstName = getName(updatedApp.applicant.firstName, lang);
+        const lastName = getName(updatedApp.applicant.lastName, lang);
+        const applicantName = `${firstName} ${lastName}`.trim() || 'Applicant';
+
+        // Format course name (Localized if possible)
         const courseName =
-          (updatedApp.batch.course.title as any)?.en || updatedApp.batch.course.title;
+          (updatedApp.batch.course.title as any)?.[lang] ||
+          (updatedApp.batch.course.title as any)?.en ||
+          (typeof updatedApp.batch.course.title === 'string'
+            ? updatedApp.batch.course.title
+            : 'Course');
 
         // Format batch name
-        const batchName = (updatedApp.batch.name as any)?.en || updatedApp.batch.name || 'N/A';
+        const batchName =
+          (updatedApp.batch.name as any)?.[lang] ||
+          (updatedApp.batch.name as any)?.en ||
+          updatedApp.batch.name ||
+          'N/A';
 
-        // Format batch start date
-        const batchStartDate = new Date(updatedApp.batch.startDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
+        // Format batch start date (Localized format)
+        const batchStartDate = new Date(updatedApp.batch.startDate).toLocaleDateString(
+          lang === 'ar' ? 'ar-SA' : 'en-US',
+          {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          },
+        );
 
-        await this.emailService.sendApplicationApprovalEmail(updatedApp.applicant.email, {
-          applicantName,
-          courseName,
-          batchName,
-          rollNumber: rollNumber || 'N/A',
-          batchStartDate,
-        });
+        await this.emailService.sendApplicationApprovalEmail(
+          updatedApp.applicant.email,
+          {
+            applicantName,
+            courseName,
+            batchName,
+            rollNumber: rollNumber || 'N/A',
+            batchStartDate,
+          },
+          lang,
+        );
 
         this.logger.log(`Approval email sent to ${updatedApp.applicant.email}`);
       } catch (error) {

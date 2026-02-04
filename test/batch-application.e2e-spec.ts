@@ -77,6 +77,7 @@ describe('Batch & Application Flow (e2e)', () => {
         role: 'admin',
         emailVerified: true,
         tenantId: tenant.id,
+        isPasswordCreated: true,
       },
     });
     adminId = dbAdmin.id;
@@ -107,6 +108,7 @@ describe('Batch & Application Flow (e2e)', () => {
         role: 'applicant',
         emailVerified: true,
         tenantId: tenant.id,
+        isPasswordCreated: true,
       },
     });
     applicantId = dbApplicant.id;
@@ -239,6 +241,7 @@ describe('Batch & Application Flow (e2e)', () => {
         role: 'applicant',
         emailVerified: true,
         tenantId: tenantId,
+        isPasswordCreated: true,
       },
     });
 

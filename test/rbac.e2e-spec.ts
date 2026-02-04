@@ -89,6 +89,7 @@ describe('RBAC (e2e)', () => {
         tenantId: tenant!.id,
         role: 'applicant',
         emailVerified: true,
+        isPasswordCreated: true,
       },
     });
 
@@ -106,7 +107,7 @@ describe('RBAC (e2e)', () => {
 
   it('3. Access admin-only endpoint as applicant -> 403 Forbidden', async () => {
     await request(app.getHttpServer())
-      .get('/api/auth/admin-only')
+      .get('/api/applications')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(403);
   });
@@ -129,10 +130,10 @@ describe('RBAC (e2e)', () => {
 
   it('6. Access admin-only endpoint as admin -> 200 OK', async () => {
     const response = await request(app.getHttpServer())
-      .get('/api/auth/admin-only')
+      .get('/api/applications')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
-    expect(response.body.data.message).toEqual('Hello Admin');
+    expect(Array.isArray(response.body.data)).toBe(true);
   });
 });

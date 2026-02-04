@@ -56,6 +56,7 @@ describe('Auth Controller - Password Reset & Me (E2E)', () => {
         tenantId: tenant!.id,
         role: 'applicant',
         emailVerified: true,
+        isPasswordCreated: true,
       },
     });
   });

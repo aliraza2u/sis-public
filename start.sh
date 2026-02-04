@@ -19,6 +19,12 @@ if [ ! -z "$ADMIN_EMAIL" ]; then
     node dist/scripts/create-admin.js
 fi
 
-# 4. Start Application
+# 4. Seed Dummy Users (Optional)
+if [ "$SEED_DUMMY_USERS" = "true" ]; then
+    echo "Seeding dummy users..."
+    node dist/scripts/seed-users.js
+fi
+
+# 5. Start Application
 echo "Starting application..."
 exec node dist/main

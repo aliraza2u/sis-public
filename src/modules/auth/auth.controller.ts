@@ -11,21 +11,22 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { AuthService } from './auth.service';
+import { AuthService } from '@/modules/auth/auth.service';
 
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { ResendVerificationDto } from './dto/resend-verification.dto';
+import { RefreshTokenDto } from '@/modules/auth/dto/refresh-token.dto';
 
-import { LoginRequestDto } from './dto/login.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { LoginRequestDto } from '@/modules/auth/dto/login.dto';
+import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
+import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
+import { CheckEmailDto, RequestSetupDto, SetupPasswordDto } from '@/modules/auth/dto/auth-flow.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 import { Public } from '@/common/decorators/public.decorator';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { UserRole } from '@/common/enums/roles.enum';
+import { UserAuthState } from '@/common/enums/auth-state.enum';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -42,6 +43,39 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful, returns tokens' })
   login(@Body() dto: LoginRequestDto) {
     return this.authService.login(dto);
+  }
+
+  @Public()
+  @Post('check')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Check email status (Identifier-first)' })
+  @ApiResponse({
+    status: 200,
+    description: `User state: ${Object.values(UserAuthState).join(', ')}`,
+  })
+  checkEmail(@Body() dto: CheckEmailDto) {
+    return this.authService.checkEmail(dto);
+  }
+
+  @Public()
+  @Post('request-setup')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request account setup email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Setup link sent if email is registered and uninitialized',
+  })
+  requestSetup(@Body() dto: RequestSetupDto) {
+    return this.authService.requestPasswordSetup(dto);
+  }
+
+  @Public()
+  @Post('setup-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Set initial password' })
+  @ApiResponse({ status: 200, description: 'Password set successfully, returns tokens' })
+  setupPassword(@Body() dto: SetupPasswordDto) {
+    return this.authService.setupPassword(dto);
   }
 
   @Public()
@@ -64,27 +98,6 @@ export class AuthController {
   }
 
   @Public()
-  @Get('verify-email')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Verify email address' })
-  @ApiResponse({ status: 200, description: 'Email verified successfully' })
-  verifyEmail(@Query('token') token: string) {
-    // Query param for link clicking
-    return this.authService.verifyEmail(token);
-  }
-
-  @Public()
-  @Throttle({ default: { limit: 2, ttl: 60000 } }) // Stricter limit for emails
-  @Post('resend-verification')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Resend verification email' })
-  @ApiResponse({ status: 200, description: 'Verification email sent' })
-  @ApiResponse({ status: 400, description: 'User already verified' })
-  resendVerification(@Body() dto: ResendVerificationDto) {
-    return this.authService.resendVerificationEmail(dto.email);
-  }
-
-  @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request password reset' })
@@ -100,13 +113,5 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Password reset successfully' })
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto);
-  }
-  @Get('admin-only')
-  @Roles(UserRole.ADMIN)
-  @UseGuards(RolesGuard)
-  @ApiOperation({ summary: 'Admin only endpoint' })
-  @ApiResponse({ status: 200, description: 'Hello Admin' })
-  adminOnly() {
-    return { message: 'Hello Admin' }; // Must match RBAC test expectation
   }
 }
