@@ -80,8 +80,8 @@ model User {
   tenantId String @map("tenant_id") @db.VarChar(50)
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  email        String @db.VarChar(255)
-  passwordHash String @map("password_hash") @db.VarChar(255)
+  email        String  @db.VarChar(255)
+  passwordHash String? @map("password_hash") @db.VarChar(255)
   isPasswordCreated Boolean @default(false) @map("is_password_created")
 
   firstName Json    @default("{}") @map("first_name")
@@ -337,4 +337,46 @@ model StudentIdCounter {
 
   @@map("student_id_counters")
   @@index([tenantId])
+}
+
+enum ImportJobStatus {
+  pending
+  processing
+  completed
+  failed
+  cancelled
+}
+
+model ImportJob {
+  id       String @id @default(dbgenerated("generate_prefixed_uuid('IMP')")) @db.VarChar(50)
+  tenantId String @map("tenant_id") @db.VarChar(50)
+  userId   String @map("user_id") @db.VarChar(50)
+
+  entityType String          @map("entity_type") @db.VarChar(50) // 'user' or 'tenant'
+  status     ImportJobStatus @default(pending)
+
+  // Progress tracking
+  totalRows     Int   @default(0) @map("total_rows")
+  processedRows Int   @default(0) @map("processed_rows")
+  successCount  Int   @default(0) @map("success_count")
+  errorCount    Int   @default(0) @map("error_count")
+  progress      Float @default(0) // 0-100
+
+  // File paths
+  sourceFilePath String? @map("source_file_path") @db.VarChar(500)
+  failedRowsPath String? @map("failed_rows_path") @db.VarChar(500)
+
+  // Error details stored as JSON array [{row, field, message, data}]
+  errorDetails Json? @map("error_details")
+
+  // Timestamps
+  startedAt   DateTime? @map("started_at") @db.Timestamptz
+  completedAt DateTime? @map("completed_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@map("import_jobs")
 }
