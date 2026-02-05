@@ -7,6 +7,7 @@ import {
   BatchImportResult,
   ImportError,
 } from './import-strategy.interface';
+import { parseMultiLangField } from '../utils/data-transfer.utils';
 
 @Injectable()
 export class TenantImportStrategy implements ImportStrategy {
@@ -56,7 +57,7 @@ export class TenantImportStrategy implements ImportStrategy {
       errors.push({ field: 'name', message: 'Name is required' });
       name = { en: '' };
     } else {
-      name = this.parseMultiLangField(nameRaw, 'name', errors);
+      name = parseMultiLangField(nameRaw, 'name', errors);
     }
 
     if (!slug) {
@@ -98,40 +99,6 @@ export class TenantImportStrategy implements ImportStrategy {
         website,
       },
     };
-  }
-
-  /**
-   * Parse multi-language field - supports both JSON strings and plain text
-   */
-  private parseMultiLangField(
-    value: string,
-    fieldName: string,
-    errors: { field: string; message: string }[],
-  ): Record<string, string> {
-    if (value.startsWith('{') && value.endsWith('}')) {
-      try {
-        const parsed = JSON.parse(value);
-
-        if (typeof parsed !== 'object' || parsed === null) {
-          errors.push({
-            field: fieldName,
-            message: `Invalid JSON format for ${fieldName}`,
-          });
-          return { en: value };
-        }
-
-        // Accept any languages provided - no specific requirements
-        return parsed;
-      } catch (error) {
-        errors.push({
-          field: fieldName,
-          message: `Failed to parse JSON in ${fieldName}: ${error instanceof Error ? error.message : 'Invalid JSON'}`,
-        });
-        return { en: value };
-      }
-    } else {
-      return { en: value };
-    }
   }
 
   async importBatch(

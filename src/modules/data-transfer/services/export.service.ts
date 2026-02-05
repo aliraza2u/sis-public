@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { CsvParserService } from '@/modules/data-transfer/services/csv-parser.service';
 import { ImportEntityType } from '@/common/enums/import-entity-type.enum';
+import { extractLocalized } from '../utils/data-transfer.utils';
 
 interface ExportColumn {
   key: string;
@@ -30,10 +31,10 @@ export class ExportService {
     // Note: Using separate columns for each language to preserve multi-language data
     const records = users.map((user) => ({
       email: user.email,
-      firstName_en: this.extractLocalized(user.firstName, 'en'),
-      firstName_ar: this.extractLocalized(user.firstName, 'ar'),
-      lastName_en: this.extractLocalized(user.lastName, 'en'),
-      lastName_ar: this.extractLocalized(user.lastName, 'ar'),
+      firstName_en: extractLocalized(user.firstName, 'en'),
+      firstName_ar: extractLocalized(user.firstName, 'ar'),
+      lastName_en: extractLocalized(user.lastName, 'en'),
+      lastName_ar: extractLocalized(user.lastName, 'ar'),
       role: user.role,
       phone: user.phone || '',
     }));
@@ -51,8 +52,8 @@ export class ExportService {
 
     // Note: Using separate columns for each language to preserve multi-language data
     const records = tenants.map((tenant) => ({
-      name_en: this.extractLocalized(tenant.name, 'en'),
-      name_ar: this.extractLocalized(tenant.name, 'ar'),
+      name_en: extractLocalized(tenant.name, 'en'),
+      name_ar: extractLocalized(tenant.name, 'ar'),
       slug: tenant.slug,
       contactEmail: tenant.contactEmail || '',
       contactPhone: tenant.contactPhone || '',
@@ -103,25 +104,5 @@ export class ExportService {
     }
 
     return result;
-  }
-
-  /**
-   * Extract localized value from JSON field
-   */
-  private extractLocalized(value: unknown, locale: string): string {
-    if (!value || typeof value !== 'object') return '';
-    const obj = value as Record<string, string>;
-    return obj[locale] || obj['en'] || Object.values(obj)[0] || '';
-  }
-
-  /**
-   * Format date for export
-   */
-  private formatDate(value: unknown): string {
-    if (!value) return '';
-    if (value instanceof Date) {
-      return value.toISOString();
-    }
-    return String(value);
   }
 }

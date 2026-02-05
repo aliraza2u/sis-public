@@ -7,6 +7,7 @@ import {
   BatchImportResult,
   ImportError,
 } from './import-strategy.interface';
+import { parseMultiLangField } from '../utils/data-transfer.utils';
 import { UserRole } from '@/infrastructure/prisma/client/client';
 
 @Injectable()
@@ -70,7 +71,7 @@ export class UserImportStrategy implements ImportStrategy {
       errors.push({ field: 'firstName', message: 'First name is required' });
       firstName = { en: '' };
     } else {
-      firstName = this.parseMultiLangField(firstNameRaw, 'firstName', errors);
+      firstName = parseMultiLangField(firstNameRaw, 'firstName', errors);
     }
 
     // Parse lastName (can be JSON string or plain text)
@@ -79,7 +80,7 @@ export class UserImportStrategy implements ImportStrategy {
       errors.push({ field: 'lastName', message: 'Last name is required' });
       lastName = { en: '' };
     } else {
-      lastName = this.parseMultiLangField(lastNameRaw, 'lastName', errors);
+      lastName = parseMultiLangField(lastNameRaw, 'lastName', errors);
     }
 
     // Role validation
@@ -108,46 +109,6 @@ export class UserImportStrategy implements ImportStrategy {
         phone,
       },
     };
-  }
-
-  /**
-   * Parse multi-language field - supports both JSON strings and plain text
-   * JSON format: {"en":"Admin","ar":"مدير"}
-   * Plain text: Admin (will be converted to {en: "Admin"})
-   */
-  private parseMultiLangField(
-    value: string,
-    fieldName: string,
-    errors: { field: string; message: string }[],
-  ): Record<string, string> {
-    // Check if it's a JSON string
-    if (value.startsWith('{') && value.endsWith('}')) {
-      try {
-        const parsed = JSON.parse(value);
-
-        // Validate it's an object with language keys
-        if (typeof parsed !== 'object' || parsed === null) {
-          errors.push({
-            field: fieldName,
-            message: `Invalid JSON format for ${fieldName}`,
-          });
-          return { en: value };
-        }
-
-        // Accept any languages provided - no specific requirements
-        return parsed;
-      } catch (error) {
-        errors.push({
-          field: fieldName,
-          message: `Failed to parse JSON in ${fieldName}: ${error instanceof Error ? error.message : 'Invalid JSON'}`,
-        });
-        // Fallback: treat as plain text
-        return { en: value };
-      }
-    } else {
-      // Plain text - convert to English-only
-      return { en: value };
-    }
   }
 
   async importBatch(rows: ValidatedRow[], tenantId: string): Promise<BatchImportResult> {
