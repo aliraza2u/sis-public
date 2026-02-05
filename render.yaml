@@ -27,16 +27,22 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
       - key: APP_NAME
-        value: "Student Information System"
+        value: 'Student Information System'
       - key: APP_PREFIX
-        value: "api"
+        value: 'api'
       - key: AUTH_EMAIL_VERIFICATION_EXPIRY
-        value: "24"
+        value: '24'
       - key: AUTH_PASSWORD_RESET_EXPIRY
-        value: "1"
+        value: '1'
       - key: AUTH_REFRESH_TOKEN_EXPIRY_DAYS
-        value: "7"
+        value: '7'
       - key: APP_SALT_ROUNDS
-        value: "12"
+        value: '12'
       - key: SWAGGER_ENABLED
-        value: "true"
+        value: 'true'
+      - key: DATA_TRANSFER_MAX_FILE_SIZE
+        value: '10485760'
+      - key: DATA_TRANSFER_BATCH_SIZE
+        value: '50'
+      - key: DATA_TRANSFER_TEMP_FILE_MAX_AGE
+        value: '86400000'
