@@ -26,8 +26,8 @@ export class UserImportStrategy implements ImportStrategy {
   getSampleRow(): Record<string, string> {
     return {
       email: 'user@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
+      firstName: '{"en":"John","ar":"جون"}',
+      lastName: '{"en":"Doe","ar":"دو"}',
       role: 'applicant',
       phone: '+1234567890',
     };
@@ -39,37 +39,47 @@ export class UserImportStrategy implements ImportStrategy {
     existingEmails?: Set<string>,
   ): Promise<ValidationResult> {
     const errors: { field: string; message: string }[] = [];
+
+    // Extract values from row
     const email = String(row.email || '')
       .toLowerCase()
       .trim();
-    const firstName = String(row.firstName || '').trim();
-    const lastName = String(row.lastName || '').trim();
+    const firstNameRaw = String(row.firstName || '').trim();
+    const lastNameRaw = String(row.lastName || '').trim();
     const role = String(row.role || '')
       .toLowerCase()
       .trim();
     const phone = row.phone ? String(row.phone).trim() : null;
 
-    // Required field checks
+    // Email validation
     if (!email) {
       errors.push({ field: 'email', message: 'Email is required' });
     } else {
-      // Email format validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         errors.push({ field: 'email', message: 'Invalid email format' });
       }
-      // Check for duplicates in current batch
       if (existingEmails?.has(email)) {
         errors.push({ field: 'email', message: 'Duplicate email in CSV file' });
       }
     }
 
-    if (!firstName) {
+    // Parse firstName (can be JSON string or plain text)
+    let firstName: Record<string, string>;
+    if (!firstNameRaw) {
       errors.push({ field: 'firstName', message: 'First name is required' });
+      firstName = { en: '' };
+    } else {
+      firstName = this.parseMultiLangField(firstNameRaw, 'firstName', errors);
     }
 
-    if (!lastName) {
+    // Parse lastName (can be JSON string or plain text)
+    let lastName: Record<string, string>;
+    if (!lastNameRaw) {
       errors.push({ field: 'lastName', message: 'Last name is required' });
+      lastName = { en: '' };
+    } else {
+      lastName = this.parseMultiLangField(lastNameRaw, 'lastName', errors);
     }
 
     // Role validation
@@ -92,12 +102,52 @@ export class UserImportStrategy implements ImportStrategy {
       errors: [],
       normalizedData: {
         email,
-        firstName: { en: firstName },
-        lastName: { en: lastName },
+        firstName,
+        lastName,
         role: role as UserRole,
         phone,
       },
     };
+  }
+
+  /**
+   * Parse multi-language field - supports both JSON strings and plain text
+   * JSON format: {"en":"Admin","ar":"مدير"}
+   * Plain text: Admin (will be converted to {en: "Admin"})
+   */
+  private parseMultiLangField(
+    value: string,
+    fieldName: string,
+    errors: { field: string; message: string }[],
+  ): Record<string, string> {
+    // Check if it's a JSON string
+    if (value.startsWith('{') && value.endsWith('}')) {
+      try {
+        const parsed = JSON.parse(value);
+
+        // Validate it's an object with language keys
+        if (typeof parsed !== 'object' || parsed === null) {
+          errors.push({
+            field: fieldName,
+            message: `Invalid JSON format for ${fieldName}`,
+          });
+          return { en: value };
+        }
+
+        // Accept any languages provided - no specific requirements
+        return parsed;
+      } catch (error) {
+        errors.push({
+          field: fieldName,
+          message: `Failed to parse JSON in ${fieldName}: ${error instanceof Error ? error.message : 'Invalid JSON'}`,
+        });
+        // Fallback: treat as plain text
+        return { en: value };
+      }
+    } else {
+      // Plain text - convert to English-only
+      return { en: value };
+    }
   }
 
   async importBatch(rows: ValidatedRow[], tenantId: string): Promise<BatchImportResult> {

@@ -24,7 +24,7 @@ export class TenantImportStrategy implements ImportStrategy {
 
   getSampleRow(): Record<string, string> {
     return {
-      name: 'My Organization',
+      name: '{"en":"My Organization","ar":"منظمتي"}',
       slug: 'my-organization',
       contactEmail: 'contact@myorg.com',
       contactPhone: '+1234567890',
@@ -38,7 +38,9 @@ export class TenantImportStrategy implements ImportStrategy {
     existingSlugs?: Set<string>,
   ): Promise<ValidationResult> {
     const errors: { field: string; message: string }[] = [];
-    const name = String(row.name || '').trim();
+
+    // Extract values from row
+    const nameRaw = String(row.name || '').trim();
     const slug = String(row.slug || '')
       .toLowerCase()
       .trim();
@@ -48,15 +50,18 @@ export class TenantImportStrategy implements ImportStrategy {
     const contactPhone = row.contactPhone ? String(row.contactPhone).trim() : null;
     const website = row.website ? String(row.website).trim() : null;
 
-    // Required field checks
-    if (!name) {
+    // Parse name (can be JSON string or plain text)
+    let name: Record<string, string>;
+    if (!nameRaw) {
       errors.push({ field: 'name', message: 'Name is required' });
+      name = { en: '' };
+    } else {
+      name = this.parseMultiLangField(nameRaw, 'name', errors);
     }
 
     if (!slug) {
       errors.push({ field: 'slug', message: 'Slug is required' });
     } else {
-      // Slug format validation: alphanumeric with hyphens only
       const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
       if (!slugRegex.test(slug)) {
         errors.push({
@@ -64,7 +69,6 @@ export class TenantImportStrategy implements ImportStrategy {
           message: 'Slug must be lowercase alphanumeric with hyphens only',
         });
       }
-      // Check for duplicates in current batch
       if (existingSlugs?.has(slug)) {
         errors.push({ field: 'slug', message: 'Duplicate slug in CSV file' });
       }
@@ -73,7 +77,6 @@ export class TenantImportStrategy implements ImportStrategy {
     if (!contactEmail) {
       errors.push({ field: 'contactEmail', message: 'Contact email is required' });
     } else {
-      // Email format validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(contactEmail)) {
         errors.push({ field: 'contactEmail', message: 'Invalid email format' });
@@ -88,13 +91,47 @@ export class TenantImportStrategy implements ImportStrategy {
       isValid: true,
       errors: [],
       normalizedData: {
-        name: { en: name },
+        name,
         slug,
         contactEmail,
         contactPhone,
         website,
       },
     };
+  }
+
+  /**
+   * Parse multi-language field - supports both JSON strings and plain text
+   */
+  private parseMultiLangField(
+    value: string,
+    fieldName: string,
+    errors: { field: string; message: string }[],
+  ): Record<string, string> {
+    if (value.startsWith('{') && value.endsWith('}')) {
+      try {
+        const parsed = JSON.parse(value);
+
+        if (typeof parsed !== 'object' || parsed === null) {
+          errors.push({
+            field: fieldName,
+            message: `Invalid JSON format for ${fieldName}`,
+          });
+          return { en: value };
+        }
+
+        // Accept any languages provided - no specific requirements
+        return parsed;
+      } catch (error) {
+        errors.push({
+          field: fieldName,
+          message: `Failed to parse JSON in ${fieldName}: ${error instanceof Error ? error.message : 'Invalid JSON'}`,
+        });
+        return { en: value };
+      }
+    } else {
+      return { en: value };
+    }
   }
 
   async importBatch(

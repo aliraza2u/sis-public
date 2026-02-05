@@ -27,30 +27,18 @@ export class ExportService {
       orderBy: { createdAt: 'asc' },
     });
 
-    const columns: ExportColumn[] = [
-      { key: 'id', header: 'id' },
-      { key: 'email', header: 'email' },
-      {
-        key: 'firstName',
-        header: 'firstName',
-        transform: (v) => this.extractLocalized(v, 'en'),
-      },
-      {
-        key: 'lastName',
-        header: 'lastName',
-        transform: (v) => this.extractLocalized(v, 'en'),
-      },
-      { key: 'phone', header: 'phone' },
-      { key: 'role', header: 'role' },
-      { key: 'emailVerified', header: 'emailVerified', transform: (v) => String(v) },
-      { key: 'isActive', header: 'isActive', transform: (v) => String(v) },
-      { key: 'createdAt', header: 'createdAt', transform: (v) => this.formatDate(v) },
-    ];
+    // Note: Using separate columns for each language to preserve multi-language data
+    const records = users.map((user) => ({
+      email: user.email,
+      firstName_en: this.extractLocalized(user.firstName, 'en'),
+      firstName_ar: this.extractLocalized(user.firstName, 'ar'),
+      lastName_en: this.extractLocalized(user.lastName, 'en'),
+      lastName_ar: this.extractLocalized(user.lastName, 'ar'),
+      role: user.role,
+      phone: user.phone || '',
+    }));
 
-    const records = users.map((user) => this.transformRecord(user, columns));
-    const headers = columns.map((c) => c.header);
-
-    return this.csvParser.generateCsv(records, headers);
+    return this.csvParser.generateCsv(records);
   }
 
   /**
@@ -61,25 +49,17 @@ export class ExportService {
       orderBy: { createdAt: 'asc' },
     });
 
-    const columns: ExportColumn[] = [
-      { key: 'id', header: 'id' },
-      {
-        key: 'name',
-        header: 'name',
-        transform: (v) => this.extractLocalized(v, 'en'),
-      },
-      { key: 'slug', header: 'slug' },
-      { key: 'contactEmail', header: 'contactEmail' },
-      { key: 'contactPhone', header: 'contactPhone' },
-      { key: 'website', header: 'website' },
-      { key: 'isActive', header: 'isActive', transform: (v) => String(v) },
-      { key: 'createdAt', header: 'createdAt', transform: (v) => this.formatDate(v) },
-    ];
+    // Note: Using separate columns for each language to preserve multi-language data
+    const records = tenants.map((tenant) => ({
+      name_en: this.extractLocalized(tenant.name, 'en'),
+      name_ar: this.extractLocalized(tenant.name, 'ar'),
+      slug: tenant.slug,
+      contactEmail: tenant.contactEmail || '',
+      contactPhone: tenant.contactPhone || '',
+      website: tenant.website || '',
+    }));
 
-    const records = tenants.map((tenant) => this.transformRecord(tenant, columns));
-    const headers = columns.map((c) => c.header);
-
-    return this.csvParser.generateCsv(records, headers);
+    return this.csvParser.generateCsv(records);
   }
 
   /**
