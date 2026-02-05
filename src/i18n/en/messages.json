@@ -78,5 +78,16 @@
   },
   "student": {
     "idGenerationFailed": "Failed to generate Student ID"
+  },
+  "dataTransfer": {
+    "invalidFile": "Invalid file. Only CSV files are allowed",
+    "fileTooLarge": "File size exceeds maximum allowed size of {maxSize}MB",
+    "emptyFile": "CSV file is empty or has no data rows",
+    "jobNotFound": "Import job not found",
+    "accessDenied": "You do not have access to this import job",
+    "failedRowsNotFound": "Failed rows file not found",
+    "noFailedRows": "No failed rows available for this import job",
+    "importStarted": "Import job started successfully",
+    "exportCompleted": "Export completed successfully"
   }
 }

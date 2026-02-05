@@ -46,6 +46,10 @@ export class AuthService {
       throw new I18nUnauthorizedException('messages.auth.invalidCredentials');
     }
 
+    if (!user.passwordHash) {
+      throw new I18nBadRequestException('messages.auth.setupRequired');
+    }
+
     const isPasswordValid = await this.hashingService.compare(dto.password, user.passwordHash);
 
     if (!isPasswordValid) {

@@ -16,6 +16,7 @@ import {
   JwtConfig,
   HashingConfig,
   AuthConfig,
+  DataTransferConfig,
 } from './config';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -32,13 +33,23 @@ import { CommonModule } from './common/common.module';
 import { ClsModule } from 'nestjs-cls';
 import { UserContextInterceptor } from './common/interceptors/user-context.interceptor';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
+import { QueueModule } from './modules/queue/queue.module';
+import { DataTransferModule } from './modules/data-transfer/data-transfer.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env'],
-      load: [AppConfig, DatabaseConfig, SwaggerConfig, JwtConfig, HashingConfig, AuthConfig],
+      load: [
+        AppConfig,
+        DatabaseConfig,
+        SwaggerConfig,
+        JwtConfig,
+        HashingConfig,
+        AuthConfig,
+        DataTransferConfig,
+      ],
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test', 'provision')
@@ -90,6 +101,8 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
     BatchModule,
     ApplicationModule,
     CommonModule,
+    QueueModule,
+    DataTransferModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
