@@ -89,5 +89,12 @@
     "noFailedRows": "لا توجد صفوف فاشلة متاحة لمهمة الاستيراد هذه",
     "importStarted": "بدأت مهمة الاستيراد بنجاح",
     "exportCompleted": "اكتمل التصدير بنجاح"
+  },
+  "prisma": {
+    "valueTooLong": "القيمة المدخلة طويلة جداً",
+    "duplicateEntry": "يوجد سجل مكرر للحقل {target}",
+    "foreignKeyConstraint": "فشل قيد المفتاح الخارجي في {field}",
+    "inconsistentData": "تم تقديم بيانات عمود غير متسقة",
+    "notFound": "لم يتم العثور على السجل"
   }
 }

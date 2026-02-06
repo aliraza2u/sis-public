@@ -27,6 +27,9 @@ services:
       - ADMIN_FIRST_NAME=${ADMIN_FIRST_NAME:-Admin}
       - ADMIN_LAST_NAME=${ADMIN_LAST_NAME:-User}
       - DEFAULT_TENANT_SLUG=${DEFAULT_TENANT_SLUG:-al-mkki}
+      - DATA_TRANSFER_MAX_FILE_SIZE=${DATA_TRANSFER_MAX_FILE_SIZE:-10485760}
+      - DATA_TRANSFER_BATCH_SIZE=${DATA_TRANSFER_BATCH_SIZE:-50}
+      - DATA_TRANSFER_TEMP_FILE_MAX_AGE=${DATA_TRANSFER_TEMP_FILE_MAX_AGE:-86400000}
     command: /bin/sh -c "npx prisma migrate deploy && node dist/scripts/seed-tenant.js && node dist/scripts/create-admin.js && node dist/main"
     depends_on:
       db:

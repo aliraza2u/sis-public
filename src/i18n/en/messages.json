@@ -89,5 +89,12 @@
     "noFailedRows": "No failed rows available for this import job",
     "importStarted": "Import job started successfully",
     "exportCompleted": "Export completed successfully"
+  },
+  "prisma": {
+    "valueTooLong": "Value provided is too long",
+    "duplicateEntry": "Duplicate entry exists for {target}",
+    "foreignKeyConstraint": "Foreign key constraint failed on {field}",
+    "inconsistentData": "Inconsistent column data provided",
+    "notFound": "Record not found"
   }
 }
