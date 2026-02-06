@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as os from 'os';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -9,8 +10,8 @@ export class FileStorageService {
   private readonly tempDir: string;
 
   constructor() {
-    // Use temp-data directory in project root
-    this.tempDir = path.join(process.cwd(), 'temp-data');
+    // Use system temp directory to avoid permission issues in production/containers
+    this.tempDir = path.join(os.tmpdir(), 'sis-backend-temp');
     this.ensureTempDir();
   }
 
