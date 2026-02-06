@@ -31,18 +31,18 @@ services:
       - key: APP_PREFIX
         value: 'api'
       - key: AUTH_EMAIL_VERIFICATION_EXPIRY
-        value: '24'
+        sync: false
       - key: AUTH_PASSWORD_RESET_EXPIRY
-        value: '1'
+        sync: false
       - key: AUTH_REFRESH_TOKEN_EXPIRY_DAYS
-        value: '7'
+        sync: false
       - key: APP_SALT_ROUNDS
-        value: '12'
+        sync: false
       - key: SWAGGER_ENABLED
-        value: 'true'
+        sync: false
       - key: DATA_TRANSFER_MAX_FILE_SIZE
-        value: '10485760'
+        sync: false
       - key: DATA_TRANSFER_BATCH_SIZE
-        value: '50'
+        sync: false
       - key: DATA_TRANSFER_TEMP_FILE_MAX_AGE
-        value: '86400000'
+        sync: false
