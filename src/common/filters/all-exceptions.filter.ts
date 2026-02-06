@@ -9,6 +9,7 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 import { Prisma } from '@/infrastructure/prisma/client/client';
 import { I18nService, I18nContext } from 'nestjs-i18n';
+import { PRISMA_ERROR_MAPPING } from '@/common/constants/prisma.constants';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -64,36 +65,3 @@ export class AllExceptionsFilter implements ExceptionFilter {
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
 }
-
-// Define error mapping outside class or in a separate constants file
-const PRISMA_ERROR_MAPPING: Record<
-  string,
-  {
-    status: HttpStatus;
-    key: string;
-    args?: (meta: any) => Record<string, any>;
-  }
-> = {
-  P2000: {
-    status: HttpStatus.BAD_REQUEST,
-    key: 'messages.prisma.valueTooLong',
-  },
-  P2002: {
-    status: HttpStatus.CONFLICT,
-    key: 'messages.prisma.duplicateEntry',
-    args: (meta) => ({ target: meta?.target || '' }),
-  },
-  P2003: {
-    status: HttpStatus.CONFLICT,
-    key: 'messages.prisma.foreignKeyConstraint',
-    args: (meta) => ({ field: meta?.field_name || 'relation' }),
-  },
-  P2023: {
-    status: HttpStatus.BAD_REQUEST,
-    key: 'messages.prisma.inconsistentData',
-  },
-  P2025: {
-    status: HttpStatus.NOT_FOUND,
-    key: 'messages.prisma.notFound',
-  },
-};
