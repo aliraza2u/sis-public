@@ -88,7 +88,8 @@
     "failedRowsNotFound": "Failed rows file not found",
     "noFailedRows": "No failed rows available for this import job",
     "importStarted": "Import job started successfully",
-    "exportCompleted": "Export completed successfully"
+    "exportCompleted": "Export completed successfully",
+    "noData": "No data available for export"
   },
   "prisma": {
     "valueTooLong": "Value provided is too long",

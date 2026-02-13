@@ -38,6 +38,7 @@ import {
   ExportRequestDto,
 } from './dto';
 import { ImportJobEntity } from './entities/import-job.entity';
+import { ExportEntityType } from '@/common/enums/export-entity-type.enum';
 
 @ApiTags('Data Transfer')
 @Controller('data-transfer')
@@ -63,7 +64,7 @@ export class DataTransferController {
         },
         entityType: {
           type: 'string',
-          enum: ['user', 'tenant'],
+          enum: Object.values(ImportEntityType),
           description: 'Type of entity to import',
         },
       },
@@ -209,7 +210,7 @@ export class DataTransferController {
   @ApiOperation({ summary: 'Export data to CSV file' })
   @ApiQuery({
     name: 'entityType',
-    enum: ImportEntityType,
+    enum: ExportEntityType,
     description: 'Type of entity to export',
   })
   @ApiResponse({
@@ -222,7 +223,7 @@ export class DataTransferController {
     },
   })
   async exportCsv(
-    @Query('entityType') entityType: ImportEntityType,
+    @Query('entityType') entityType: ExportEntityType,
     @CurrentUser() user: { tenantId: string },
     @Res() res: Response,
   ): Promise<void> {

@@ -27,6 +27,9 @@ export class CategoryEntity extends BaseSoftDeleteEntity implements Category {
   @ApiProperty({ description: 'URL-friendly slug', example: 'islamic-studies' })
   @Expose()
   slug: string;
+  @ApiProperty({ description: 'Category description (multilingual)', required: false })
+  @Expose()
+  description: any;
 
   @ApiProperty({ description: 'Is active?', example: true })
   @Expose()

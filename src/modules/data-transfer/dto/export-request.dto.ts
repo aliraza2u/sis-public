@@ -1,14 +1,14 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ImportEntityType } from '@/common/enums/import-entity-type.enum';
+import { ExportEntityType } from '@/common/enums/export-entity-type.enum';
 
 export class ExportRequestDto {
   @ApiProperty({
     description: 'Type of entity to export',
-    enum: ImportEntityType,
-    example: ImportEntityType.USER,
+    enum: ExportEntityType,
+    example: ExportEntityType.USER,
   })
-  @IsEnum(ImportEntityType)
+  @IsEnum(ExportEntityType)
   @IsNotEmpty()
-  entityType: ImportEntityType;
+  entityType: ExportEntityType;
 }

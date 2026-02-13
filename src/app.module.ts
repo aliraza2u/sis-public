@@ -72,6 +72,7 @@ import { DataTransferModule } from './modules/data-transfer/data-transfer.module
         ADMIN_FIRST_NAME: Joi.string().optional(),
         ADMIN_LAST_NAME: Joi.string().optional(),
         DEFAULT_TENANT_SLUG: Joi.string().default('al-mkki'),
+        BOOTSTRAP_SECRET: Joi.string().required(),
       }),
     }),
     LoggerModule.forRootAsync({

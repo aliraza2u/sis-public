@@ -23,7 +23,6 @@ export class CourseService {
         // Cast JSON fields to any for Prisma compatibility
         prerequisites: createCourseDto.prerequisites as any,
         learningOutcomes: createCourseDto.learningOutcomes as any,
-        syllabus: createCourseDto.syllabus as any,
         requiredDocuments: createCourseDto.requiredDocuments as any,
       },
     });
@@ -62,7 +61,6 @@ export class CourseService {
         // Cast JSON fields to any for Prisma compatibility
         prerequisites: updateCourseDto.prerequisites as any,
         learningOutcomes: updateCourseDto.learningOutcomes as any,
-        syllabus: updateCourseDto.syllabus as any,
         requiredDocuments: updateCourseDto.requiredDocuments as any,
       },
     });

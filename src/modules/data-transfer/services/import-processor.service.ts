@@ -10,6 +10,10 @@ import {
   ValidatedRow,
   IMPORT_STRATEGIES,
 } from '../strategies/import-strategy.interface';
+import {
+  RAW_IMPORT_STRATEGIES,
+  RawImportStrategy,
+} from '../strategies/raw-import-strategy.interface';
 import { DataTransferConstants } from '@/common/constants/data-transfer.constants';
 
 interface ImportJobPayload {
@@ -33,12 +37,15 @@ export class ImportProcessorService implements OnModuleInit {
     private readonly fileStorage: FileStorageService,
     @Inject(IMPORT_STRATEGIES)
     private readonly strategies: ImportStrategy[],
+    @Inject(RAW_IMPORT_STRATEGIES)
+    private readonly rawStrategies: RawImportStrategy[],
   ) {
     // Initialize config values
     this.batchSize = this.configService.get<number>('dataTransfer.batchSize') || 50;
 
     // Build strategy map for quick lookup
-    for (const strategy of strategies) {
+    const allStrategies = [...strategies, ...rawStrategies];
+    for (const strategy of allStrategies) {
       this.strategyMap.set(strategy.getEntityType(), strategy);
     }
   }

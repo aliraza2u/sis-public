@@ -148,7 +148,7 @@ export class UserImportStrategy implements ImportStrategy {
             email,
             firstName: row.data.firstName as object,
             lastName: row.data.lastName as object,
-            passwordHash: null, // Password will be set via Setup Password email workflow
+            passwordHash: '', // Password will be set via Setup Password email workflow
             role: row.data.role as UserRole,
             phone: row.data.phone as string | null,
             emailVerified: false,

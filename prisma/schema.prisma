@@ -115,6 +115,7 @@ model User {
 
   lastLoginAt DateTime? @map("last_login_at") @db.Timestamptz
   isActive    Boolean   @default(true) @map("is_active")
+  isPasswordCreated Boolean @default(false) @map("is_password_created")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
@@ -680,4 +681,44 @@ model ModuleItemProgress {
   @@index([userId])
   @@index([moduleItemId])
   @@map("module_item_progress")
+}
+
+// ─── Data Transfer ──────────────────────────────────────────────────────────
+
+enum ImportJobStatus {
+  pending
+  processing
+  completed
+  failed
+  cancelled
+}
+
+model ImportJob {
+  id       String @id @default(dbgenerated("generate_prefixed_uuid('IMP')")) @db.VarChar(50)
+  tenantId String @map("tenant_id") @db.VarChar(50)
+  userId   String @map("user_id") @db.VarChar(50)
+
+  entityType String          @map("entity_type") @db.VarChar(50)
+  status     ImportJobStatus @default(pending)
+
+  totalRows     Int @default(0) @map("total_rows")
+  processedRows Int @default(0) @map("processed_rows")
+  successCount  Int @default(0) @map("success_count")
+  errorCount    Int @default(0) @map("error_count")
+
+  progress Float @default(0.0)
+
+  sourceFilePath String? @map("source_file_path") @db.Text
+  failedRowsPath String? @map("failed_rows_path") @db.Text
+  errorDetails   Json?   @map("error_details")
+
+  startedAt   DateTime? @map("started_at") @db.Timestamptz
+  completedAt DateTime? @map("completed_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([tenantId])
+  @@index([userId])
+  @@map("import_jobs")
 }

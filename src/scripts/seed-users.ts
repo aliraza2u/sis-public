@@ -15,7 +15,21 @@ async function main() {
   const tenantSlug = process.env.DEFAULT_TENANT_SLUG || 'al-mkki';
 
   try {
-    // 1. Ensure Tenant exists
+    // 1. Ensure Languages exist
+    const languages = [
+      { code: 'en', nameEnglish: 'English', nameNative: 'English', isRtl: false },
+      { code: 'ar', nameEnglish: 'Arabic', nameNative: 'العربية', isRtl: true },
+    ];
+
+    for (const lang of languages) {
+      await prisma.supportedLanguage.upsert({
+        where: { code: lang.code },
+        update: {},
+        create: lang,
+      });
+    }
+
+    // 2. Ensure Tenant exists
     let tenant = await prisma.tenant.findUnique({
       where: { slug: tenantSlug },
     });
@@ -28,23 +42,9 @@ async function main() {
           slug: tenantSlug,
           contactEmail: `admin@${tenantSlug}.com`,
           defaultLanguageCode: 'ar',
-          enabledLanguages: ['en', 'ar'],
+          enabledLanguages: ['en', 'ar'], // This is just an array of strings, but defaultLanguageCode checks FK
           alias: 'DT',
         },
-      });
-    }
-
-    // 2. Ensure Languages exist
-    const languages = [
-      { code: 'en', nameEnglish: 'English', nameNative: 'English', isRtl: false },
-      { code: 'ar', nameEnglish: 'Arabic', nameNative: 'العربية', isRtl: true },
-    ];
-
-    for (const lang of languages) {
-      await prisma.supportedLanguage.upsert({
-        where: { code: lang.code },
-        update: {},
-        create: lang,
       });
     }
 
@@ -88,7 +88,6 @@ async function main() {
           role: data.role,
           tenantId: tenant.id,
           emailVerified: true,
-          isPasswordCreated: false,
           passwordHash: 'UNSET', // Prisma requires a string
           phone: '+0000000000',
         },

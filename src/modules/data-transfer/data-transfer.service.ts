@@ -12,6 +12,7 @@ import { CsvParserService } from './services/csv-parser.service';
 import { FileStorageService } from './services/file-storage.service';
 import { ExportService } from './services/export.service';
 import { ImportEntityType } from '@/common/enums/import-entity-type.enum';
+import { ExportEntityType } from '@/common/enums/export-entity-type.enum';
 import { ImportJob } from '@/infrastructure/prisma/client/client';
 
 @Injectable()
@@ -134,7 +135,7 @@ export class DataTransferService {
    * Export data to CSV
    */
   async exportToCsv(
-    entityType: ImportEntityType,
+    entityType: ExportEntityType,
     tenantId: string,
   ): Promise<{ content: string; filename: string }> {
     const content = await this.exportService.export(entityType, tenantId);
