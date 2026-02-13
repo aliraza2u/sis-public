@@ -80,8 +80,8 @@ model User {
   tenantId String @map("tenant_id") @db.VarChar(50)
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  email        String  @db.VarChar(255)
-  passwordHash String? @map("password_hash") @db.VarChar(255)
+  email             String  @db.VarChar(255)
+  passwordHash      String? @map("password_hash") @db.VarChar(255)
   isPasswordCreated Boolean @default(false) @map("is_password_created")
 
   firstName Json    @default("{}") @map("first_name")
@@ -147,7 +147,7 @@ model Category {
   tenantId String @map("tenant_id") @db.VarChar(50)
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  name Json @default("{}")
+  name Json   @default("{}")
   slug String @db.VarChar(100)
 
   isActive  Boolean @default(true) @map("is_active")
@@ -181,10 +181,10 @@ model Course {
   shortDescription Json?   @default("{}") @map("short_description")
   thumbnailUrl     String? @map("thumbnail_url") @db.VarChar(500)
 
-  categoryId String?   @map("category_id") @db.VarChar(50)
-  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  level      String?   @db.VarChar(50)
-  durationWeeks Int?    @map("duration_weeks")
+  categoryId    String?   @map("category_id") @db.VarChar(50)
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  level         String?   @db.VarChar(50)
+  durationWeeks Int?      @map("duration_weeks")
 
   prerequisites    Json? @default("[]")
   learningOutcomes Json? @default("[]") @map("learning_outcomes")
@@ -335,8 +335,8 @@ model StudentIdCounter {
 
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  @@map("student_id_counters")
   @@index([tenantId])
+  @@map("student_id_counters")
 }
 
 enum ImportJobStatus {
