@@ -9,7 +9,12 @@ import {
   ImportProcessorService,
   ExportService,
 } from './services';
-import { IMPORT_STRATEGIES, UserImportStrategy, TenantImportStrategy } from './strategies';
+import {
+  IMPORT_STRATEGIES,
+  UserImportStrategy,
+  TenantImportStrategy,
+  ModuleItemProgressImportStrategy,
+} from './strategies';
 import { CleanupService } from './cleanup.service';
 
 @Module({
@@ -26,13 +31,15 @@ import { CleanupService } from './cleanup.service';
     // Import strategies
     UserImportStrategy,
     TenantImportStrategy,
+    ModuleItemProgressImportStrategy,
     {
       provide: IMPORT_STRATEGIES,
-      useFactory: (userStrategy: UserImportStrategy, tenantStrategy: TenantImportStrategy) => [
-        userStrategy,
-        tenantStrategy,
-      ],
-      inject: [UserImportStrategy, TenantImportStrategy],
+      useFactory: (
+        userStrategy: UserImportStrategy,
+        tenantStrategy: TenantImportStrategy,
+        moduleItemProgressStrategy: ModuleItemProgressImportStrategy,
+      ) => [userStrategy, tenantStrategy, moduleItemProgressStrategy],
+      inject: [UserImportStrategy, TenantImportStrategy, ModuleItemProgressImportStrategy],
     },
   ],
   exports: [DataTransferService],
