@@ -11,43 +11,43 @@ export class BatchRawImportStrategy extends BaseRawImportStrategy {
 
   protected getConfig(): StrategyConfig {
     return {
-      entityType: ImportEntityType.BATCH_RAW,
+      entityType: ImportEntityType.BATCH,
       dependencyOrder: 3,
       prismaModel: 'batch',
       fields: [
         { name: 'id', prismaField: 'id', type: 'string', required: true },
-        { name: 'tenant_id', prismaField: 'tenantId', type: 'string', required: true },
-        { name: 'course_id', prismaField: 'courseId', type: 'string', required: true },
+        { name: 'tenantId', prismaField: 'tenantId', type: 'string', required: true },
+        { name: 'courseId', prismaField: 'courseId', type: 'string', required: true },
         { name: 'name', prismaField: 'name', type: 'json', required: true },
         { name: 'code', prismaField: 'code', type: 'string' },
-        { name: 'batch_number', prismaField: 'batchNumber', type: 'string', required: true },
-        { name: 'enrollment_start_date', prismaField: 'enrollmentStartDate', type: 'date' },
-        { name: 'enrollment_end_date', prismaField: 'enrollmentEndDate', type: 'date' },
-        { name: 'start_date', prismaField: 'startDate', type: 'date', required: true },
-        { name: 'end_date', prismaField: 'endDate', type: 'date' },
-        { name: 'max_students', prismaField: 'maxStudents', type: 'number' },
-        { name: 'is_active', prismaField: 'isActive', type: 'boolean', defaultValue: true },
-        { name: 'created_at', prismaField: 'createdAt', type: 'date' },
-        { name: 'updated_at', prismaField: 'updatedAt', type: 'date' },
-        { name: 'created_by', prismaField: 'createdBy', type: 'string' },
-        { name: 'updated_by', prismaField: 'updatedBy', type: 'string' },
-        { name: 'deleted_at', prismaField: 'deletedAt', type: 'date' },
-        { name: 'deleted_by', prismaField: 'deletedBy', type: 'string' },
+        { name: 'batchNumber', prismaField: 'batchNumber', type: 'string', required: true },
+        { name: 'enrollmentStartDate', prismaField: 'enrollmentStartDate', type: 'date' },
+        { name: 'enrollmentEndDate', prismaField: 'enrollmentEndDate', type: 'date' },
+        { name: 'startDate', prismaField: 'startDate', type: 'date', required: true },
+        { name: 'endDate', prismaField: 'endDate', type: 'date' },
+        { name: 'maxStudents', prismaField: 'maxStudents', type: 'number' },
+        { name: 'isActive', prismaField: 'isActive', type: 'boolean', defaultValue: true },
+        { name: 'createdAt', prismaField: 'createdAt', type: 'date' },
+        { name: 'updatedAt', prismaField: 'updatedAt', type: 'date' },
+        { name: 'createdBy', prismaField: 'createdBy', type: 'string' },
+        { name: 'updatedBy', prismaField: 'updatedBy', type: 'string' },
+        { name: 'deletedAt', prismaField: 'deletedAt', type: 'date' },
+        { name: 'deletedBy', prismaField: 'deletedBy', type: 'string' },
       ],
-      foreignKeyFields: ['course_id'],
+      foreignKeyFields: ['courseId'],
     };
   }
 
   getSampleRow(): Record<string, string> {
     return {
       id: 'BAT_abc123',
-      tenant_id: 'TNT_xyz789',
-      course_id: 'CRS_def456',
+      tenantId: 'TNT_xyz789',
+      courseId: 'CRS_def456',
       name: '{"en":"Spring 2025","ar":"ربيع 2025"}',
       code: 'SCI101-S25',
-      batch_number: '01',
-      start_date: '2025-03-01T00:00:00.000Z',
-      end_date: '2025-06-30T23:59:59.000Z',
+      batchNumber: '01',
+      startDate: '2025-03-01T00:00:00.000Z',
+      endDate: '2025-06-30T23:59:59.000Z',
     };
   }
 }

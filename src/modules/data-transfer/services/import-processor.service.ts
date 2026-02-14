@@ -4,12 +4,7 @@ import { QueueService } from '@/modules/queue/queue.service';
 import { ImportJobService } from './import-job.service';
 import { CsvParserService } from './csv-parser.service';
 import { FileStorageService } from './file-storage.service';
-import {
-  ImportStrategy,
-  ImportError,
-  ValidatedRow,
-  IMPORT_STRATEGIES,
-} from '../strategies/import-strategy.interface';
+import { ImportStrategy, ImportError, ValidatedRow } from '../strategies/import-strategy.interface';
 import {
   RAW_IMPORT_STRATEGIES,
   RawImportStrategy,
@@ -35,8 +30,6 @@ export class ImportProcessorService implements OnModuleInit {
     private readonly importJobService: ImportJobService,
     private readonly csvParser: CsvParserService,
     private readonly fileStorage: FileStorageService,
-    @Inject(IMPORT_STRATEGIES)
-    private readonly strategies: ImportStrategy[],
     @Inject(RAW_IMPORT_STRATEGIES)
     private readonly rawStrategies: RawImportStrategy[],
   ) {
@@ -44,8 +37,8 @@ export class ImportProcessorService implements OnModuleInit {
     this.batchSize = this.configService.get<number>('dataTransfer.batchSize') || 50;
 
     // Build strategy map for quick lookup
-    const allStrategies = [...strategies, ...rawStrategies];
-    for (const strategy of allStrategies) {
+    // All strategies are now RawImportStrategies
+    for (const strategy of rawStrategies) {
       this.strategyMap.set(strategy.getEntityType(), strategy);
     }
   }

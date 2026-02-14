@@ -117,10 +117,9 @@ export class ExportService {
     }
 
     // Determine ImportEntityType for strategy lookup to get headers
-    // Convention: ExportEntityType + '_raw' = ImportEntityType (mostly)
-    // e.g. 'course' -> 'course_raw'
-    // 'supported_language' -> 'supported_language_raw'
-    const importEntityType = `${entityType}_raw`;
+    // Convention: ExportEntityType = ImportEntityType
+    // e.g. 'course' -> 'course'
+    const importEntityType = String(entityType);
 
     // Attempt to find strategy configuration to map fields
     const strategy = this.rawStrategyMap.get(importEntityType);

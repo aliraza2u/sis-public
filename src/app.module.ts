@@ -35,6 +35,7 @@ import { UserContextInterceptor } from './common/interceptors/user-context.inter
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { QueueModule } from './modules/queue/queue.module';
 import { DataTransferModule } from './modules/data-transfer/data-transfer.module';
+import { SystemModule } from './modules/system/system.module';
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { DataTransferModule } from './modules/data-transfer/data-transfer.module
     CommonModule,
     QueueModule,
     DataTransferModule,
+    SystemModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

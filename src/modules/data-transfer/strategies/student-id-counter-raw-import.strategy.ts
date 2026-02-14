@@ -11,27 +11,27 @@ export class StudentIdCounterRawImportStrategy extends BaseRawImportStrategy {
 
   protected getConfig(): StrategyConfig {
     return {
-      entityType: ImportEntityType.STUDENT_ID_COUNTER_RAW,
+      entityType: ImportEntityType.STUDENT_ID_COUNTER,
       dependencyOrder: 1,
       prismaModel: 'studentIdCounter',
       fields: [
         { name: 'id', prismaField: 'id', type: 'string', required: true },
-        { name: 'tenant_id', prismaField: 'tenantId', type: 'string', required: true },
-        { name: 'context_key', prismaField: 'contextKey', type: 'string', required: true },
-        { name: 'current_count', prismaField: 'currentCount', type: 'number', defaultValue: 0 },
-        { name: 'created_at', prismaField: 'createdAt', type: 'date' },
-        { name: 'updated_at', prismaField: 'updatedAt', type: 'date' },
+        { name: 'tenantId', prismaField: 'tenantId', type: 'string', required: true },
+        { name: 'contextKey', prismaField: 'contextKey', type: 'string', required: true },
+        { name: 'currentCount', prismaField: 'currentCount', type: 'number', defaultValue: 0 },
+        { name: 'createdAt', prismaField: 'createdAt', type: 'date' },
+        { name: 'updatedAt', prismaField: 'updatedAt', type: 'date' },
       ],
-      foreignKeyFields: ['tenant_id'],
+      foreignKeyFields: ['tenantId'],
     };
   }
 
   getSampleRow(): Record<string, string> {
     return {
       id: 'SIC_abc123',
-      tenant_id: 'TNT_xyz789',
-      context_key: '2025',
-      current_count: '1000',
+      tenantId: 'TNT_xyz789',
+      contextKey: '2025',
+      currentCount: '1000',
     };
   }
 }

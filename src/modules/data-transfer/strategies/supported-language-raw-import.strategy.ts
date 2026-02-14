@@ -11,7 +11,7 @@ export class SupportedLanguageRawImportStrategy extends BaseRawImportStrategy {
 
   protected getConfig(): StrategyConfig {
     return {
-      entityType: ImportEntityType.SUPPORTED_LANGUAGE_RAW,
+      entityType: ImportEntityType.SUPPORTED_LANGUAGE,
       dependencyOrder: 0,
       prismaModel: 'supportedLanguage',
       primaryKeyField: 'code', // Uses 'code' as PK, not 'id'

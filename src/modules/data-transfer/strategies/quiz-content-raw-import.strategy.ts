@@ -11,33 +11,33 @@ export class QuizContentRawImportStrategy extends BaseRawImportStrategy {
 
   protected getConfig(): StrategyConfig {
     return {
-      entityType: ImportEntityType.QUIZ_CONTENT_RAW,
+      entityType: ImportEntityType.QUIZ_CONTENT,
       dependencyOrder: 5,
       prismaModel: 'quizContent',
       fields: [
         { name: 'id', prismaField: 'id', type: 'string', required: true },
-        { name: 'module_item_id', prismaField: 'moduleItemId', type: 'string', required: true },
-        { name: 'tenant_id', prismaField: 'tenantId', type: 'string', required: true },
-        { name: 'passing_score', prismaField: 'passingScore', type: 'number', required: true },
-        { name: 'time_limit_minutes', prismaField: 'timeLimitMinutes', type: 'number' },
-        { name: 'created_at', prismaField: 'createdAt', type: 'date' },
-        { name: 'updated_at', prismaField: 'updatedAt', type: 'date' },
-        { name: 'created_by', prismaField: 'createdBy', type: 'string' },
-        { name: 'updated_by', prismaField: 'updatedBy', type: 'string' },
-        { name: 'deleted_at', prismaField: 'deletedAt', type: 'date' },
-        { name: 'deleted_by', prismaField: 'deletedBy', type: 'string' },
+        { name: 'moduleItemId', prismaField: 'moduleItemId', type: 'string', required: true },
+        { name: 'tenantId', prismaField: 'tenantId', type: 'string', required: true },
+        { name: 'passingScore', prismaField: 'passingScore', type: 'number', required: true },
+        { name: 'timeLimitMinutes', prismaField: 'timeLimitMinutes', type: 'number' },
+        { name: 'createdAt', prismaField: 'createdAt', type: 'date' },
+        { name: 'updatedAt', prismaField: 'updatedAt', type: 'date' },
+        { name: 'createdBy', prismaField: 'createdBy', type: 'string' },
+        { name: 'updatedBy', prismaField: 'updatedBy', type: 'string' },
+        { name: 'deletedAt', prismaField: 'deletedAt', type: 'date' },
+        { name: 'deletedBy', prismaField: 'deletedBy', type: 'string' },
       ],
-      foreignKeyFields: ['module_item_id'],
+      foreignKeyFields: ['moduleItemId', 'tenantId'],
     };
   }
 
   getSampleRow(): Record<string, string> {
     return {
       id: 'QC_abc123',
-      module_item_id: 'MI_def456',
-      tenant_id: 'TNT_xyz789',
-      passing_score: '70',
-      time_limit_minutes: '30',
+      moduleItemId: 'MI_def456',
+      tenantId: 'TNT_xyz789',
+      passingScore: '70',
+      timeLimitMinutes: '30',
     };
   }
 }

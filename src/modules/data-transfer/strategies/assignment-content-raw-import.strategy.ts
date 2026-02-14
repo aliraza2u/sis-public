@@ -11,33 +11,33 @@ export class AssignmentContentRawImportStrategy extends BaseRawImportStrategy {
 
   protected getConfig(): StrategyConfig {
     return {
-      entityType: ImportEntityType.ASSIGNMENT_CONTENT_RAW,
+      entityType: ImportEntityType.ASSIGNMENT_CONTENT,
       dependencyOrder: 5,
       prismaModel: 'assignmentContent',
       fields: [
         { name: 'id', prismaField: 'id', type: 'string', required: true },
-        { name: 'module_item_id', prismaField: 'moduleItemId', type: 'string', required: true },
-        { name: 'tenant_id', prismaField: 'tenantId', type: 'string', required: true },
+        { name: 'moduleItemId', prismaField: 'moduleItemId', type: 'string', required: true },
+        { name: 'tenantId', prismaField: 'tenantId', type: 'string', required: true },
         { name: 'instructions', prismaField: 'instructions', type: 'json', required: true },
-        { name: 'due_date', prismaField: 'dueDate', type: 'date' },
-        { name: 'created_at', prismaField: 'createdAt', type: 'date' },
-        { name: 'updated_at', prismaField: 'updatedAt', type: 'date' },
-        { name: 'created_by', prismaField: 'createdBy', type: 'string' },
-        { name: 'updated_by', prismaField: 'updatedBy', type: 'string' },
-        { name: 'deleted_at', prismaField: 'deletedAt', type: 'date' },
-        { name: 'deleted_by', prismaField: 'deletedBy', type: 'string' },
+        { name: 'dueDate', prismaField: 'dueDate', type: 'date' },
+        { name: 'createdAt', prismaField: 'createdAt', type: 'date' },
+        { name: 'updatedAt', prismaField: 'updatedAt', type: 'date' },
+        { name: 'createdBy', prismaField: 'createdBy', type: 'string' },
+        { name: 'updatedBy', prismaField: 'updatedBy', type: 'string' },
+        { name: 'deletedAt', prismaField: 'deletedAt', type: 'date' },
+        { name: 'deletedBy', prismaField: 'deletedBy', type: 'string' },
       ],
-      foreignKeyFields: ['module_item_id'],
+      foreignKeyFields: ['moduleItemId', 'tenantId'],
     };
   }
 
   getSampleRow(): Record<string, string> {
     return {
       id: 'AC_abc123',
-      module_item_id: 'MI_def456',
-      tenant_id: 'TNT_xyz789',
+      moduleItemId: 'MI_def456',
+      tenantId: 'TNT_xyz789',
       instructions: '{"en":"Complete the assignment","ar":"أكمل الواجب"}',
-      due_date: '2025-02-01T23:59:59.000Z',
+      dueDate: '2025-02-01T23:59:59.000Z',
     };
   }
 }

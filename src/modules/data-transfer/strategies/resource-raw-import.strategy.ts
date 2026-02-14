@@ -11,35 +11,35 @@ export class ResourceRawImportStrategy extends BaseRawImportStrategy {
 
   protected getConfig(): StrategyConfig {
     return {
-      entityType: ImportEntityType.RESOURCE_RAW,
+      entityType: ImportEntityType.RESOURCE,
       dependencyOrder: 5,
       prismaModel: 'resource',
       fields: [
         { name: 'id', prismaField: 'id', type: 'string', required: true },
-        { name: 'module_item_id', prismaField: 'moduleItemId', type: 'string', required: true },
-        { name: 'tenant_id', prismaField: 'tenantId', type: 'string', required: true },
+        { name: 'moduleItemId', prismaField: 'moduleItemId', type: 'string', required: true },
+        { name: 'tenantId', prismaField: 'tenantId', type: 'string', required: true },
         { name: 'title', prismaField: 'title', type: 'json' },
-        { name: 'resource_type', prismaField: 'resourceType', type: 'string', required: true },
-        { name: 'resource_url', prismaField: 'resourceUrl', type: 'string', required: true },
-        { name: 'created_at', prismaField: 'createdAt', type: 'date' },
-        { name: 'updated_at', prismaField: 'updatedAt', type: 'date' },
-        { name: 'created_by', prismaField: 'createdBy', type: 'string' },
-        { name: 'updated_by', prismaField: 'updatedBy', type: 'string' },
-        { name: 'deleted_at', prismaField: 'deletedAt', type: 'date' },
-        { name: 'deleted_by', prismaField: 'deletedBy', type: 'string' },
+        { name: 'resourceType', prismaField: 'resourceType', type: 'string', required: true },
+        { name: 'resourceUrl', prismaField: 'resourceUrl', type: 'string', required: true },
+        { name: 'createdAt', prismaField: 'createdAt', type: 'date' },
+        { name: 'updatedAt', prismaField: 'updatedAt', type: 'date' },
+        { name: 'createdBy', prismaField: 'createdBy', type: 'string' },
+        { name: 'updatedBy', prismaField: 'updatedBy', type: 'string' },
+        { name: 'deletedAt', prismaField: 'deletedAt', type: 'date' },
+        { name: 'deletedBy', prismaField: 'deletedBy', type: 'string' },
       ],
-      foreignKeyFields: ['module_item_id'],
+      foreignKeyFields: ['moduleItemId', 'tenantId'],
     };
   }
 
   getSampleRow(): Record<string, string> {
     return {
       id: 'RES_abc123',
-      module_item_id: 'MI_def456',
-      tenant_id: 'TNT_xyz789',
+      moduleItemId: 'MI_def456',
+      tenantId: 'TNT_xyz789',
       title: '{"en":"Resource Title","ar":"عنوان المادة"}',
-      resource_type: 'pdf',
-      resource_url: 'https://example.com/resource.pdf',
+      resourceType: 'pdf',
+      resourceUrl: 'https://example.com/resource.pdf',
     };
   }
 }

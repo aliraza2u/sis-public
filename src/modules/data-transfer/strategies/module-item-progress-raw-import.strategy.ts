@@ -11,7 +11,7 @@ export class ModuleItemProgressRawImportStrategy extends BaseRawImportStrategy {
 
   protected getConfig(): StrategyConfig {
     return {
-      entityType: ImportEntityType.MODULE_ITEM_PROGRESS_RAW,
+      entityType: ImportEntityType.MODULE_ITEM_PROGRESS,
       dependencyOrder: 5,
       prismaModel: 'moduleItemProgress',
       fields: [
@@ -20,7 +20,12 @@ export class ModuleItemProgressRawImportStrategy extends BaseRawImportStrategy {
         { name: 'user_id', prismaField: 'userId', type: 'string', required: true },
         { name: 'module_item_id', prismaField: 'moduleItemId', type: 'string', required: true },
         { name: 'status', prismaField: 'status', type: 'string', required: true },
-        { name: 'progress_percent', prismaField: 'progressPercent', type: 'number', defaultValue: 0 },
+        {
+          name: 'progress_percent',
+          prismaField: 'progressPercent',
+          type: 'number',
+          defaultValue: 0,
+        },
         { name: 'completed_at', prismaField: 'completedAt', type: 'date' },
         { name: 'created_at', prismaField: 'createdAt', type: 'date' },
         { name: 'updated_at', prismaField: 'updatedAt', type: 'date' },

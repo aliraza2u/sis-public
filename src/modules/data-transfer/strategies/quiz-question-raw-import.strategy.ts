@@ -11,40 +11,40 @@ export class QuizQuestionRawImportStrategy extends BaseRawImportStrategy {
 
   protected getConfig(): StrategyConfig {
     return {
-      entityType: ImportEntityType.QUIZ_QUESTION_RAW,
+      entityType: ImportEntityType.QUIZ_QUESTION,
       dependencyOrder: 6,
       prismaModel: 'quizQuestion',
       fields: [
         { name: 'id', prismaField: 'id', type: 'string', required: true },
-        { name: 'quiz_id', prismaField: 'quizId', type: 'string', required: true },
-        { name: 'tenant_id', prismaField: 'tenantId', type: 'string', required: true },
-        { name: 'question_text', prismaField: 'questionText', type: 'json', required: true },
+        { name: 'quizId', prismaField: 'quizId', type: 'string', required: true },
+        { name: 'tenantId', prismaField: 'tenantId', type: 'string', required: true },
+        { name: 'questionText', prismaField: 'questionText', type: 'json', required: true },
         {
-          name: 'question_type',
+          name: 'questionType',
           prismaField: 'questionType',
           type: 'string',
           defaultValue: 'multiple_choice',
         },
-        { name: 'sort_order', prismaField: 'sortOrder', type: 'number', defaultValue: 0 },
-        { name: 'created_at', prismaField: 'createdAt', type: 'date' },
-        { name: 'updated_at', prismaField: 'updatedAt', type: 'date' },
-        { name: 'created_by', prismaField: 'createdBy', type: 'string' },
-        { name: 'updated_by', prismaField: 'updatedBy', type: 'string' },
-        { name: 'deleted_at', prismaField: 'deletedAt', type: 'date' },
-        { name: 'deleted_by', prismaField: 'deletedBy', type: 'string' },
+        { name: 'sortOrder', prismaField: 'sortOrder', type: 'number', defaultValue: 0 },
+        { name: 'createdAt', prismaField: 'createdAt', type: 'date' },
+        { name: 'updatedAt', prismaField: 'updatedAt', type: 'date' },
+        { name: 'createdBy', prismaField: 'createdBy', type: 'string' },
+        { name: 'updatedBy', prismaField: 'updatedBy', type: 'string' },
+        { name: 'deletedAt', prismaField: 'deletedAt', type: 'date' },
+        { name: 'deletedBy', prismaField: 'deletedBy', type: 'string' },
       ],
-      foreignKeyFields: ['quiz_id'],
+      foreignKeyFields: ['quizId', 'tenantId'],
     };
   }
 
   getSampleRow(): Record<string, string> {
     return {
       id: 'QQ_abc123',
-      quiz_id: 'QC_def456',
-      tenant_id: 'TNT_xyz789',
-      question_text: '{"en":"What is 2+2?","ar":"ما هو 2+2؟"}',
-      question_type: 'multiple_choice',
-      sort_order: '1',
+      quizId: 'QC_def456',
+      tenantId: 'TNT_xyz789',
+      questionText: '{"en":"What is 2+2?","ar":"ما هو 2+2؟"}',
+      questionType: 'multiple_choice',
+      sortOrder: '1',
     };
   }
 }

@@ -11,9 +11,6 @@ import {
 } from './services';
 import {
   IMPORT_STRATEGIES,
-  UserImportStrategy,
-  TenantImportStrategy,
-  ModuleItemProgressImportStrategy,
   RAW_IMPORT_STRATEGIES,
   TenantRawImportStrategy,
   UserRawImportStrategy,
@@ -49,18 +46,12 @@ import { CleanupService } from './cleanup.service';
     ExportService,
     CleanupService,
     // Import strategies
-    UserImportStrategy,
-    TenantImportStrategy,
-    ModuleItemProgressImportStrategy,
-    {
-      provide: IMPORT_STRATEGIES,
-      useFactory: (
-        userStrategy: UserImportStrategy,
-        tenantStrategy: TenantImportStrategy,
-        moduleItemProgressStrategy: ModuleItemProgressImportStrategy,
-      ) => [userStrategy, tenantStrategy, moduleItemProgressStrategy],
-      inject: [UserImportStrategy, TenantImportStrategy, ModuleItemProgressImportStrategy],
-    },
+    // Strategies are now all RAW strategies
+    // {
+    //   provide: IMPORT_STRATEGIES,
+    //   useFactory: () => [],
+    //   inject: [],
+    // },
     // Raw import strategies
     SupportedLanguageRawImportStrategy,
     TenantRawImportStrategy,
