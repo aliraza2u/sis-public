@@ -80,7 +80,10 @@ export class ExportService {
     const filter: any = {};
 
     // Special handling for shared tables or those without tenantId
-    if (entityType !== ExportEntityType.SUPPORTED_LANGUAGE) {
+    if (
+      entityType !== ExportEntityType.SUPPORTED_LANGUAGE &&
+      entityType !== ExportEntityType.TENANT
+    ) {
       filter.tenantId = tenantId;
     }
 
@@ -95,10 +98,18 @@ export class ExportService {
     const actualOrderBy =
       entityType === ExportEntityType.SUPPORTED_LANGUAGE ? { code: 'asc' } : orderBy;
 
-    const data = await model.findMany({
-      where: filter,
-      orderBy: actualOrderBy,
-    });
+    let data;
+    try {
+      data = await model.findMany({
+        where: filter,
+        orderBy: actualOrderBy,
+      });
+    } catch (error) {
+      this.logger.error(`Failed to fetch data for export: ${error.message}`, error.stack);
+      throw new BadRequestException(
+        `Failed to export ${entityType}. The system encountered a database error.`,
+      );
+    }
 
     if (!data || data.length === 0) {
       throw new I18nNotFoundException('messages.dataTransfer.noData');
