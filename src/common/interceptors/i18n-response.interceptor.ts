@@ -1,4 +1,4 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { I18nService } from 'nestjs-i18n';
@@ -9,6 +9,8 @@ import { I18nService } from 'nestjs-i18n';
  */
 @Injectable()
 export class I18nResponseInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(I18nResponseInterceptor.name);
+
   constructor(private readonly i18n: I18nService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -39,7 +41,8 @@ export class I18nResponseInterceptor implements NestInterceptor {
             });
           }
         } catch (e) {
-          // Ignore parsing errors, treat as regular string
+          // Log parsing error but don't crash the request
+          this.logger.warn(`Failed to parse i18n JSON message: ${obj.message}`, e.stack);
         }
       }
     }

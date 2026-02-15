@@ -1,20 +1,7 @@
-export enum ExportEntityType {
-  TENANT = 'tenant',
-  USER = 'user',
-  CATEGORY = 'category',
-  COURSE = 'course',
-  BATCH = 'batch',
-  APPLICATION = 'application',
-  STUDENT_ID_COUNTER = 'student_id_counter',
-  ACTIVITY_TYPE = 'activity_type',
-  MODULE = 'module',
-  MODULE_ITEM = 'module_item',
-  LESSON_CONTENT = 'lesson_content',
-  QUIZ_CONTENT = 'quiz_content',
-  QUIZ_QUESTION = 'quiz_question',
-  QUIZ_OPTION = 'quiz_option',
-  ASSIGNMENT_CONTENT = 'assignment_content',
-  PREREQUISITE = 'prerequisite',
-  RESOURCE = 'resource',
-  SUPPORTED_LANGUAGE = 'supported_language',
-}
+import { EntityType } from './entity-type.enum';
+
+export const ExportEntityType = {
+  ...EntityType,
+} as const;
+
+export type ExportEntityType = (typeof ExportEntityType)[keyof typeof ExportEntityType];
