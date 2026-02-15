@@ -2,9 +2,10 @@ import { BaseSoftDeleteEntity } from '@/common/entities/base.entity';
 import { Category, Tenant, Course } from '@/infrastructure/prisma/client/client';
 import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
 
 export class CategoryEntity extends BaseSoftDeleteEntity implements Category {
-  constructor(partial: Partial<CategoryEntity>) {
+  constructor(partial: Partial<CategoryEntity> | any) {
     super();
     Object.assign(this, partial);
   }
@@ -22,14 +23,14 @@ export class CategoryEntity extends BaseSoftDeleteEntity implements Category {
     example: { en: 'Islamic Studies', ar: 'الدراسات الإسلامية' },
   })
   @Expose()
-  name: any;
+  name: LocalizedStringDto;
 
   @ApiProperty({ description: 'URL-friendly slug', example: 'islamic-studies' })
   @Expose()
   slug: string;
   @ApiProperty({ description: 'Category description (multilingual)', required: false })
   @Expose()
-  description: any;
+  description: LocalizedStringDto | null;
 
   @ApiProperty({ description: 'Is active?', example: true })
   @Expose()

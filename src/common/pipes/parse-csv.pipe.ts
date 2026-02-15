@@ -1,13 +1,7 @@
-import {
-  Injectable,
-  PipeTransform,
-  ArgumentMetadata,
-  HttpStatus,
-  ParseFilePipeBuilder,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, PipeTransform, ArgumentMetadata, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { I18nBadRequestException } from '@/common/exceptions/i18n.exception';
+import { DataTransferConstants } from '../constants/data-transfer.constants';
 
 @Injectable()
 export class ParseCsvPipe implements PipeTransform {
@@ -23,25 +17,13 @@ export class ParseCsvPipe implements PipeTransform {
         `Validating file: ${value.originalname}, Mime: ${value.mimetype}, Size: ${value.size}`,
       );
 
-      // Manual Validation for better control and debugging
-
-      // 1. Size Validation
       if (value.size > maxFileSize) {
         throw new I18nBadRequestException('__i18n:dataTransfer.fileTooLarge', {
-          maxSize: maxFileSize / (1024 * 1024),
+          maxSize: maxFileSize / DataTransferConstants.BYTES_PER_MB,
         });
       }
 
-      // 2. Type Validation
-      // Allow common CSV mime types and generic streams
-      const allowedMimeTypes = [
-        'text/csv',
-        'text/plain',
-        'application/vnd.ms-excel',
-        'application/octet-stream',
-        'application/csv',
-        'text/x-csv',
-      ];
+      const allowedMimeTypes = DataTransferConstants.VALID_MIME_TYPES;
 
       if (!allowedMimeTypes.includes(value.mimetype)) {
         this.logger.warn(`Invalid mime type blocked: ${value.mimetype}`);
