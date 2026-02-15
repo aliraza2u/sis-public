@@ -1,10 +1,9 @@
+import { Injectable, Logger } from '@nestjs/common';
 import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
+  I18nBadRequestException,
+  I18nForbiddenException,
+  I18nNotFoundException,
+} from '@/common/exceptions/i18n.exception';
 import { ConfigService } from '@nestjs/config';
 import { ImportJobService } from './services/import-job.service';
 import { ImportProcessorService } from './services/import-processor.service';
@@ -48,7 +47,7 @@ export class DataTransferService {
     const { totalRows } = await this.csvParser.parseBuffer(file.buffer);
 
     if (totalRows === 0) {
-      throw new BadRequestException('CSV file is empty or has no data rows');
+      throw new I18nBadRequestException('dataTransfer.emptyFile');
     }
 
     // Save file to temp storage
@@ -84,7 +83,7 @@ export class DataTransferService {
 
     // Ensure user owns the job
     if (job.userId !== userId) {
-      throw new ForbiddenException('You do not have access to this import job');
+      throw new I18nForbiddenException('dataTransfer.accessDenied');
     }
 
     return job;
@@ -125,7 +124,7 @@ export class DataTransferService {
 
     const exists = await this.fileStorage.fileExists(job.failedRowsPath);
     if (!exists) {
-      throw new NotFoundException('Failed rows file not found');
+      throw new I18nNotFoundException('dataTransfer.failedRowsNotFound');
     }
 
     return this.fileStorage.readFile(job.failedRowsPath);
@@ -149,14 +148,14 @@ export class DataTransferService {
    */
   private validateFile(file: Express.Multer.File): void {
     if (!file) {
-      throw new BadRequestException('No file uploaded');
+      throw new I18nBadRequestException('dataTransfer.invalidFile');
     }
 
     // Check file size
     if (file.size > this.maxFileSize) {
-      throw new BadRequestException(
-        `File size exceeds maximum allowed size of ${this.maxFileSize / (1024 * 1024)}MB`,
-      );
+      throw new I18nBadRequestException('dataTransfer.fileTooLarge', {
+        maxSize: this.maxFileSize / (1024 * 1024),
+      });
     }
 
     // Check file type
@@ -167,13 +166,13 @@ export class DataTransferService {
       'application/vnd.ms-excel',
     ];
     if (!validMimeTypes.includes(file.mimetype)) {
-      throw new BadRequestException('Invalid file type. Only CSV files are allowed');
+      throw new I18nBadRequestException('dataTransfer.invalidFile');
     }
 
     // Check file extension
     const filename = file.originalname.toLowerCase();
     if (!filename.endsWith('.csv')) {
-      throw new BadRequestException('Invalid file extension. Only .csv files are allowed');
+      throw new I18nBadRequestException('dataTransfer.invalidFile');
     }
   }
 }

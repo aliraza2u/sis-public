@@ -19,7 +19,7 @@ export function t(key: string): string {
 
 /**
  * Helper for i18n messages with arguments/interpolation.
- * Note: Currently not supported by interceptor - use for future enhancement.
+ * Supported by I18nResponseInterceptor.
  *
  * @param key - Translation key
  * @param args - Arguments for interpolation

@@ -89,12 +89,16 @@
     "noFailedRows": "No failed rows available for this import job",
     "importStarted": "Import job started successfully",
     "exportCompleted": "Export completed successfully",
-    "noData": "No data available for export"
+    "noData": "No data available for export",
+    "importCompleted": "Import job completed: {success} success, {errors} errors",
+    "importFailed": "Import job failed: {error}",
+    "headerValidationFailed": "Missing required headers: {missingHeaders}. Expected headers: {expectedHeaders}"
   },
   "prisma": {
     "valueTooLong": "Value provided is too long",
     "duplicateEntry": "Duplicate entry exists for {target}",
-    "foreignKeyConstraint": "Foreign key constraint failed on {field}",
+    "foreignKeyConstraint": "Foreign key constraint failed on {field}. Referenced record not found.",
+    "uniqueConstraint": "Unique constraint failed on {field}. Record already exists.",
     "inconsistentData": "Inconsistent column data provided",
     "notFound": "Record not found"
   }

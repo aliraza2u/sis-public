@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { t_ } from '@/common/helpers/i18n.helper';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import {
   ValidationResult,
@@ -139,12 +140,23 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
         this.logger.error(`Failed to import ${config.entityType} row ${row.rowIndex}:`, error);
 
         const isFKViolation = this.isForeignKeyViolation(error, config.foreignKeyFields);
-        const fkField = isFKViolation ? this.detectFKField(error, config.foreignKeyFields) : null;
+        const isUniqueViolation = this.isUniqueConstraintViolation(error);
+
+        let message = error instanceof Error ? error.message : 'Unknown error';
+        let field = 'unknown';
+
+        if (isFKViolation) {
+          field = this.detectFKField(error, config.foreignKeyFields) || 'unknown';
+          message = t_('prisma.foreignKeyConstraint', { field });
+        } else if (isUniqueViolation) {
+          field = this.detectUniqueField(error) || 'unknown';
+          message = t_('prisma.uniqueConstraint', { field });
+        }
 
         errors.push({
           row: row.rowIndex,
-          field: fkField || 'unknown',
-          message: error instanceof Error ? error.message : 'Unknown error',
+          field: field,
+          message: message,
           data: row.data,
         });
       }
@@ -266,5 +278,27 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
     }
 
     return foreignKeyFields.length > 0 ? foreignKeyFields[0] : null;
+  }
+
+  /**
+   * Check if error is a unique constraint violation
+   */
+  protected isUniqueConstraintViolation(error: unknown): boolean {
+    if (!(error instanceof Error)) return false;
+    const msg = error.message.toLowerCase();
+    return msg.includes('unique constraint') || (error as any).code === 'P2002';
+  }
+
+  /**
+   * Detect which field caused the unique constraint violation
+   */
+  protected detectUniqueField(error: unknown): string | null {
+    if (!(error instanceof Error)) return null;
+    // P2002 often puts the field in meta.target
+    const meta = (error as any).meta;
+    if (meta && meta.target) {
+      return Array.isArray(meta.target) ? meta.target.join(', ') : meta.target;
+    }
+    return null;
   }
 }

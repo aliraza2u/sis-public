@@ -39,6 +39,7 @@ import {
 } from './dto';
 import { ImportJobEntity } from './entities/import-job.entity';
 import { ExportEntityType } from '@/common/enums/export-entity-type.enum';
+import { I18nNotFoundException } from '@/common/exceptions/i18n.exception';
 
 @ApiTags('Data Transfer')
 @Controller('data-transfer')
@@ -195,10 +196,7 @@ export class DataTransferController {
     const csvBuffer = await this.dataTransferService.getFailedRowsCsv(id, user.id);
 
     if (!csvBuffer) {
-      res.status(HttpStatus.NOT_FOUND).json({
-        message: 'No failed rows available for this import job',
-      });
-      return;
+      throw new I18nNotFoundException('dataTransfer.noFailedRows');
     }
 
     res.setHeader('Content-Type', 'text/csv');

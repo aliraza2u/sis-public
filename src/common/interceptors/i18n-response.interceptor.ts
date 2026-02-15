@@ -26,9 +26,22 @@ export class I18nResponseInterceptor implements NestInterceptor {
 
   private async translateObject(obj: any): Promise<any> {
     // Handle message field
-    if (typeof obj.message === 'string' && obj.message.startsWith('__i18n:')) {
-      const key = obj.message.substring(7); // Remove '__i18n:' prefix
-      obj.message = await this.i18n.translate(key);
+    if (typeof obj.message === 'string') {
+      if (obj.message.startsWith('__i18n:')) {
+        const key = obj.message.substring(7); // Remove '__i18n:' prefix
+        obj.message = await this.i18n.translate(key);
+      } else if (obj.message.startsWith('{"__i18n__"')) {
+        try {
+          const parsed = JSON.parse(obj.message);
+          if (parsed.__i18n__) {
+            obj.message = await this.i18n.translate(parsed.__i18n__, {
+              args: parsed.args || {},
+            });
+          }
+        } catch (e) {
+          // Ignore parsing errors, treat as regular string
+        }
+      }
     }
 
     // Recursively handle nested objects (if needed in future)
