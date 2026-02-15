@@ -1,25 +1,6 @@
 export * from './import-strategy.interface';
-// export * from './user-import.strategy'; // Deleted
-// export * from './tenant-import.strategy'; // Deleted
-// export * from './module-item-progress-import.strategy'; // Deleted
 export * from './raw-import-strategy.interface';
 export * from './base-raw-import.strategy';
+export * from './generic-raw-import.strategy';
 export * from './tenant-raw-import.strategy';
 export * from './user-raw-import.strategy';
-export * from './category-raw-import.strategy';
-export * from './course-raw-import.strategy';
-export * from './batch-raw-import.strategy';
-export * from './application-raw-import.strategy';
-export * from './supported-language-raw-import.strategy';
-export * from './student-id-counter-raw-import.strategy';
-export * from './activity-type-raw-import.strategy';
-export * from './module-raw-import.strategy';
-export * from './module-item-raw-import.strategy';
-export * from './lesson-content-raw-import.strategy';
-export * from './quiz-content-raw-import.strategy';
-export * from './assignment-content-raw-import.strategy';
-export * from './quiz-question-raw-import.strategy';
-export * from './quiz-option-raw-import.strategy';
-export * from './prerequisite-raw-import.strategy';
-export * from './resource-raw-import.strategy';
-export * from './module-item-progress-raw-import.strategy';

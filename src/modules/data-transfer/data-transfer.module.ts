@@ -9,30 +9,17 @@ import {
   ImportProcessorService,
   ExportService,
 } from './services';
+import { CleanupService } from './cleanup.service';
 import {
-  IMPORT_STRATEGIES,
   RAW_IMPORT_STRATEGIES,
   TenantRawImportStrategy,
   UserRawImportStrategy,
-  CategoryRawImportStrategy,
-  CourseRawImportStrategy,
-  BatchRawImportStrategy,
-  ApplicationRawImportStrategy,
-  SupportedLanguageRawImportStrategy,
-  StudentIdCounterRawImportStrategy,
-  ActivityTypeRawImportStrategy,
-  ModuleRawImportStrategy,
-  ModuleItemRawImportStrategy,
-  LessonContentRawImportStrategy,
-  QuizContentRawImportStrategy,
-  AssignmentContentRawImportStrategy,
-  QuizQuestionRawImportStrategy,
-  QuizOptionRawImportStrategy,
-  PrerequisiteRawImportStrategy,
-  ResourceRawImportStrategy,
-  ModuleItemProgressRawImportStrategy,
+  GenericRawImportStrategy,
+  RawImportStrategy,
 } from './strategies';
-import { CleanupService } from './cleanup.service';
+import { STRATEGY_CONFIGS } from './config/import-strategies.config';
+import { ImportEntityType } from '@/common/enums/import-entity-type.enum';
+import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 
 @Module({
   imports: [ScheduleModule.forRoot()],
@@ -45,97 +32,41 @@ import { CleanupService } from './cleanup.service';
     ImportProcessorService,
     ExportService,
     CleanupService,
-    // Import strategies
-    // Strategies are now all RAW strategies
-    // {
-    //   provide: IMPORT_STRATEGIES,
-    //   useFactory: () => [],
-    //   inject: [],
-    // },
-    // Raw import strategies
-    SupportedLanguageRawImportStrategy,
+
+    // Explicit strategies (required for SystemService injection)
     TenantRawImportStrategy,
     UserRawImportStrategy,
-    CategoryRawImportStrategy,
-    CourseRawImportStrategy,
-    BatchRawImportStrategy,
-    ApplicationRawImportStrategy,
-    StudentIdCounterRawImportStrategy,
-    ActivityTypeRawImportStrategy,
-    ModuleRawImportStrategy,
-    ModuleItemRawImportStrategy,
-    LessonContentRawImportStrategy,
-    QuizContentRawImportStrategy,
-    AssignmentContentRawImportStrategy,
-    QuizQuestionRawImportStrategy,
-    QuizOptionRawImportStrategy,
-    PrerequisiteRawImportStrategy,
-    ResourceRawImportStrategy,
-    ModuleItemProgressRawImportStrategy,
+
+    // Factory to provide all raw import strategies
     {
       provide: RAW_IMPORT_STRATEGIES,
       useFactory: (
-        supportedLanguageRaw: SupportedLanguageRawImportStrategy,
-        tenantRaw: TenantRawImportStrategy,
-        userRaw: UserRawImportStrategy,
-        categoryRaw: CategoryRawImportStrategy,
-        courseRaw: CourseRawImportStrategy,
-        batchRaw: BatchRawImportStrategy,
-        applicationRaw: ApplicationRawImportStrategy,
-        studentIdCounterRaw: StudentIdCounterRawImportStrategy,
-        activityTypeRaw: ActivityTypeRawImportStrategy,
-        moduleRaw: ModuleRawImportStrategy,
-        moduleItemRaw: ModuleItemRawImportStrategy,
-        lessonContentRaw: LessonContentRawImportStrategy,
-        quizContentRaw: QuizContentRawImportStrategy,
-        assignmentContentRaw: AssignmentContentRawImportStrategy,
-        quizQuestionRaw: QuizQuestionRawImportStrategy,
-        quizOptionRaw: QuizOptionRawImportStrategy,
-        prerequisiteRaw: PrerequisiteRawImportStrategy,
-        resourceRaw: ResourceRawImportStrategy,
-        moduleItemProgressRaw: ModuleItemProgressRawImportStrategy,
-      ) => [
-        supportedLanguageRaw,
-        tenantRaw,
-        userRaw,
-        categoryRaw,
-        courseRaw,
-        batchRaw,
-        applicationRaw,
-        studentIdCounterRaw,
-        activityTypeRaw,
-        moduleRaw,
-        moduleItemRaw,
-        lessonContentRaw,
-        quizContentRaw,
-        assignmentContentRaw,
-        quizQuestionRaw,
-        quizOptionRaw,
-        prerequisiteRaw,
-        resourceRaw,
-        moduleItemProgressRaw,
-      ],
-      inject: [
-        SupportedLanguageRawImportStrategy,
-        TenantRawImportStrategy,
-        UserRawImportStrategy,
-        CategoryRawImportStrategy,
-        CourseRawImportStrategy,
-        BatchRawImportStrategy,
-        ApplicationRawImportStrategy,
-        StudentIdCounterRawImportStrategy,
-        ActivityTypeRawImportStrategy,
-        ModuleRawImportStrategy,
-        ModuleItemRawImportStrategy,
-        LessonContentRawImportStrategy,
-        QuizContentRawImportStrategy,
-        AssignmentContentRawImportStrategy,
-        QuizQuestionRawImportStrategy,
-        QuizOptionRawImportStrategy,
-        PrerequisiteRawImportStrategy,
-        ResourceRawImportStrategy,
-        ModuleItemProgressRawImportStrategy,
-      ],
+        prisma: PrismaService,
+        tenantStrategy: TenantRawImportStrategy,
+        userStrategy: UserRawImportStrategy,
+      ) => {
+        const strategies: RawImportStrategy[] = [];
+
+        // Add explicit strategies
+        strategies.push(tenantStrategy);
+        strategies.push(userStrategy);
+
+        // Add generic strategies for all other entities
+        Object.values(STRATEGY_CONFIGS).forEach(({ config, sampleRow }) => {
+          // Skip if already handled explicitly
+          if (
+            config.entityType === ImportEntityType.TENANT ||
+            config.entityType === ImportEntityType.USER
+          ) {
+            return;
+          }
+
+          strategies.push(new GenericRawImportStrategy(prisma, config, sampleRow));
+        });
+
+        return strategies;
+      },
+      inject: [PrismaService, TenantRawImportStrategy, UserRawImportStrategy],
     },
   ],
   exports: [DataTransferService, CsvParserService, TenantRawImportStrategy, UserRawImportStrategy],
