@@ -113,9 +113,9 @@ model User {
   preferredLanguageCode String?            @default("ar") @map("preferred_language") @db.VarChar(5)
   preferredLanguage     SupportedLanguage? @relation("PreferredLanguage", fields: [preferredLanguageCode], references: [code])
 
-  lastLoginAt DateTime? @map("last_login_at") @db.Timestamptz
-  isActive    Boolean   @default(true) @map("is_active")
-  isPasswordCreated Boolean @default(false) @map("is_password_created")
+  lastLoginAt       DateTime? @map("last_login_at") @db.Timestamptz
+  isActive          Boolean   @default(true) @map("is_active")
+  isPasswordCreated Boolean   @default(false) @map("is_password_created")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
@@ -132,7 +132,7 @@ model User {
   createdCourses Course[]       @relation("CourseCreator")
 
   applications         Application[]
-  reviewedApplications Application[] @relation("ApplicationReviewer")
+  reviewedApplications Application[]        @relation("ApplicationReviewer")
   moduleItemProgress   ModuleItemProgress[]
 
   @@unique([tenantId, email])
@@ -444,8 +444,8 @@ model ModuleItem {
   lessonContent     LessonContent?
   quizContent       QuizContent?
   assignmentContent AssignmentContent?
-  prerequisites     Prerequisite[]     @relation("ItemPrerequisites")
-  prerequisiteFor   Prerequisite[]     @relation("PrerequisiteOf")
+  prerequisites     Prerequisite[]       @relation("ItemPrerequisites")
+  prerequisiteFor   Prerequisite[]       @relation("PrerequisiteOf")
   resources         Resource[]
   progress          ModuleItemProgress[]
 
@@ -662,7 +662,7 @@ model ModuleItemProgress {
   moduleItem   ModuleItem @relation(fields: [moduleItemId], references: [id], onDelete: Cascade)
 
   status          String    @db.VarChar(50) // e.g. "completed", "in_progress", "not_started"
-  progressPercent Int       @map("progress_percent") @default(0)
+  progressPercent Int       @default(0) @map("progress_percent")
   completedAt     DateTime? @map("completed_at") @db.Timestamptz
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
