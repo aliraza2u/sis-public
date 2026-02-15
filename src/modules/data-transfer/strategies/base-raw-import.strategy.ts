@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { t_ } from '@/common/helpers/i18n.helper';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
+import { FieldType } from '@/common/enums/field-type.enum';
 import {
   ValidationResult,
   ValidatedRow,
@@ -13,16 +14,13 @@ import { RawImportStrategy, RawValueParser } from './raw-import-strategy.interfa
  * Field configuration for auto-validation and upsert
  */
 export interface FieldConfig {
-  name: string; // CSV column name (snake_case)
-  prismaField: string; // Prisma model field name (camelCase)
-  type: 'string' | 'json' | 'date' | 'boolean' | 'number' | 'array';
+  name: string;
+  prismaField: string;
+  type: FieldType;
   required?: boolean;
   defaultValue?: unknown;
 }
 
-/**
- * Strategy configuration for declarative import/export
- */
 export interface StrategyConfig {
   entityType: string;
   dependencyOrder: number;
@@ -32,10 +30,6 @@ export interface StrategyConfig {
   primaryKeyField?: string; // Custom PK field (default: 'id')
 }
 
-/**
- * Base class for raw import strategies
- * Provides configuration-driven validation and upsert logic
- */
 export abstract class BaseRawImportStrategy implements RawImportStrategy {
   protected readonly logger: Logger;
 
@@ -43,14 +37,8 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
     this.logger = new Logger(this.constructor.name);
   }
 
-  /**
-   * Override this to provide strategy configuration
-   */
   protected abstract getConfig(): StrategyConfig;
 
-  /**
-   * Override this to provide sample data
-   */
   abstract getSampleRow(): Record<string, string>;
 
   getEntityType(): string {
@@ -214,11 +202,11 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
    */
   protected convertToPrismaValue(value: unknown, field: FieldConfig): unknown {
     if (value === null || value === undefined) {
-      return field.type === 'json' ? undefined : null;
+      return field.type === FieldType.JSON ? undefined : null;
     }
 
     // JSON fields: use 'undefined' for empty to preserve Prisma defaults
-    if (field.type === 'json' && !value) {
+    if (field.type === FieldType.JSON && !value) {
       return undefined;
     }
 
@@ -230,17 +218,17 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
    */
   protected getParser(type: FieldConfig['type']): (value: unknown) => unknown {
     switch (type) {
-      case 'string':
+      case FieldType.STRING:
         return RawValueParser.parseString;
-      case 'json':
+      case FieldType.JSON:
         return RawValueParser.parseJson;
-      case 'date':
+      case FieldType.DATE:
         return RawValueParser.parseDate;
-      case 'boolean':
+      case FieldType.BOOLEAN:
         return RawValueParser.parseBoolean;
-      case 'number':
+      case FieldType.NUMBER:
         return RawValueParser.parseNumber;
-      case 'array':
+      case FieldType.ARRAY:
         return RawValueParser.parseArray;
       default:
         return RawValueParser.parseString;
@@ -294,7 +282,6 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
    */
   protected detectUniqueField(error: unknown): string | null {
     if (!(error instanceof Error)) return null;
-    // P2002 often puts the field in meta.target
     const meta = (error as any).meta;
     if (meta && meta.target) {
       return Array.isArray(meta.target) ? meta.target.join(', ') : meta.target;
