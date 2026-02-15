@@ -27,8 +27,7 @@ export class DataTransferService {
     private readonly fileStorage: FileStorageService,
     private readonly exportService: ExportService,
   ) {
-    this.maxFileSize =
-      this.configService.get<number>('dataTransfer.maxFileSize') || 10 * 1024 * 1024;
+    this.maxFileSize = this.configService.getOrThrow<number>('dataTransfer.maxFileSize');
   }
 
   /**
@@ -40,9 +39,6 @@ export class DataTransferService {
     userId: string,
     tenantId: string,
   ): Promise<ImportJob> {
-    // Validate file
-    this.validateFile(file);
-
     // Parse CSV to get row count
     const { totalRows } = await this.csvParser.parseBuffer(file.buffer);
 
@@ -141,38 +137,5 @@ export class DataTransferService {
     const filename = this.exportService.getExportFilename(entityType);
 
     return { content, filename };
-  }
-
-  /**
-   * Validate uploaded file
-   */
-  private validateFile(file: Express.Multer.File): void {
-    if (!file) {
-      throw new I18nBadRequestException('dataTransfer.invalidFile');
-    }
-
-    // Check file size
-    if (file.size > this.maxFileSize) {
-      throw new I18nBadRequestException('dataTransfer.fileTooLarge', {
-        maxSize: this.maxFileSize / (1024 * 1024),
-      });
-    }
-
-    // Check file type
-    const validMimeTypes = [
-      'text/csv',
-      'application/csv',
-      'text/plain',
-      'application/vnd.ms-excel',
-    ];
-    if (!validMimeTypes.includes(file.mimetype)) {
-      throw new I18nBadRequestException('dataTransfer.invalidFile');
-    }
-
-    // Check file extension
-    const filename = file.originalname.toLowerCase();
-    if (!filename.endsWith('.csv')) {
-      throw new I18nBadRequestException('dataTransfer.invalidFile');
-    }
   }
 }

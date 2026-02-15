@@ -12,6 +12,7 @@ import { SystemService } from './system.service';
 import { BootstrapAuthGuard } from './guards/bootstrap-auth.guard';
 import { ImportEntityType } from '@/common/enums/import-entity-type.enum';
 import { Public } from '@/common/decorators/public.decorator';
+import { ParseCsvPipe } from '@/common/pipes/parse-csv.pipe';
 
 @ApiTags('System')
 @Controller('system')
@@ -47,7 +48,7 @@ export class SystemController {
   @ApiResponse({ status: 201, description: 'Import successful' })
   @ApiResponse({ status: 403, description: 'Forbidden (Invalid token or DB not empty)' })
   async bootstrapImport(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(ParseCsvPipe) file: Express.Multer.File,
     @Body('entityType') entityType: ImportEntityType,
   ) {
     return this.systemService.bootstrapImport(file, entityType);

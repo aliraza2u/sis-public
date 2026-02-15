@@ -42,7 +42,7 @@ async function main() {
           slug: tenantSlug,
           contactEmail: `admin@${tenantSlug}.com`,
           defaultLanguageCode: 'ar',
-          enabledLanguages: ['en', 'ar'], // This is just an array of strings, but defaultLanguageCode checks FK
+          enabledLanguages: ['en', 'ar'],
           alias: 'DT',
         },
       });

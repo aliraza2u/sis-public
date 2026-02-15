@@ -78,25 +78,12 @@ export class ExportService {
 
     const filter: any = {};
 
-    // Most models have tenantId, but check if it's applicable?
-    // For raw export we usually filter by tenantId if the model has it.
-    // We can check if the strategy has 'tenant_id' in its fields or just try-catch?
-    // Or strictly rely on specific logic.
-    // The previous implementation for raw export did: if (tenantId) filter.tenantId = tenantId;
-    // And for most types it applied it.
-    // Let's assume safely that if we pass tenantId, we want to filter by it.
-    // However, some global tables like SupportedLanguage might not have tenantId.
-
     // Special handling for shared tables or those without tenantId
     if (entityType !== ExportEntityType.SUPPORTED_LANGUAGE) {
       filter.tenantId = tenantId;
     }
 
     // Add deletedAt check if applicable
-    // We can check if the model has soft delete by convention or just apply it and see?
-    // Better to apply it. If the column doesn't exist, Prisma might complain if we aren't careful.
-    // But since we are using weak typing (any), we need to be sure.
-    // For now, let's assume all our exportable entities support soft delete except maybe supportedLanguage?
     if (entityType !== ExportEntityType.SUPPORTED_LANGUAGE) {
       filter.deletedAt = null;
     }
@@ -116,9 +103,6 @@ export class ExportService {
       throw new I18nNotFoundException('messages.dataTransfer.noData');
     }
 
-    // Determine ImportEntityType for strategy lookup to get headers
-    // Convention: ExportEntityType = ImportEntityType
-    // e.g. 'course' -> 'course'
     const importEntityType = String(entityType);
 
     // Attempt to find strategy configuration to map fields

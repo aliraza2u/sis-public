@@ -101,5 +101,9 @@
     "uniqueConstraint": "Unique constraint failed on {field}. Record already exists.",
     "inconsistentData": "Inconsistent column data provided",
     "notFound": "Record not found"
+  },
+  "bootstrap": {
+    "databaseNotEmpty": "Database is not empty. Cannot run bootstrap import.",
+    "success": "Bootstrap import completed successfully."
   }
 }

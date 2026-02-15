@@ -1,49 +1,55 @@
-import { Injectable, ForbiddenException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { CsvParserService } from '@/modules/data-transfer/services/csv-parser.service';
 import { ImportEntityType } from '@/common/enums/import-entity-type.enum';
 import { TenantRawImportStrategy } from '@/modules/data-transfer/strategies/tenant-raw-import.strategy';
 import { UserRawImportStrategy } from '@/modules/data-transfer/strategies/user-raw-import.strategy';
+import {
+  I18nForbiddenException,
+  I18nBadRequestException,
+} from '@/common/exceptions/i18n.exception';
+import { t, t_ } from '@/common/helpers/i18n.helper';
 
 @Injectable()
 export class SystemService {
   private readonly logger = new Logger(SystemService.name);
+  private readonly maxFileSize: number;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly csvParser: CsvParserService,
     private readonly tenantStrategy: TenantRawImportStrategy,
     private readonly userStrategy: UserRawImportStrategy,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.maxFileSize = this.configService.getOrThrow<number>('dataTransfer.maxFileSize');
+  }
 
   async bootstrapImport(file: Express.Multer.File, entityType: ImportEntityType) {
     // 1. Check if DB is empty for the specific entity type
     if (entityType === ImportEntityType.TENANT) {
       const tenantCount = await this.prisma.tenant.count();
       if (tenantCount > 0) {
-        throw new ForbiddenException(
-          'Tenant table is not empty. Bootstrap import for tenants is only allowed for fresh migrations.',
-        );
+        throw new I18nForbiddenException('bootstrap.databaseNotEmpty');
       }
     } else if (entityType === ImportEntityType.USER) {
       const userCount = await this.prisma.user.count();
       if (userCount > 0) {
-        throw new ForbiddenException(
-          'User table is not empty. Bootstrap import for users is only allowed for fresh migrations.',
-        );
+        throw new I18nForbiddenException('bootstrap.databaseNotEmpty');
       }
     }
 
     // 2. Validate Entity Type
     if (![ImportEntityType.TENANT, ImportEntityType.USER].includes(entityType)) {
-      throw new BadRequestException('Only tenant and user are allowed for bootstrap import');
+      throw new I18nBadRequestException('dataTransfer.invalidFile');
     }
 
     // 3. Parse CSV
     const { rows, totalRows } = await this.csvParser.parseBuffer(file.buffer);
 
     if (totalRows === 0) {
-      throw new BadRequestException('CSV file is empty');
+      throw new I18nBadRequestException('dataTransfer.emptyFile');
     }
 
     // 4. Get Strategy
@@ -72,10 +78,6 @@ export class SystemService {
       };
     }
 
-    // 6. Import Batch
-    // For bootstrap, we process all at once.
-    // Tenant ID is not needed for Tenant Raw Import, and for User Raw Import it comes from CSV.
-    // So we can pass a dummy string or rely on the strategy ignoring it or using CSV data.
     const result = await strategy.importBatch(validatedRows, 'bootstrap-system');
 
     this.logger.log(
@@ -84,7 +86,7 @@ export class SystemService {
 
     return {
       success: true,
-      message: `Bootstrap import completed. Imported ${result.successCount} records.`,
+      message: t_('bootstrap.success', { count: result.successCount }),
       errors: result.errors,
     };
   }
