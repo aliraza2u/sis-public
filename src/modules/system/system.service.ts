@@ -9,7 +9,7 @@ import {
   I18nForbiddenException,
   I18nBadRequestException,
 } from '@/common/exceptions/i18n.exception';
-import { t, t_ } from '@/common/helpers/i18n.helper';
+import { t_ } from '@/common/helpers/i18n.helper';
 
 @Injectable()
 export class SystemService {
