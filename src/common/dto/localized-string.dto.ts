@@ -11,4 +11,6 @@ export class LocalizedStringDto {
   @IsOptional()
   @IsString()
   ar?: string;
+
+  [key: string]: string | undefined;
 }

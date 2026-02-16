@@ -59,3 +59,12 @@ export class I18nInternalServerErrorException extends I18nException {
     super(translationKey, translationArgs, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
+
+/**
+ * 403 Forbidden with i18n translation
+ */
+export class I18nForbiddenException extends I18nException {
+  constructor(translationKey: string, translationArgs?: Record<string, any>) {
+    super(translationKey, translationArgs, HttpStatus.FORBIDDEN);
+  }
+}

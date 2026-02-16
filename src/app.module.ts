@@ -35,6 +35,7 @@ import { UserContextInterceptor } from './common/interceptors/user-context.inter
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { QueueModule } from './modules/queue/queue.module';
 import { DataTransferModule } from './modules/data-transfer/data-transfer.module';
+import { SystemModule } from './modules/system/system.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { DataTransferModule } from './modules/data-transfer/data-transfer.module
         ADMIN_FIRST_NAME: Joi.string().optional(),
         ADMIN_LAST_NAME: Joi.string().optional(),
         DEFAULT_TENANT_SLUG: Joi.string().default('al-mkki'),
+        BOOTSTRAP_SECRET: Joi.string().required(),
       }),
     }),
     LoggerModule.forRootAsync({
@@ -103,6 +105,7 @@ import { DataTransferModule } from './modules/data-transfer/data-transfer.module
     CommonModule,
     QueueModule,
     DataTransferModule,
+    SystemModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

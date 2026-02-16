@@ -1,4 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
+import { PrismaErrorCode } from '@/common/enums/prisma-error-code.enum';
 
 export const PRISMA_ERROR_MAPPING: Record<
   string,
@@ -8,25 +9,25 @@ export const PRISMA_ERROR_MAPPING: Record<
     args?: (meta: any) => Record<string, any>;
   }
 > = {
-  P2000: {
+  [PrismaErrorCode.ValueTooLong]: {
     status: HttpStatus.BAD_REQUEST,
     key: 'messages.prisma.valueTooLong',
   },
-  P2002: {
+  [PrismaErrorCode.UniqueConstraintVioaltion]: {
     status: HttpStatus.CONFLICT,
     key: 'messages.prisma.duplicateEntry',
     args: (meta) => ({ target: meta?.target || '' }),
   },
-  P2003: {
+  [PrismaErrorCode.ForeignKeyConstraintViolation]: {
     status: HttpStatus.CONFLICT,
     key: 'messages.prisma.foreignKeyConstraint',
     args: (meta) => ({ field: meta?.field_name || 'relation' }),
   },
-  P2023: {
+  [PrismaErrorCode.InconsistentData]: {
     status: HttpStatus.BAD_REQUEST,
     key: 'messages.prisma.inconsistentData',
   },
-  P2025: {
+  [PrismaErrorCode.RecordNotFound]: {
     status: HttpStatus.NOT_FOUND,
     key: 'messages.prisma.notFound',
   },

@@ -1,15 +1,16 @@
 import { Injectable, Logger, OnModuleInit, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { t_ } from '@/common/helpers/i18n.helper';
 import { QueueService } from '@/modules/queue/queue.service';
 import { ImportJobService } from './import-job.service';
+
 import { CsvParserService } from './csv-parser.service';
 import { FileStorageService } from './file-storage.service';
+import { ImportStrategy, ImportError, ValidatedRow } from '../strategies/import-strategy.interface';
 import {
-  ImportStrategy,
-  ImportError,
-  ValidatedRow,
-  IMPORT_STRATEGIES,
-} from '../strategies/import-strategy.interface';
+  RAW_IMPORT_STRATEGIES,
+  RawImportStrategy,
+} from '../strategies/raw-import-strategy.interface';
 import { DataTransferConstants } from '@/common/constants/data-transfer.constants';
 
 interface ImportJobPayload {
@@ -31,14 +32,15 @@ export class ImportProcessorService implements OnModuleInit {
     private readonly importJobService: ImportJobService,
     private readonly csvParser: CsvParserService,
     private readonly fileStorage: FileStorageService,
-    @Inject(IMPORT_STRATEGIES)
-    private readonly strategies: ImportStrategy[],
+    @Inject(RAW_IMPORT_STRATEGIES)
+    private readonly rawStrategies: RawImportStrategy[],
   ) {
     // Initialize config values
     this.batchSize = this.configService.get<number>('dataTransfer.batchSize') || 50;
 
     // Build strategy map for quick lookup
-    for (const strategy of strategies) {
+    // All strategies are now RawImportStrategies
+    for (const strategy of rawStrategies) {
       this.strategyMap.set(strategy.getEntityType(), strategy);
     }
   }
@@ -85,7 +87,10 @@ export class ImportProcessorService implements OnModuleInit {
         const headerError: ImportError = {
           row: 0,
           field: 'file_headers',
-          message: `Missing required headers: ${headerValidation.missingHeaders.join(', ')}. Expected headers: ${requiredHeaders.join(', ')}`,
+          message: t_('dataTransfer.headerValidationFailed', {
+            missingHeaders: headerValidation.missingHeaders.join(', '),
+            expectedHeaders: requiredHeaders.join(', '),
+          }),
           data: { providedHeaders: headers, missingHeaders: headerValidation.missingHeaders },
         };
 
@@ -146,7 +151,9 @@ export class ImportProcessorService implements OnModuleInit {
       this.logger.error(`Import job ${jobId} failed:`, error);
       await this.importJobService.markFailed(
         jobId,
-        error instanceof Error ? error.message : 'Unknown error',
+        t_('dataTransfer.importFailed', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        }),
       );
       throw error;
     }

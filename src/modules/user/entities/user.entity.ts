@@ -14,7 +14,7 @@ export class UserEntity implements User {
   email: string;
 
   @Exclude()
-  passwordHash: string | null;
+  passwordHash: string;
 
   @ApiProperty()
   isPasswordCreated: boolean;

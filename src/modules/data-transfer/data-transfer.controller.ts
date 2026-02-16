@@ -38,6 +38,9 @@ import {
   ExportRequestDto,
 } from './dto';
 import { ImportJobEntity } from './entities/import-job.entity';
+import { ExportEntityType } from '@/common/enums/export-entity-type.enum';
+import { I18nNotFoundException } from '@/common/exceptions/i18n.exception';
+import { ParseCsvPipe } from '@/common/pipes/parse-csv.pipe';
 
 @ApiTags('Data Transfer')
 @Controller('data-transfer')
@@ -63,7 +66,7 @@ export class DataTransferController {
         },
         entityType: {
           type: 'string',
-          enum: ['user', 'tenant'],
+          enum: Object.values(ImportEntityType),
           description: 'Type of entity to import',
         },
       },
@@ -78,7 +81,7 @@ export class DataTransferController {
   @ApiResponse({ status: 400, description: 'Invalid file or request' })
   @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async importCsv(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(ParseCsvPipe) file: Express.Multer.File,
     @Body('entityType') entityType: ImportEntityType,
     @CurrentUser() user: { id: string; tenantId: string },
   ): Promise<ImportJobEntity> {
@@ -194,10 +197,7 @@ export class DataTransferController {
     const csvBuffer = await this.dataTransferService.getFailedRowsCsv(id, user.id);
 
     if (!csvBuffer) {
-      res.status(HttpStatus.NOT_FOUND).json({
-        message: 'No failed rows available for this import job',
-      });
-      return;
+      throw new I18nNotFoundException('dataTransfer.noFailedRows');
     }
 
     res.setHeader('Content-Type', 'text/csv');
@@ -209,7 +209,7 @@ export class DataTransferController {
   @ApiOperation({ summary: 'Export data to CSV file' })
   @ApiQuery({
     name: 'entityType',
-    enum: ImportEntityType,
+    enum: ExportEntityType,
     description: 'Type of entity to export',
   })
   @ApiResponse({
@@ -222,7 +222,7 @@ export class DataTransferController {
     },
   })
   async exportCsv(
-    @Query('entityType') entityType: ImportEntityType,
+    @Query('entityType') entityType: ExportEntityType,
     @CurrentUser() user: { tenantId: string },
     @Res() res: Response,
   ): Promise<void> {

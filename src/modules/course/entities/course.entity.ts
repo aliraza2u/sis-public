@@ -2,9 +2,11 @@ import { BaseSoftDeleteEntity } from '@/common/entities/base.entity';
 import { Course, Tenant, User } from '@/infrastructure/prisma/client/client';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
+import { CategoryEntity } from '@/modules/category/entities/category.entity';
 
 export class CourseEntity extends BaseSoftDeleteEntity implements Course {
-  constructor(partial: Partial<CourseEntity>) {
+  constructor(partial: Partial<CourseEntity> | any) {
     super();
     Object.assign(this, partial);
   }
@@ -25,21 +27,21 @@ export class CourseEntity extends BaseSoftDeleteEntity implements Course {
     example: { en: 'Introduction to Programming' },
   })
   @Expose()
-  title: any;
+  title: LocalizedStringDto;
 
   @ApiProperty({
     description: 'The detailed description of the course (multilingual)',
     example: { en: 'A comprehensive guide...' },
   })
   @Expose()
-  description: any;
+  description: LocalizedStringDto | null;
 
   @ApiProperty({
     description: 'Short description for cards (multilingual)',
     example: { en: 'Learn basics...' },
   })
   @Expose()
-  shortDescription: any;
+  shortDescription: LocalizedStringDto | null;
 
   @ApiProperty({
     description: 'URL of the course thumbnail',
@@ -56,7 +58,8 @@ export class CourseEntity extends BaseSoftDeleteEntity implements Course {
 
   @ApiProperty({ description: 'Category details', required: false })
   @Expose()
-  category: any;
+  @Type(() => CategoryEntity)
+  category: CategoryEntity | null;
 
   @ApiProperty({ description: 'Difficulty level', required: false, example: 'Beginner' })
   @Expose()

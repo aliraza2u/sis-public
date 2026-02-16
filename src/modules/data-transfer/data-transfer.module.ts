@@ -9,8 +9,17 @@ import {
   ImportProcessorService,
   ExportService,
 } from './services';
-import { IMPORT_STRATEGIES, UserImportStrategy, TenantImportStrategy } from './strategies';
 import { CleanupService } from './cleanup.service';
+import {
+  RAW_IMPORT_STRATEGIES,
+  TenantRawImportStrategy,
+  UserRawImportStrategy,
+  GenericRawImportStrategy,
+  RawImportStrategy,
+} from './strategies';
+import { STRATEGY_CONFIGS } from './config/import-strategies.config';
+import { ImportEntityType } from '@/common/enums/import-entity-type.enum';
+import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 
 @Module({
   imports: [ScheduleModule.forRoot()],
@@ -23,18 +32,43 @@ import { CleanupService } from './cleanup.service';
     ImportProcessorService,
     ExportService,
     CleanupService,
-    // Import strategies
-    UserImportStrategy,
-    TenantImportStrategy,
+
+    // Explicit strategies (required for SystemService injection)
+    TenantRawImportStrategy,
+    UserRawImportStrategy,
+
+    // Factory to provide all raw import strategies
     {
-      provide: IMPORT_STRATEGIES,
-      useFactory: (userStrategy: UserImportStrategy, tenantStrategy: TenantImportStrategy) => [
-        userStrategy,
-        tenantStrategy,
-      ],
-      inject: [UserImportStrategy, TenantImportStrategy],
+      provide: RAW_IMPORT_STRATEGIES,
+      useFactory: (
+        prisma: PrismaService,
+        tenantStrategy: TenantRawImportStrategy,
+        userStrategy: UserRawImportStrategy,
+      ) => {
+        const strategies: RawImportStrategy[] = [];
+
+        // Add explicit strategies
+        strategies.push(tenantStrategy);
+        strategies.push(userStrategy);
+
+        // Add generic strategies for all other entities
+        Object.values(STRATEGY_CONFIGS).forEach(({ config, sampleRow }) => {
+          // Skip if already handled explicitly
+          if (
+            config.entityType === ImportEntityType.TENANT ||
+            config.entityType === ImportEntityType.USER
+          ) {
+            return;
+          }
+
+          strategies.push(new GenericRawImportStrategy(prisma, config, sampleRow));
+        });
+
+        return strategies;
+      },
+      inject: [PrismaService, TenantRawImportStrategy, UserRawImportStrategy],
     },
   ],
-  exports: [DataTransferService],
+  exports: [DataTransferService, CsvParserService, TenantRawImportStrategy, UserRawImportStrategy],
 })
 export class DataTransferModule {}

@@ -88,13 +88,22 @@
     "failedRowsNotFound": "لم يتم العثور على ملف الصفوف الفاشلة",
     "noFailedRows": "لا توجد صفوف فاشلة متاحة لمهمة الاستيراد هذه",
     "importStarted": "بدأت مهمة الاستيراد بنجاح",
-    "exportCompleted": "اكتمل التصدير بنجاح"
+    "exportCompleted": "اكتمل التصدير بنجاح",
+    "noData": "لا توجد بيانات متاحة للتصدير",
+    "importCompleted": "اكتملت مهمة الاستيراد: {success} ناجحة، {errors} أخطاء",
+    "importFailed": "فشلت مهمة الاستيراد: {error}",
+    "headerValidationFailed": "رؤوس مطلوبة مفقودة: {missingHeaders}. الرؤوس المتوقعة: {expectedHeaders}"
   },
   "prisma": {
     "valueTooLong": "القيمة المدخلة طويلة جداً",
     "duplicateEntry": "يوجد سجل مكرر للحقل {target}",
-    "foreignKeyConstraint": "فشل قيد المفتاح الخارجي في {field}",
+    "foreignKeyConstraint": "فشل قيد المفتاح الخارجي في {field}. السجل المرجعي غير موجود.",
+    "uniqueConstraint": "فشل قيد الفرادة في {field}. السجل موجود بالفعل.",
     "inconsistentData": "تم تقديم بيانات عمود غير متسقة",
     "notFound": "لم يتم العثور على السجل"
+  },
+  "bootstrap": {
+    "databaseNotEmpty": "قاعدة البيانات ليست فارغة. لا يمكن تشغيل استيراد التمهيد.",
+    "success": "تم استيراد التمهيد بنجاح."
   }
 }

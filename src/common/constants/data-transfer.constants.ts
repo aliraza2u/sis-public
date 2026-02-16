@@ -1,6 +1,12 @@
 export const DataTransferConstants = {
-  // Queue name - must remain stable to avoid breaking existing jobs
   IMPORT_QUEUE_NAME: 'import-jobs',
-  // Standard CSV MIME types - technical specification, not configurable
-  VALID_MIME_TYPES: ['text/csv', 'application/csv', 'text/plain', 'application/vnd.ms-excel'],
+  VALID_MIME_TYPES: [
+    'text/csv',
+    'application/csv',
+    'text/plain',
+    'application/vnd.ms-excel',
+    'application/octet-stream',
+    'text/x-csv',
+  ],
+  BYTES_PER_MB: 1024 * 1024,
 };
