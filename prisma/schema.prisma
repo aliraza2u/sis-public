@@ -92,7 +92,7 @@ model User {
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   email        String @db.VarChar(255)
-  passwordHash String @map("password_hash") @db.VarChar(255)
+  passwordHash String? @map("password_hash") @db.VarChar(255)
 
   firstName Json    @default("{}") @map("first_name")
   lastName  Json    @default("{}") @map("last_name")
