@@ -88,7 +88,7 @@ async function main() {
           role: data.role,
           tenantId: tenant.id,
           emailVerified: true,
-          passwordHash: 'UNSET', // Prisma requires a string
+          passwordHash: null,
           phone: '+0000000000',
         },
       });
