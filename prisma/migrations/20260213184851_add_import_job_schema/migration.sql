@@ -48,8 +48,7 @@ ALTER COLUMN "id" SET DEFAULT generate_prefixed_uuid('CTR');
 ALTER TABLE "tenants" ALTER COLUMN "id" SET DEFAULT generate_prefixed_uuid('TNT');
 
 -- AlterTable
-ALTER TABLE "users" ALTER COLUMN "id" SET DEFAULT generate_prefixed_uuid('USR'),
-ALTER COLUMN "password_hash" SET NOT NULL;
+ALTER TABLE "users" ALTER COLUMN "id" SET DEFAULT generate_prefixed_uuid('USR');
 
 -- CreateTable
 CREATE TABLE "activity_types" (
