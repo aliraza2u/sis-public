@@ -52,9 +52,11 @@ export class RawValueParser {
    * Parse boolean from string
    * Admission Portal exports booleans as "true"/"false" strings
    */
-  static parseBoolean(value: unknown): boolean {
+  static parseBoolean(value: unknown): boolean | null {
+    if (value === null || value === undefined || value === '') return null;
     if (typeof value === 'boolean') return value;
     const str = String(value).toLowerCase().trim();
+    if (str === '') return null;
     return str === 'true' || str === '1' || str === 'yes';
   }
 
