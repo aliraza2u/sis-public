@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
@@ -36,6 +36,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { QueueModule } from './modules/queue/queue.module';
 import { DataTransferModule } from './modules/data-transfer/data-transfer.module';
 import { SystemModule } from './modules/system/system.module';
+import { SYSTEM_ROUTES } from './common/constants/routes';
 
 @Module({
   imports: [
@@ -157,6 +158,9 @@ import { SystemModule } from './modules/system/system.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(TenantMiddleware).exclude('system/bootstrap-import').forRoutes('*');
+    consumer
+      .apply(TenantMiddleware)
+      .exclude({ path: SYSTEM_ROUTES.BOOTSTRAP_IMPORT, method: RequestMethod.POST })
+      .forRoutes('*');
   }
 }
