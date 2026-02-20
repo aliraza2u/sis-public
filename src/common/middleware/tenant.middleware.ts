@@ -5,7 +5,7 @@ import { ClsService } from 'nestjs-cls';
 import * as net from 'net';
 import { TENANT_HEADER } from '../constants/headers';
 import { I18nService } from 'nestjs-i18n';
-import { I18nNotFoundException } from '../exceptions/i18n.exception';
+import { SYSTEM_ROUTES } from '../constants/routes';
 
 @Injectable()
 export class TenantMiddleware implements NestMiddleware {
@@ -16,6 +16,14 @@ export class TenantMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
+    // 0. Bypass for bootstrap-import (Belt & Suspenders)
+    if (
+      req.originalUrl === SYSTEM_ROUTES.BOOTSTRAP_IMPORT ||
+      req.path === SYSTEM_ROUTES.BOOTSTRAP_IMPORT
+    ) {
+      return next();
+    }
+
     // 1. Check for X-Tenant-ID header (Dev/Testing priority)
     let tenantSlug = req.headers[TENANT_HEADER] as string;
 
@@ -55,11 +63,15 @@ export class TenantMiddleware implements NestMiddleware {
     });
 
     if (!tenant) {
-      throw new I18nNotFoundException('messages.tenant.notFound', { slug: tenantSlug });
+      throw new NotFoundException(
+        this.i18n.t('messages.tenant.notFound', { args: { slug: tenantSlug } }),
+      );
     }
 
     if (!tenant.isActive) {
-      throw new I18nNotFoundException('messages.tenant.inactive', { slug: tenantSlug });
+      throw new NotFoundException(
+        this.i18n.t('messages.tenant.inactive', { args: { slug: tenantSlug } }),
+      );
     }
 
     // 5. Store in CLS
