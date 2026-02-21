@@ -91,7 +91,7 @@ model User {
   tenantId String @map("tenant_id") @db.VarChar(50)
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  email        String @db.VarChar(255)
+  email        String  @db.VarChar(255)
   passwordHash String? @map("password_hash") @db.VarChar(255)
 
   firstName Json    @default("{}") @map("first_name")
@@ -650,6 +650,12 @@ model Resource {
   @@map("resources")
 }
 
+enum ProgressStatus {
+  not_started
+  in_progress
+  completed
+}
+
 model ModuleItemProgress {
   id       String @id @default(dbgenerated("generate_prefixed_uuid('MIP')")) @db.VarChar(50)
   tenantId String @map("tenant_id") @db.VarChar(50)
@@ -661,9 +667,9 @@ model ModuleItemProgress {
   moduleItemId String     @map("module_item_id") @db.VarChar(50)
   moduleItem   ModuleItem @relation(fields: [moduleItemId], references: [id], onDelete: Cascade)
 
-  status          String    @db.VarChar(50) // e.g. "completed", "in_progress", "not_started"
-  progressPercent Int       @default(0) @map("progress_percent")
-  completedAt     DateTime? @map("completed_at") @db.Timestamptz
+  status          ProgressStatus @default(not_started)
+  progressPercent Int            @default(0) @map("progress_percent")
+  completedAt     DateTime?      @map("completed_at") @db.Timestamptz
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
