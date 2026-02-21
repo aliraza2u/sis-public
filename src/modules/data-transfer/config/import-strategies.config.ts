@@ -1,6 +1,7 @@
 import { ImportEntityType } from '@/common/enums/import-entity-type.enum';
 import { FieldType } from '@/common/enums/field-type.enum';
 import { StrategyConfig } from '../strategies/base-raw-import.strategy';
+import { ProgressStatus } from '@/infrastructure/prisma/client/enums';
 
 export const STRATEGY_CONFIGS: Record<
   string,
@@ -382,7 +383,7 @@ export const STRATEGY_CONFIGS: Record<
         { name: 'courseId', prismaField: 'courseId', type: FieldType.STRING, required: true },
         { name: 'title', prismaField: 'title', type: FieldType.JSON, required: true },
         { name: 'description', prismaField: 'description', type: FieldType.JSON },
-        { name: 'order', prismaField: 'sortOrder', type: FieldType.NUMBER, required: true },
+        { name: 'sortOrder', prismaField: 'sortOrder', type: FieldType.NUMBER, required: true },
         {
           name: 'isPublished',
           prismaField: 'isPublished',
@@ -702,7 +703,7 @@ export const STRATEGY_CONFIGS: Record<
           name: 'status',
           prismaField: 'status',
           type: FieldType.STRING,
-          defaultValue: 'not_started',
+          defaultValue: ProgressStatus.not_started,
         },
         {
           name: 'progressPercent',
@@ -725,7 +726,7 @@ export const STRATEGY_CONFIGS: Record<
       tenantId: 'TNT_xyz789',
       userId: 'USR_ghi789',
       moduleItemId: 'MI_def456',
-      status: 'completed',
+      status: ProgressStatus.completed,
       progressPercent: '100',
     },
   },
