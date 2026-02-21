@@ -383,7 +383,7 @@ export const STRATEGY_CONFIGS: Record<
         { name: 'courseId', prismaField: 'courseId', type: FieldType.STRING, required: true },
         { name: 'title', prismaField: 'title', type: FieldType.JSON, required: true },
         { name: 'description', prismaField: 'description', type: FieldType.JSON },
-        { name: 'order', prismaField: 'sortOrder', type: FieldType.NUMBER, required: true },
+        { name: 'sortOrder', prismaField: 'sortOrder', type: FieldType.NUMBER, required: true },
         {
           name: 'isPublished',
           prismaField: 'isPublished',
