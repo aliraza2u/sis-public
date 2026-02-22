@@ -462,6 +462,7 @@ model LessonContent {
   moduleItem   ModuleItem @relation(fields: [moduleItemId], references: [id], onDelete: Cascade)
 
   videoUrl     String? @map("video_url") @db.VarChar(500)
+  videoDurationSeconds Int? @map("video_duration_seconds")
   title        Json?   @default("{}")
   thumbnailUrl String? @map("thumbnail_url") @db.VarChar(500)
   description  Json?   @default("{}")
