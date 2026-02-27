@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@/infrastructure/prisma/client/client';
 import { Exclude } from 'class-transformer';
 import { TenantEntity } from './tenant.entity';
+import { UserRole } from '@/common/enums';
 
 export class UserEntity implements User {
   @ApiProperty({ example: '56d259ae-179d-464e-9d3c-b28da6055b85' })
@@ -28,8 +29,12 @@ export class UserEntity implements User {
   @ApiProperty({ example: '+1234567890', required: false, nullable: true })
   phone: string | null;
 
-  @ApiProperty({ example: 'applicant', enum: ['applicant', 'reviewer', 'admin', 'super_admin'] })
-  role: 'applicant' | 'reviewer' | 'admin' | 'super_admin';
+  @ApiProperty({
+    example: [UserRole.student, UserRole.admin],
+    enum: UserRole,
+    isArray: true,
+  })
+  roles: UserRole[];
 
   @ApiProperty({ required: false, nullable: true })
   avatarUrl: string | null;

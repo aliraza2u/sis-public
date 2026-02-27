@@ -17,7 +17,7 @@ import { CategoryEntity } from './entities/category.entity';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Public } from '@/common/decorators/public.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from '@/common/enums';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -27,7 +27,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Create a new category (Admin only)' })
   @ApiResponse({
     status: 201,
@@ -73,7 +73,7 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Update category details (Admin only)' })
   @ApiParam({
     name: 'id',
@@ -95,7 +95,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Soft delete a category (Admin only)' })
   @ApiParam({
     name: 'id',

@@ -4,7 +4,7 @@ import { CreateBatchDto, UpdateBatchDto } from './dto/batch.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from '@/common/enums';
 import { Public } from '@/common/decorators/public.decorator';
 import {
   ApiTags,
@@ -39,7 +39,7 @@ export class BatchController {
 
   @Post('courses/:courseId/batches')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Create a new batch for a course (Admin only)' })
   @ApiParam({
     name: 'courseId',
@@ -94,7 +94,7 @@ export class BatchController {
 
   @Patch('batches/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Update batch details (Admin only)' })
   @ApiParam({
     name: 'id',
@@ -116,7 +116,7 @@ export class BatchController {
 
   @Delete('batches/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Soft delete a batch (Admin only)' })
   @ApiParam({
     name: 'id',

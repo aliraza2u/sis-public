@@ -1,20 +1,16 @@
 import {
   Controller,
   Post,
-  Get,
   Body,
   HttpCode,
   HttpStatus,
   UseInterceptors,
   ClassSerializerInterceptor,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthService } from '@/modules/auth/auth.service';
-
 import { RefreshTokenDto } from '@/modules/auth/dto/refresh-token.dto';
-
 import { LoginRequestDto } from '@/modules/auth/dto/login.dto';
 import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
@@ -23,9 +19,6 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { UserEntity } from '@/modules/user/entities/user.entity';
 import { Public } from '@/common/decorators/public.decorator';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import { Roles } from '@/common/decorators/roles.decorator';
-import { RolesGuard } from '@/common/guards/roles.guard';
-import { UserRole } from '@/common/enums/roles.enum';
 import { UserAuthState } from '@/common/enums/auth-state.enum';
 
 @ApiTags('Auth')

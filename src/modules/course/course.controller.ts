@@ -13,11 +13,10 @@ import {
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { CourseEntity } from './entities/course.entity';
-// import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Public } from '@/common/decorators/public.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from '@/common/enums';
 
 @ApiTags('Courses')
 @Controller('courses')
@@ -27,7 +26,7 @@ export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Create a new course (Admin only)' })
   @ApiResponse({
     status: 201,
@@ -72,7 +71,7 @@ export class CourseController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Update course details (Admin only)' })
   @ApiParam({
     name: 'id',
@@ -93,7 +92,7 @@ export class CourseController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Soft delete a course (Admin only)' })
   @ApiParam({
     name: 'id',
