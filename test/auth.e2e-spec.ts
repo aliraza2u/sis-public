@@ -68,7 +68,7 @@ describe('AuthController (e2e)', () => {
         lastName: { en: testUser.lastName },
         phone: testUser.phone,
         tenantId: tenant.id,
-        role: 'applicant',
+        roles: ['student'],
         emailVerified: true, // Auto-verify for login tests
         isPasswordCreated: true,
       },

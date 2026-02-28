@@ -93,17 +93,23 @@ export class RawValueParser {
     if (!value || value === '') return null;
     if (Array.isArray(value)) return value;
 
-    const strValue = String(value);
+    const strValue = String(value).trim();
+    if (strValue === '') return null;
+
     try {
       const parsed = JSON.parse(strValue);
       return Array.isArray(parsed) ? parsed : null;
     } catch {
       // Fallback for comma-separated strings (common in CSV export)
       if (strValue.includes(',')) {
-        return strValue.split(',').map((item) => item.trim());
+        const items = strValue
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item.length > 0);
+        return items.length > 0 ? items : null;
       }
       // Single value fallback
-      return [strValue.trim()];
+      return [strValue];
     }
   }
 }

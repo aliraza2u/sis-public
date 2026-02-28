@@ -98,7 +98,7 @@ model User {
   lastName  Json    @default("{}") @map("last_name")
   phone     String? @db.VarChar(50)
 
-  roles UserRole[]
+  roles UserRole[] @default([])
 
   avatarUrl String? @map("avatar_url") @db.VarChar(500)
 

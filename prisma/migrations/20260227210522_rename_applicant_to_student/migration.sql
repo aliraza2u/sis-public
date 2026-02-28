@@ -9,7 +9,7 @@
 BEGIN;
 CREATE TYPE "UserRole_new" AS ENUM ('student', 'reviewer', 'admin', 'super_admin');
 
-ALTER TABLE "users" ADD COLUMN "roles" "UserRole_new"[];
+ALTER TABLE "users" ADD COLUMN "roles" "UserRole_new"[] NOT NULL DEFAULT '{}';
 
 UPDATE "users" 
 SET "roles" = ARRAY[
