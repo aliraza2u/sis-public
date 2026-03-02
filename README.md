@@ -75,14 +75,13 @@ If you prefer to run the application code locally (e.g., for debugging):
     ```
 
 5.  **Seed Database (Required for First Run)**
-    Initialize the database with default languages and the demo tenant:
+    Initialize the database with default languages:
 
     ```bash
-    npx ts-node src/scripts/seed-tenant.ts
+    npm run seed:languages
     ```
 
     - Creates default languages (`en`, `ar`).
-    - Creates a demo tenant: **Al-Mkki Ed-Tech** (Slug: `al-mkki`).
 
 6.  **Start Application**
     ```bash
