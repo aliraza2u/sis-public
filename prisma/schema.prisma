@@ -80,7 +80,7 @@ model Tenant {
 }
 
 enum UserRole {
-  applicant
+  student
   reviewer
   admin
   super_admin
@@ -98,7 +98,7 @@ model User {
   lastName  Json    @default("{}") @map("last_name")
   phone     String? @db.VarChar(50)
 
-  role UserRole
+  roles UserRole[] @default([])
 
   avatarUrl String? @map("avatar_url") @db.VarChar(500)
 
@@ -461,11 +461,11 @@ model LessonContent {
   moduleItemId String     @unique @map("module_item_id") @db.VarChar(50)
   moduleItem   ModuleItem @relation(fields: [moduleItemId], references: [id], onDelete: Cascade)
 
-  videoUrl     String? @map("video_url") @db.VarChar(500)
-  videoDurationSeconds Int? @map("video_duration_seconds")
-  title        Json?   @default("{}")
-  thumbnailUrl String? @map("thumbnail_url") @db.VarChar(500)
-  description  Json?   @default("{}")
+  videoUrl             String? @map("video_url") @db.VarChar(500)
+  videoDurationSeconds Int?    @map("video_duration_seconds")
+  title                Json?   @default("{}")
+  thumbnailUrl         String? @map("thumbnail_url") @db.VarChar(500)
+  description          Json?   @default("{}")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz

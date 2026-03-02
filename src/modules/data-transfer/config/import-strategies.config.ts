@@ -14,7 +14,7 @@ export const STRATEGY_CONFIGS: Record<
       prismaModel: 'tenant',
       fields: [
         { name: 'id', prismaField: 'id', type: FieldType.STRING, required: true },
-        { name: 'name', prismaField: 'name', type: FieldType.STRING, required: true },
+        { name: 'name', prismaField: 'name', type: FieldType.JSON, required: true },
         { name: 'slug', prismaField: 'slug', type: FieldType.STRING, required: true },
         { name: 'alias', prismaField: 'alias', type: FieldType.STRING },
         { name: 'logoUrl', prismaField: 'logoUrl', type: FieldType.STRING },
@@ -30,7 +30,7 @@ export const STRATEGY_CONFIGS: Record<
         { name: 'address', prismaField: 'address', type: FieldType.JSON },
         { name: 'website', prismaField: 'website', type: FieldType.STRING },
         { name: 'defaultLanguageCode', prismaField: 'defaultLanguageCode', type: FieldType.STRING },
-        { name: 'enabledLanguages', prismaField: 'enabledLanguages', type: FieldType.JSON }, // Array of strings
+        { name: 'enabledLanguages', prismaField: 'enabledLanguages', type: FieldType.ARRAY }, // Array of strings
         { name: 'timezone', prismaField: 'timezone', type: FieldType.STRING },
         { name: 'isActive', prismaField: 'isActive', type: FieldType.BOOLEAN, defaultValue: true },
         { name: 'settings', prismaField: 'settings', type: FieldType.JSON },
@@ -62,7 +62,13 @@ export const STRATEGY_CONFIGS: Record<
         { name: 'email', prismaField: 'email', type: FieldType.STRING, required: true },
         { name: 'firstName', prismaField: 'firstName', type: FieldType.JSON, required: true },
         { name: 'lastName', prismaField: 'lastName', type: FieldType.JSON, required: true },
-        { name: 'role', prismaField: 'role', type: FieldType.STRING, required: true },
+        {
+          name: 'roles',
+          prismaField: 'roles',
+          type: FieldType.ARRAY,
+          required: true,
+          mapper: { applicant: 'student' },
+        },
         { name: 'passwordHash', prismaField: 'passwordHash', type: FieldType.STRING },
         { name: 'phone', prismaField: 'phone', type: FieldType.STRING },
         { name: 'avatarUrl', prismaField: 'avatarUrl', type: FieldType.STRING },
@@ -103,7 +109,7 @@ export const STRATEGY_CONFIGS: Record<
       email: 'user@example.com',
       firstName: '{"en":"John","ar":"جون"}',
       lastName: '{"en":"Doe","ar":"دو"}',
-      role: 'applicant',
+      roles: '["student"]',
       isActive: 'true',
     },
   },
@@ -290,8 +296,8 @@ export const STRATEGY_CONFIGS: Record<
       primaryKeyField: 'code', // Custom PK
       fields: [
         { name: 'code', prismaField: 'code', type: FieldType.STRING, required: true },
-        { name: 'name', prismaField: 'name', type: FieldType.STRING, required: true },
-        { name: 'nativeName', prismaField: 'nativeName', type: FieldType.STRING, required: true },
+        { name: 'name', prismaField: 'nameEnglish', type: FieldType.STRING, required: true },
+        { name: 'nativeName', prismaField: 'nameNative', type: FieldType.STRING, required: true },
         {
           name: 'direction',
           prismaField: 'direction',

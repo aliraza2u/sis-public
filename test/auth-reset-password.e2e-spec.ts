@@ -54,7 +54,7 @@ describe('Auth Controller - Password Reset & Me (E2E)', () => {
         lastName: { en: testUser.lastName },
         phone: testUser.phone,
         tenantId: tenant!.id,
-        role: 'applicant',
+        roles: ['student'],
         emailVerified: true,
         isPasswordCreated: true,
       },

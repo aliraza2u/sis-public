@@ -4,7 +4,7 @@ import { CreateApplicationDto, UpdateApplicationStatusDto } from './dto/applicat
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from '@/common/enums';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { IpAddress } from '@/common/decorators/ip-address.decorator';
 import { UserAgent } from '@/common/decorators/user-agent.decorator';
@@ -31,8 +31,8 @@ export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
 
   @Post('batches/:batchId/apply')
-  @Roles(UserRole.APPLICANT)
-  @ApiOperation({ summary: 'Submit application to a batch (Applicants only)' })
+  @Roles(UserRole.student)
+  @ApiOperation({ summary: 'Submit application to a batch (Students only)' })
   @ApiParam({
     name: 'batchId',
     description: 'Unique identifier of the batch to apply to',
@@ -46,7 +46,7 @@ export class ApplicationController {
   @ApiBadRequestResponse({ description: 'Invalid data or enrollment window closed' })
   @ApiNotFoundResponse({ description: 'Batch not found' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
-  @ApiForbiddenResponse({ description: 'Requires applicant role' })
+  @ApiForbiddenResponse({ description: 'Requires student role' })
   apply(
     @Param('batchId') batchId: string,
     @Body() createDto: CreateApplicationDto,
@@ -57,7 +57,7 @@ export class ApplicationController {
   }
 
   @Get('applications')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.REVIEWER)
+  @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer)
   @ApiOperation({
     summary: 'List all applications with optional batch filter (Admin/Reviewer only)',
   })
@@ -98,7 +98,7 @@ export class ApplicationController {
   }
 
   @Patch('applications/:id/status')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.REVIEWER)
+  @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer)
   @ApiOperation({
     summary:
       'Update application status - auto-generates roll number on approval (Admin/Reviewer only)',

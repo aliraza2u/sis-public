@@ -73,7 +73,7 @@ describe('CourseController (e2e)', () => {
         lastName: { en: testUser.lastName },
         phone: testUser.phone,
         tenantId: tenant.id,
-        role: 'admin',
+        roles: ['admin'],
         emailVerified: true,
         isPasswordCreated: true,
       },

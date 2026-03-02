@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { UserRole } from '@/common/enums/roles.enum';
+import { UserRole } from '@/common/enums';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -20,11 +20,12 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
 
     // Check if user exists (handled by JwtAuthGuard usually, but safe to check)
-    if (!user) {
+    if (!user || (!user.role && !user.roles)) {
       return false;
     }
 
     // Role hierarchy checking could go here, but simple matching for now
-    return requiredRoles.some((role) => user.role === role);
+    const userRoles = user.roles || (user.role ? [user.role] : []);
+    return requiredRoles.some((role) => userRoles.includes(role as any));
   }
 }

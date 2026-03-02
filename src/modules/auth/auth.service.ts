@@ -268,7 +268,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       tenantId: user.tenantId,
-      role: user.role,
+      roles: user.roles,
       jti: this.tokenService.generate(), // Use tokenService which wraps nanoid/uuid
     };
 

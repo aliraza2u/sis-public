@@ -75,7 +75,7 @@ describe('RBAC (e2e)', () => {
   let accessToken: string;
   let userId: string;
 
-  it('1. Seed user (default role: applicant)', async () => {
+  it('1. Seed user (default role: student)', async () => {
     const tenant = await prismaService.tenant.findFirst();
     const hashedPassword = await import('bcrypt').then((m) => m.hash(testUser.password, 10));
 
@@ -87,7 +87,7 @@ describe('RBAC (e2e)', () => {
         lastName: { en: testUser.lastName },
         phone: testUser.phone,
         tenantId: tenant!.id,
-        role: 'applicant',
+        roles: ['student'],
         emailVerified: true,
         isPasswordCreated: true,
       },
@@ -105,7 +105,7 @@ describe('RBAC (e2e)', () => {
     accessToken = response.body.data.access_token;
   });
 
-  it('3. Access admin-only endpoint as applicant -> 403 Forbidden', async () => {
+  it('3. Access admin-only endpoint as student -> 403 Forbidden', async () => {
     await request(app.getHttpServer())
       .get('/api/applications')
       .set('Authorization', `Bearer ${accessToken}`)
@@ -115,7 +115,7 @@ describe('RBAC (e2e)', () => {
   it('4. Promote user to admin', async () => {
     await prismaService.user.update({
       where: { id: userId },
-      data: { role: 'admin' },
+      data: { roles: ['admin'] },
     });
   });
 

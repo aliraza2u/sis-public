@@ -19,6 +19,7 @@ export interface FieldConfig {
   type: FieldType;
   required?: boolean;
   defaultValue?: unknown;
+  mapper?: Record<string, unknown>;
 }
 
 export interface StrategyConfig {
@@ -208,6 +209,16 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
     // JSON fields: use 'undefined' for empty to preserve Prisma defaults
     if (field.type === FieldType.JSON && !value) {
       return undefined;
+    }
+
+    // Apply mapper if available
+    if (field.mapper) {
+      if (Array.isArray(value)) {
+        // Map each element and deduplicate
+        const mappedArray = value.map((v) => (field.mapper![String(v)] as any) ?? v);
+        return [...new Set(mappedArray)];
+      }
+      return (field.mapper[String(value)] as any) ?? value;
     }
 
     return value;

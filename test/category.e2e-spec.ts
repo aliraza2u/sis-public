@@ -77,7 +77,7 @@ describe('CategoryController (e2e)', () => {
         lastName: { en: adminUser.lastName },
         phone: adminUser.phone,
         tenantId: tenant.id,
-        role: 'admin',
+        roles: ['admin'],
         emailVerified: true,
         isPasswordCreated: true,
       },
