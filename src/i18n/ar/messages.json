@@ -61,7 +61,10 @@
     "enrollmentClosed": "فترة التسجيل مغلقة"
   },
   "course": {
-    "notFound": "الدورة غير موجودة"
+    "notFound": "الدورة غير موجودة",
+    "introVideoFileRequired": "ملف الفيديو التعريفي مطلوب عندما يكون المصدر 'تحميل'",
+    "introVideoLinkRequired": "رابط الفيديو التعريفي مطلوب عندما يكون المصدر 'رابط'",
+    "invalidIntroVideoSource": "مصدر الفيديو التعريفي غير صالح. يجب أن يكون 'تحميل' أو 'رابط'"
   },
   "category": {
     "notFound": "الفئة غير موجودة",
