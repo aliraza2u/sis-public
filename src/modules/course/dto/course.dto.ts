@@ -3,19 +3,16 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsNumber,
   IsString,
   IsObject,
   IsArray,
   ValidateNested,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  PrerequisiteDto,
-  LearningOutcomeDto,
-  SyllabusDto,
-  RequiredDocumentDto,
-} from './course-fields.dto';
+import { PrerequisiteDto, LearningOutcomeDto, RequiredDocumentDto } from './course-fields.dto';
+import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
 
 export class CreateCourseDto {
   @ApiProperty({
@@ -24,7 +21,12 @@ export class CreateCourseDto {
   })
   @IsNotEmpty()
   @IsObject()
-  title: any;
+  title: LocalizedStringDto;
+
+  @ApiProperty({ description: 'Course Code / Identifier', example: 'QRN101' })
+  @IsNotEmpty()
+  @IsString()
+  code: string;
 
   @ApiProperty({
     description: 'The detailed description (multilingual)',
@@ -33,7 +35,7 @@ export class CreateCourseDto {
   })
   @IsOptional()
   @IsObject()
-  description?: any;
+  description?: LocalizedStringDto;
 
   @ApiProperty({
     description: 'Short description for cards (multilingual)',
@@ -42,16 +44,53 @@ export class CreateCourseDto {
   })
   @IsOptional()
   @IsObject()
-  shortDescription?: any;
+  shortDescription?: LocalizedStringDto;
 
   @ApiProperty({
-    description: 'Thumbnail URL',
+    description: 'Intro video URL (required if introVideoSource is "link")',
     required: false,
-    example: 'https://example.com/image.jpg',
+    example: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
   })
   @IsOptional()
   @IsString()
-  thumbnailUrl?: string;
+  introVideoUrl?: string;
+
+  @ApiProperty({
+    description: 'Intro video source type (upload or link)',
+    required: false,
+    enum: ['upload', 'link'],
+    example: 'link',
+  })
+  @IsOptional()
+  @IsString()
+  introVideoSource?: string;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    description: 'Course thumbnail image',
+  })
+  @IsOptional()
+  thumbnailFile?: Express.Multer.File;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    description: 'Course banner image',
+  })
+  @IsOptional()
+  bannerFile?: Express.Multer.File;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    description: 'Course intro video file',
+  })
+  @IsOptional()
+  introVideoFile?: Express.Multer.File;
 
   @ApiProperty({ description: 'Category ID', required: false, example: 'CAT-123e4567' })
   @IsOptional()
@@ -67,6 +106,25 @@ export class CreateCourseDto {
   @IsOptional()
   @IsInt()
   durationWeeks?: number;
+
+  @ApiProperty({ description: 'Estimated hours', required: false, example: 40 })
+  @IsOptional()
+  @IsInt()
+  estimatedHours?: number;
+
+  @ApiProperty({ description: 'Passing score (0-100)', required: false, example: 60 })
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  passingScore?: number;
+
+  @ApiProperty({
+    description: 'Enable certificate for this course',
+    required: false,
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  certificateEnabled?: boolean;
 
   @ApiProperty({
     description: 'Prerequisites - Array of prerequisite requirements',
@@ -97,34 +155,6 @@ export class CreateCourseDto {
   @ValidateNested({ each: true })
   @Type(() => LearningOutcomeDto)
   learningOutcomes?: LearningOutcomeDto[];
-
-  @ApiProperty({
-    description: 'Syllabus structure with modules and topics',
-    required: false,
-    type: SyllabusDto,
-    example: {
-      modules: [
-        {
-          title: { en: 'Introduction to Tajweed', ar: 'مقدمة في التجويد' },
-          description: { en: 'Learn basic concepts', ar: 'تعلم المفاهيم الأساسية' },
-          order: 1,
-          topics: [
-            { en: 'Arabic letters', ar: 'الحروف العربية' },
-            { en: 'Pronunciation basics', ar: 'أساسيات النطق' },
-          ],
-        },
-      ],
-    },
-  })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => SyllabusDto)
-  syllabus?: SyllabusDto;
-
-  @ApiProperty({ description: 'Course Code / Identifier', required: false, example: 'QRN101' })
-  @IsOptional()
-  @IsString()
-  code?: string;
 
   @ApiProperty({
     description: 'Required documents for admission',
@@ -159,10 +189,15 @@ export class CreateCourseDto {
   @IsBoolean()
   isFeatured?: boolean;
 
+  @ApiProperty({ description: 'Is the course active?', required: false, example: true })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+
   @ApiProperty({ description: 'Sort order', required: false, example: 1 })
   @IsOptional()
   @IsInt()
   sortOrder?: number;
 }
 
-export class UpdateCourseDto extends CreateCourseDto {}
+export class UpdateCourseDto extends PartialType(CreateCourseDto) {}

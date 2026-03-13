@@ -1,3 +1,4 @@
+import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
@@ -8,7 +9,7 @@ export class CreateCategoryDto {
   })
   @IsNotEmpty()
   @IsObject()
-  name: any;
+  name: LocalizedStringDto;
 
   @ApiProperty({
     description: 'URL-friendly slug',

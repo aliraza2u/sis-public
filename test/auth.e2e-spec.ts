@@ -95,7 +95,7 @@ describe('AuthController (e2e)', () => {
     phone: '+1234567890',
   };
 
-  let params: { access_token?: string; refresh_token?: string } = {};
+  const params: { access_token?: string; refresh_token?: string } = {};
 
   it('/auth/login (POST)', async () => {
     const response = await request(app.getHttpServer())

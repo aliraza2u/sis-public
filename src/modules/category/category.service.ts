@@ -4,6 +4,8 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CategoryEntity } from './entities/category.entity';
 import { ClsService } from 'nestjs-cls';
 import { I18nNotFoundException, I18nConflictException } from '@/common/exceptions/i18n.exception';
+import { Prisma, type Category as PrismaCategory } from '@/infrastructure/prisma/client/client';
+import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
 
 @Injectable()
 export class CategoryService {
@@ -12,16 +14,20 @@ export class CategoryService {
     private readonly cls: ClsService,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto) {
-    const tenantId = this.cls.get('tenantId');
+  private toCategoryEntity(category: PrismaCategory): CategoryEntity {
+    return new CategoryEntity({
+      ...category,
+      name: category.name as LocalizedStringDto,
+      description: (category.description ?? null) as LocalizedStringDto,
+    });
+  }
 
+  async create(createCategoryDto: CreateCategoryDto) {
     // Check for duplicate slug within tenant
-    const existing = await this.prisma.category.findUnique({
+    // findFirst is automatically scoped to the current tenant by the multi-tenant extension
+    const existing = await this.prisma.category.findFirst({
       where: {
-        tenantId_slug: {
-          tenantId,
-          slug: createCategoryDto.slug,
-        },
+        slug: createCategoryDto.slug,
       },
     });
 
@@ -30,22 +36,17 @@ export class CategoryService {
     }
 
     const category = await this.prisma.category.create({
-      data: {
-        ...createCategoryDto,
-        tenantId,
-      },
+      data: createCategoryDto as unknown as Prisma.CategoryUncheckedCreateInput,
     });
 
-    return new CategoryEntity(category);
+    return this.toCategoryEntity(category);
   }
 
   async findAll() {
-    const tenantId = this.cls.get('tenantId');
     const categories = await this.prisma.category.findMany({
-      where: { tenantId },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
     });
-    return categories.map((cat) => new CategoryEntity(cat));
+    return categories.map((cat) => this.toCategoryEntity(cat));
   }
 
   async findOne(id: string) {
@@ -57,7 +58,7 @@ export class CategoryService {
       throw new I18nNotFoundException('messages.category.notFound');
     }
 
-    return new CategoryEntity(category);
+    return this.toCategoryEntity(category);
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
@@ -65,10 +66,8 @@ export class CategoryService {
 
     // Check for slug conflict if slug is being updated
     if (updateCategoryDto.slug) {
-      const tenantId = this.cls.get('tenantId');
       const existing = await this.prisma.category.findFirst({
         where: {
-          tenantId,
           slug: updateCategoryDto.slug,
           NOT: { id },
         },
@@ -84,7 +83,7 @@ export class CategoryService {
       data: updateCategoryDto,
     });
 
-    return new CategoryEntity(updatedCategory);
+    return this.toCategoryEntity(updatedCategory);
   }
 
   async remove(id: string) {

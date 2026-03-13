@@ -61,7 +61,10 @@
     "enrollmentClosed": "Enrollment window is closed"
   },
   "course": {
-    "notFound": "Course not found"
+    "notFound": "Course not found",
+    "introVideoFileRequired": "Intro video file is required when source is 'upload'",
+    "introVideoLinkRequired": "Intro video link is required when source is 'link'",
+    "invalidIntroVideoSource": "Invalid intro video source. Must be 'upload' or 'link'"
   },
   "category": {
     "notFound": "Category not found",

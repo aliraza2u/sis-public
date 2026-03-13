@@ -27,8 +27,6 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { UserModule } from './modules/user/user.module';
 import { CourseModule } from './modules/course/course.module';
 import { CategoryModule } from './modules/category/category.module';
-import { BatchModule } from './modules/batch/batch.module';
-import { ApplicationModule } from './modules/application/application.module';
 import { CommonModule } from './common/common.module';
 import { ClsModule } from 'nestjs-cls';
 import { UserContextInterceptor } from './common/interceptors/user-context.interceptor';
@@ -99,10 +97,8 @@ import { SYSTEM_ROUTES } from './common/constants/routes';
     PrismaModule,
     AuthModule,
     UserModule,
-    CourseModule,
     CategoryModule,
-    BatchModule,
-    ApplicationModule,
+    CourseModule,
     CommonModule,
     QueueModule,
     DataTransferModule,

@@ -193,6 +193,9 @@ model Course {
   description      Json?   @default("{}")
   shortDescription Json?   @default("{}") @map("short_description")
   thumbnailUrl     String? @map("thumbnail_url") @db.VarChar(500)
+  bannerUrl        String? @map("banner_url") @db.VarChar(500)
+  introVideoUrl    String? @map("intro_video_url") @db.VarChar(500)
+  introVideoSource String? @map("intro_video_source") @db.VarChar(20) // 'upload' or 'link'
 
   categoryId String?   @map("category_id") @db.VarChar(50)
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -203,12 +206,16 @@ model Course {
 
   requiredDocuments Json? @default("[]") @map("required_documents")
 
-  isPublished Boolean @default(false) @map("is_published")
-  isFeatured  Boolean @default(false) @map("is_featured")
-  isActive    Boolean @default(true) @map("is_active")
-  sortOrder   Int     @default(0) @map("sort_order")
+  durationWeeks      Int?     @map("duration_weeks")
+  estimatedHours     Int?     @map("estimated_hours")
+  passingScore       Decimal? @default(60.00) @map("passing_score") @db.Decimal(5, 2)
+  certificateEnabled Boolean  @default(true) @map("certificate_enabled")
+  isPublished        Boolean  @default(false) @map("is_published")
+  isFeatured         Boolean  @default(false) @map("is_featured")
+  isActive           Boolean  @default(true) @map("is_active")
+  sortOrder          Int      @default(0) @map("sort_order")
 
-  code String? @db.VarChar(10) // e.g. "SD"
+  code String @db.VarChar(10) // e.g. "SD"
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
