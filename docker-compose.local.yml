@@ -5,8 +5,8 @@ services:
     build: .
     ports:
       - "${APP_PORT:-3000}:${APP_PORT:-3000}"
-    env_file: .env
     environment:
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-sis_db}?schema=public
       - NODE_ENV=${NODE_ENV:-development}
       - APP_PORT=${APP_PORT:-3000}
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
@@ -31,8 +31,37 @@ services:
       - DATA_TRANSFER_BATCH_SIZE=${DATA_TRANSFER_BATCH_SIZE:-50}
       - DATA_TRANSFER_TEMP_FILE_MAX_AGE=${DATA_TRANSFER_TEMP_FILE_MAX_AGE:-86400000}
     command: /bin/sh -c "npx prisma migrate deploy && node dist/scripts/seed-languages.js && node dist/main"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - sis-network
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-sis_db}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-sis_db}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sis-network
+
+volumes:
+  postgres_data:
 
 networks:
   sis-network:

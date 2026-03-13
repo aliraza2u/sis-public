@@ -1,18 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { join } from 'path';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
   // Security
   app.enableCors();
   app.use(helmet());
+
+  // Static Assets
+  const uploadDir = configService.get<string>('upload.uploadDir') || './uploads';
+  app.useStaticAssets(join(process.cwd(), uploadDir), {
+    prefix: '/uploads',
+  });
 
   // Global Prefix & Versioning
   const prefix = configService.get<string>('app.prefix') ?? 'api';

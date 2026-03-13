@@ -27,7 +27,7 @@ import {
 } from '@nestjs/swagger';
 import { CourseEntity } from './entities/course.entity';
 import { RolesGuard } from '@/common/guards/roles.guard';
-import { ParseFormDataJsonPipe } from '@/common/pipes/parse-form-data-json.pipe';
+import { ParseFormDataJsonInterceptor } from '@/common/interceptors/parse-form-data-json.interceptor';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Public } from '@/common/decorators/public.decorator';
 import { UserRole } from '@/common/enums';
@@ -51,6 +51,7 @@ export class CourseController {
       { name: 'bannerFile', maxCount: 1 },
       { name: 'introVideoFile', maxCount: 1 },
     ]),
+    ParseFormDataJsonInterceptor,
   )
   @ApiResponse({
     status: 201,
@@ -62,7 +63,7 @@ export class CourseController {
   @ApiForbiddenResponse({ description: 'Requires admin or super_admin role' })
   create(
     @CurrentUser() user: User,
-    @Body(new ParseFormDataJsonPipe()) createCourseDto: CreateCourseDto,
+    @Body() createCourseDto: CreateCourseDto,
     @UploadedFiles()
     files: {
       thumbnailFile?: Express.Multer.File[];
@@ -117,6 +118,7 @@ export class CourseController {
       { name: 'bannerFile', maxCount: 1 },
       { name: 'introVideoFile', maxCount: 1 },
     ]),
+    ParseFormDataJsonInterceptor,
   )
   @ApiParam({
     name: 'id',
@@ -135,7 +137,7 @@ export class CourseController {
   update(
     @CurrentUser() user: User,
     @Param('id') id: string,
-    @Body(new ParseFormDataJsonPipe()) updateCourseDto: UpdateCourseDto,
+    @Body() updateCourseDto: UpdateCourseDto,
     @UploadedFiles()
     files: {
       thumbnailFile?: Express.Multer.File[];
