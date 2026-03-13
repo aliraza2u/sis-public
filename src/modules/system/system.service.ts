@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { CsvParserService } from '@/modules/data-transfer/services/csv-parser.service';
@@ -46,7 +46,17 @@ export class SystemService {
     }
 
     // 3. Parse CSV
-    const { rows, totalRows } = await this.csvParser.parseBuffer(file.buffer);
+    let rows: any[];
+    let totalRows: number;
+
+    try {
+      const result = await this.csvParser.parseBuffer(file.buffer);
+      rows = result.rows;
+      totalRows = result.totalRows;
+    } catch (error: any) {
+      this.logger.error(`CSV parsing failed: ${error.message}`);
+      throw new BadRequestException(error.message);
+    }
 
     if (totalRows === 0) {
       throw new I18nBadRequestException('dataTransfer.emptyFile');

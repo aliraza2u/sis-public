@@ -1,11 +1,11 @@
 import { BaseSoftDeleteEntity } from '@/common/entities/base.entity';
-import { Category, Tenant, Course } from '@/infrastructure/prisma/client/client';
+import { Tenant, Course } from '@/infrastructure/prisma/client/client';
 import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
 
-export class CategoryEntity extends BaseSoftDeleteEntity implements Category {
-  constructor(partial: Partial<CategoryEntity> | any) {
+export class CategoryEntity extends BaseSoftDeleteEntity {
+  constructor(partial: Partial<CategoryEntity>) {
     super();
     Object.assign(this, partial);
   }

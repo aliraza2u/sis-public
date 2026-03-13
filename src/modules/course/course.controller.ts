@@ -17,6 +17,8 @@ import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Public } from '@/common/decorators/public.decorator';
 import { UserRole } from '@/common/enums';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { User } from '@/infrastructure/prisma/client/client';
 
 @ApiTags('Courses')
 @Controller('courses')
@@ -36,8 +38,8 @@ export class CourseController {
   @ApiBadRequestResponse({ description: 'Invalid course data' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Requires admin or super_admin role' })
-  create(@Body() createCourseDto: CreateCourseDto) {
-    return this.courseService.create(createCourseDto);
+  create(@CurrentUser() user: User, @Body() createCourseDto: CreateCourseDto) {
+    return this.courseService.create(user.id, createCourseDto);
   }
 
   @Get()
@@ -87,8 +89,12 @@ export class CourseController {
   @ApiNotFoundResponse({ description: 'Course not found' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Requires admin or super_admin role' })
-  update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
-    return this.courseService.update(id, updateCourseDto);
+  update(
+    @CurrentUser() user: User,
+    @Param('id') id: string,
+    @Body() updateCourseDto: UpdateCourseDto,
+  ) {
+    return this.courseService.update(user.id, id, updateCourseDto);
   }
 
   @Delete(':id')

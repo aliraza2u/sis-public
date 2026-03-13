@@ -27,7 +27,7 @@ export class RawValueParser {
    */
   static parseJson(value: unknown): object | null {
     if (!value || value === '') return null;
-    if (typeof value === 'object') return value as object;
+    if (typeof value === 'object') return value;
 
     try {
       return JSON.parse(String(value));

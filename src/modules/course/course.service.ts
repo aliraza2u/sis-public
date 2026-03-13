@@ -1,10 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { CreateCourseDto, UpdateCourseDto } from './dto/course.dto';
 import { CourseEntity } from './entities/course.entity';
+import { CategoryEntity } from '@/modules/category/entities/category.entity';
 import { I18nService } from 'nestjs-i18n';
 import { ClsService } from 'nestjs-cls';
 import { I18nNotFoundException } from '@/common/exceptions/i18n.exception';
+import type {
+  Category as PrismaCategory,
+  Course as PrismaCourse,
+  Prisma,
+} from '@/infrastructure/prisma/client/client';
+import type { LocalizedStringDto } from '@/common/dto/localized-string.dto';
+import type {
+  LearningOutcomeDto,
+  PrerequisiteDto,
+  RequiredDocumentDto,
+} from './dto/course-fields.dto';
 
 @Injectable()
 export class CourseService {
@@ -14,19 +26,53 @@ export class CourseService {
     private readonly i18n: I18nService,
   ) {}
 
-  async create(createCourseDto: CreateCourseDto) {
-    const tenantId = this.cls.get('tenantId');
+  private asLocalized(value: unknown): LocalizedStringDto {
+    return value as LocalizedStringDto;
+  }
+
+  private asNullableLocalized(value: unknown): LocalizedStringDto | null {
+    return (value ?? null) as LocalizedStringDto | null;
+  }
+
+  private asNullableArray<T>(value: unknown): T[] | null {
+    return (value ?? null) as T[] | null;
+  }
+
+  private toCourseEntity(
+    course: PrismaCourse & { category?: PrismaCategory | null },
+  ): CourseEntity {
+    return new CourseEntity({
+      ...course,
+      category: course.category
+        ? new CategoryEntity({
+            ...course.category,
+            name: this.asLocalized(course.category.name),
+            description: this.asNullableLocalized(course.category.description),
+          })
+        : null,
+      title: this.asLocalized(course.title),
+      description: this.asNullableLocalized(course.description),
+      shortDescription: this.asNullableLocalized(course.shortDescription),
+      prerequisites: this.asNullableArray<PrerequisiteDto>(course.prerequisites),
+      learningOutcomes: this.asNullableArray<LearningOutcomeDto>(course.learningOutcomes),
+      requiredDocuments: this.asNullableArray<RequiredDocumentDto>(course.requiredDocuments),
+      passingScore: course.passingScore ? Number(course.passingScore) : null,
+    });
+  }
+
+  async create(userId: string, createCourseDto: CreateCourseDto) {
     const course = await this.prisma.course.create({
       data: {
         ...createCourseDto,
-        tenantId,
+        createdBy: userId,
+        updatedBy: userId,
         // Cast JSON fields to any for Prisma compatibility
-        prerequisites: createCourseDto.prerequisites as any,
-        learningOutcomes: createCourseDto.learningOutcomes as any,
-        requiredDocuments: createCourseDto.requiredDocuments as any,
-      },
+        prerequisites: createCourseDto.prerequisites as unknown as Prisma.InputJsonValue,
+        learningOutcomes: createCourseDto.learningOutcomes as unknown as Prisma.InputJsonValue,
+        requiredDocuments: createCourseDto.requiredDocuments as unknown as Prisma.InputJsonValue,
+      } as unknown as Prisma.CourseUncheckedCreateInput,
     });
-    return new CourseEntity(course);
+    return this.toCourseEntity(course);
   }
 
   async findAll() {
@@ -34,11 +80,11 @@ export class CourseService {
       include: { category: true },
       orderBy: { createdAt: 'desc' },
     });
-    return courses.map((course) => new CourseEntity(course));
+    return courses.map((course) => this.toCourseEntity(course));
   }
 
   async findOne(id: string) {
-    const course = await this.prisma.course.findUnique({
+    const course = await this.prisma.course.findFirst({
       where: { id },
       include: { category: true },
     });
@@ -47,10 +93,10 @@ export class CourseService {
       throw new I18nNotFoundException('messages.course.notFound');
     }
 
-    return new CourseEntity(course);
+    return this.toCourseEntity(course);
   }
 
-  async update(id: string, updateCourseDto: UpdateCourseDto) {
+  async update(userId: string, id: string, updateCourseDto: UpdateCourseDto) {
     // Check if exists
     await this.findOne(id);
 
@@ -58,14 +104,15 @@ export class CourseService {
       where: { id },
       data: {
         ...updateCourseDto,
+        updatedBy: userId,
         // Cast JSON fields to any for Prisma compatibility
-        prerequisites: updateCourseDto.prerequisites as any,
-        learningOutcomes: updateCourseDto.learningOutcomes as any,
-        requiredDocuments: updateCourseDto.requiredDocuments as any,
+        prerequisites: updateCourseDto.prerequisites as unknown as Prisma.InputJsonValue,
+        learningOutcomes: updateCourseDto.learningOutcomes as unknown as Prisma.InputJsonValue,
+        requiredDocuments: updateCourseDto.requiredDocuments as unknown as Prisma.InputJsonValue,
       },
     });
 
-    return new CourseEntity(updatedCourse);
+    return this.toCourseEntity(updatedCourse);
   }
 
   async remove(id: string) {

@@ -1,12 +1,13 @@
 import { BaseSoftDeleteEntity } from '@/common/entities/base.entity';
-import { Course, Tenant, User } from '@/infrastructure/prisma/client/client';
+import { Tenant, User } from '@/infrastructure/prisma/client/client';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
 import { CategoryEntity } from '@/modules/category/entities/category.entity';
+import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
+import { LearningOutcomeDto, PrerequisiteDto, RequiredDocumentDto } from '../dto/course-fields.dto';
 
-export class CourseEntity extends BaseSoftDeleteEntity implements Course {
-  constructor(partial: Partial<CourseEntity> | any) {
+export class CourseEntity extends BaseSoftDeleteEntity {
+  constructor(partial: Partial<CourseEntity>) {
     super();
     Object.assign(this, partial);
   }
@@ -52,6 +53,14 @@ export class CourseEntity extends BaseSoftDeleteEntity implements Course {
   @Expose()
   thumbnailUrl: string | null;
 
+  @ApiProperty({ description: 'Banner URL', required: false })
+  @Expose()
+  bannerUrl: string | null;
+
+  @ApiProperty({ description: 'Intro video URL', required: false })
+  @Expose()
+  introVideoUrl: string | null;
+
   @ApiProperty({ description: 'Category ID', required: false })
   @Expose()
   categoryId: string | null;
@@ -69,25 +78,33 @@ export class CourseEntity extends BaseSoftDeleteEntity implements Course {
   @Expose()
   durationWeeks: number | null;
 
+  @ApiProperty({ description: 'Estimated hours', required: false, example: 40 })
+  @Expose()
+  estimatedHours: number | null;
+
+  @ApiProperty({ description: 'Passing score (0-100)', required: false, example: 60 })
+  @Expose()
+  passingScore: number | null;
+
+  @ApiProperty({ description: 'Certificate enabled', example: true })
+  @Expose()
+  certificateEnabled: boolean;
+
   @ApiProperty({ description: 'Prerequisites for the course (multilingual)', required: false })
   @Expose()
-  prerequisites: any;
+  prerequisites: PrerequisiteDto[] | null;
 
   @ApiProperty({ description: 'Learning outcomes (multilingual)', required: false })
   @Expose()
-  learningOutcomes: any;
-
-  @ApiProperty({ description: 'Syllabus structure (multilingual)', required: false })
-  @Expose()
-  syllabus: any;
+  learningOutcomes: LearningOutcomeDto[] | null;
 
   @ApiProperty({ description: 'Course Code / Identifier', required: false, example: 'CS101' })
   @Expose()
-  code: string | null;
+  code: string;
 
   @ApiProperty({ description: 'Required documents for admission', required: false })
   @Expose()
-  requiredDocuments: any;
+  requiredDocuments: RequiredDocumentDto[] | null;
 
   @ApiProperty({ description: 'Is the course published?', example: true })
   @Expose()
