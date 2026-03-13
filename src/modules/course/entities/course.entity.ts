@@ -61,6 +61,15 @@ export class CourseEntity extends BaseSoftDeleteEntity {
   @Expose()
   introVideoUrl: string | null;
 
+  @ApiProperty({
+    description: 'Intro video source type (upload or link)',
+    required: false,
+    enum: ['upload', 'link'],
+    example: 'link',
+  })
+  @Expose()
+  introVideoSource: string | null;
+
   @ApiProperty({ description: 'Category ID', required: false })
   @Expose()
   categoryId: string | null;

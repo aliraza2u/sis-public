@@ -47,31 +47,50 @@ export class CreateCourseDto {
   shortDescription?: LocalizedStringDto;
 
   @ApiProperty({
-    description: 'Thumbnail URL',
+    description: 'Intro video URL (required if introVideoSource is "link")',
     required: false,
-    example: 'https://example.com/image.jpg',
-  })
-  @IsOptional()
-  @IsString()
-  thumbnailUrl?: string;
-
-  @ApiProperty({
-    description: 'Banner URL',
-    required: false,
-    example: 'https://example.com/banner.jpg',
-  })
-  @IsOptional()
-  @IsString()
-  bannerUrl?: string;
-
-  @ApiProperty({
-    description: 'Intro video URL',
-    required: false,
-    example: 'https://example.com/intro.mp4',
+    example: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
   })
   @IsOptional()
   @IsString()
   introVideoUrl?: string;
+
+  @ApiProperty({
+    description: 'Intro video source type (upload or link)',
+    required: false,
+    enum: ['upload', 'link'],
+    example: 'link',
+  })
+  @IsOptional()
+  @IsString()
+  introVideoSource?: string;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    description: 'Course thumbnail image',
+  })
+  @IsOptional()
+  thumbnailFile?: Express.Multer.File;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    description: 'Course banner image',
+  })
+  @IsOptional()
+  bannerFile?: Express.Multer.File;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    description: 'Course intro video file',
+  })
+  @IsOptional()
+  introVideoFile?: Express.Multer.File;
 
   @ApiProperty({ description: 'Category ID', required: false, example: 'CAT-123e4567' })
   @IsOptional()

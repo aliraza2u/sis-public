@@ -195,6 +195,7 @@ model Course {
   thumbnailUrl     String? @map("thumbnail_url") @db.VarChar(500)
   bannerUrl        String? @map("banner_url") @db.VarChar(500)
   introVideoUrl    String? @map("intro_video_url") @db.VarChar(500)
+  introVideoSource String? @map("intro_video_source") @db.VarChar(20) // 'upload' or 'link'
 
   categoryId String?   @map("category_id") @db.VarChar(50)
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)

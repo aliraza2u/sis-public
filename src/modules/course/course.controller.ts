@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFiles,
+} from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CourseService } from './course.service';
 import { CreateCourseDto, UpdateCourseDto } from './dto/course.dto';
 import {
@@ -11,9 +23,11 @@ import {
   ApiNotFoundResponse,
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { CourseEntity } from './entities/course.entity';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { ParseFormDataJsonPipe } from '@/common/pipes/parse-form-data-json.pipe';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Public } from '@/common/decorators/public.decorator';
 import { UserRole } from '@/common/enums';
@@ -30,6 +44,14 @@ export class CourseController {
   @Post()
   @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Create a new course (Admin only)' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'thumbnailFile', maxCount: 1 },
+      { name: 'bannerFile', maxCount: 1 },
+      { name: 'introVideoFile', maxCount: 1 },
+    ]),
+  )
   @ApiResponse({
     status: 201,
     description: 'Course created successfully',
@@ -38,8 +60,21 @@ export class CourseController {
   @ApiBadRequestResponse({ description: 'Invalid course data' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Requires admin or super_admin role' })
-  create(@CurrentUser() user: User, @Body() createCourseDto: CreateCourseDto) {
-    return this.courseService.create(user.id, createCourseDto);
+  create(
+    @CurrentUser() user: User,
+    @Body(new ParseFormDataJsonPipe()) createCourseDto: CreateCourseDto,
+    @UploadedFiles()
+    files: {
+      thumbnailFile?: Express.Multer.File[];
+      bannerFile?: Express.Multer.File[];
+      introVideoFile?: Express.Multer.File[];
+    },
+  ) {
+    return this.courseService.create(user.id, createCourseDto, {
+      thumbnailFile: files?.thumbnailFile?.[0],
+      bannerFile: files?.bannerFile?.[0],
+      introVideoFile: files?.introVideoFile?.[0],
+    });
   }
 
   @Get()
@@ -75,6 +110,14 @@ export class CourseController {
   @Patch(':id')
   @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Update course details (Admin only)' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'thumbnailFile', maxCount: 1 },
+      { name: 'bannerFile', maxCount: 1 },
+      { name: 'introVideoFile', maxCount: 1 },
+    ]),
+  )
   @ApiParam({
     name: 'id',
     description: 'Course ID',
@@ -92,9 +135,19 @@ export class CourseController {
   update(
     @CurrentUser() user: User,
     @Param('id') id: string,
-    @Body() updateCourseDto: UpdateCourseDto,
+    @Body(new ParseFormDataJsonPipe()) updateCourseDto: UpdateCourseDto,
+    @UploadedFiles()
+    files: {
+      thumbnailFile?: Express.Multer.File[];
+      bannerFile?: Express.Multer.File[];
+      introVideoFile?: Express.Multer.File[];
+    },
   ) {
-    return this.courseService.update(user.id, id, updateCourseDto);
+    return this.courseService.update(user.id, id, updateCourseDto, {
+      thumbnailFile: files?.thumbnailFile?.[0],
+      bannerFile: files?.bannerFile?.[0],
+      introVideoFile: files?.introVideoFile?.[0],
+    });
   }
 
   @Delete(':id')

@@ -5,7 +5,8 @@ import { CourseEntity } from './entities/course.entity';
 import { CategoryEntity } from '@/modules/category/entities/category.entity';
 import { I18nService } from 'nestjs-i18n';
 import { ClsService } from 'nestjs-cls';
-import { I18nNotFoundException } from '@/common/exceptions/i18n.exception';
+import { I18nNotFoundException, I18nBadRequestException } from '@/common/exceptions/i18n.exception';
+import { FileStorageService } from '@/common/services/file-storage.service';
 import type {
   Category as PrismaCategory,
   Course as PrismaCourse,
@@ -24,6 +25,7 @@ export class CourseService {
     private readonly prisma: PrismaService,
     private readonly cls: ClsService,
     private readonly i18n: I18nService,
+    private readonly fileStorage: FileStorageService,
   ) {}
 
   private asLocalized(value: unknown): LocalizedStringDto {
@@ -60,16 +62,62 @@ export class CourseService {
     });
   }
 
-  async create(userId: string, createCourseDto: CreateCourseDto) {
+  async create(
+    userId: string,
+    createCourseDto: CreateCourseDto,
+    files?: {
+      thumbnailFile?: Express.Multer.File;
+      bannerFile?: Express.Multer.File;
+      introVideoFile?: Express.Multer.File;
+    },
+  ) {
+    const { introVideoSource, ...dto } = createCourseDto;
+    let { introVideoUrl } = dto;
+    let thumbnailUrl: string | undefined;
+    let bannerUrl: string | undefined;
+
+    // Handle Image Uploads
+    if (files?.thumbnailFile) {
+      const { fileUrl } = await this.fileStorage.saveFile(
+        files.thumbnailFile,
+        'courses/thumbnails',
+      );
+      thumbnailUrl = fileUrl;
+    }
+
+    if (files?.bannerFile) {
+      const { fileUrl } = await this.fileStorage.saveFile(files.bannerFile, 'courses/banners');
+      bannerUrl = fileUrl;
+    }
+
+    // Handle Intro Video Logic
+    if (introVideoSource === 'upload') {
+      if (!files?.introVideoFile) {
+        throw new I18nBadRequestException('messages.course.introVideoFileRequired');
+      }
+      const { fileUrl } = await this.fileStorage.saveFile(files.introVideoFile, 'courses/videos');
+      introVideoUrl = fileUrl;
+    } else if (introVideoSource === 'link') {
+      if (!introVideoUrl) {
+        throw new I18nBadRequestException('messages.course.introVideoLinkRequired');
+      }
+    } else if (introVideoSource) {
+      throw new I18nBadRequestException('messages.course.invalidIntroVideoSource');
+    }
+
     const course = await this.prisma.course.create({
       data: {
-        ...createCourseDto,
+        ...dto,
+        thumbnailUrl,
+        bannerUrl,
+        introVideoUrl,
+        introVideoSource,
         createdBy: userId,
         updatedBy: userId,
         // Cast JSON fields to any for Prisma compatibility
-        prerequisites: createCourseDto.prerequisites as unknown as Prisma.InputJsonValue,
-        learningOutcomes: createCourseDto.learningOutcomes as unknown as Prisma.InputJsonValue,
-        requiredDocuments: createCourseDto.requiredDocuments as unknown as Prisma.InputJsonValue,
+        prerequisites: dto.prerequisites as unknown as Prisma.InputJsonValue,
+        learningOutcomes: dto.learningOutcomes as unknown as Prisma.InputJsonValue,
+        requiredDocuments: dto.requiredDocuments as unknown as Prisma.InputJsonValue,
       } as unknown as Prisma.CourseUncheckedCreateInput,
     });
     return this.toCourseEntity(course);
@@ -96,19 +144,66 @@ export class CourseService {
     return this.toCourseEntity(course);
   }
 
-  async update(userId: string, id: string, updateCourseDto: UpdateCourseDto) {
+  async update(
+    userId: string,
+    id: string,
+    updateCourseDto: UpdateCourseDto,
+    files?: {
+      thumbnailFile?: Express.Multer.File;
+      bannerFile?: Express.Multer.File;
+      introVideoFile?: Express.Multer.File;
+    },
+  ) {
     // Check if exists
-    await this.findOne(id);
+    const existing = await this.findOne(id);
+
+    const { introVideoSource, ...dto } = updateCourseDto;
+    let { introVideoUrl } = dto;
+    let thumbnailUrl: string | undefined;
+    let bannerUrl: string | undefined;
+
+    // Handle Image Uploads
+    if (files?.thumbnailFile) {
+      const { fileUrl } = await this.fileStorage.saveFile(
+        files.thumbnailFile,
+        'courses/thumbnails',
+      );
+      thumbnailUrl = fileUrl;
+    }
+
+    if (files?.bannerFile) {
+      const { fileUrl } = await this.fileStorage.saveFile(files.bannerFile, 'courses/banners');
+      bannerUrl = fileUrl;
+    }
+
+    // Handle Intro Video Logic
+    if (introVideoSource === 'upload') {
+      if (files?.introVideoFile) {
+        const { fileUrl } = await this.fileStorage.saveFile(files.introVideoFile, 'courses/videos');
+        introVideoUrl = fileUrl;
+      } else if (!existing.introVideoUrl || existing.introVideoSource !== 'upload') {
+        // If switching to upload but no file provided, that's an error only if there's no existing upload
+        throw new I18nBadRequestException('messages.course.introVideoFileRequired');
+      }
+    } else if (introVideoSource === 'link') {
+      if (!introVideoUrl) {
+        throw new I18nBadRequestException('messages.course.introVideoLinkRequired');
+      }
+    }
 
     const updatedCourse = await this.prisma.course.update({
       where: { id },
       data: {
-        ...updateCourseDto,
+        ...dto,
+        thumbnailUrl,
+        bannerUrl,
+        introVideoUrl,
+        introVideoSource,
         updatedBy: userId,
         // Cast JSON fields to any for Prisma compatibility
-        prerequisites: updateCourseDto.prerequisites as unknown as Prisma.InputJsonValue,
-        learningOutcomes: updateCourseDto.learningOutcomes as unknown as Prisma.InputJsonValue,
-        requiredDocuments: updateCourseDto.requiredDocuments as unknown as Prisma.InputJsonValue,
+        prerequisites: dto.prerequisites as unknown as Prisma.InputJsonValue,
+        learningOutcomes: dto.learningOutcomes as unknown as Prisma.InputJsonValue,
+        requiredDocuments: dto.requiredDocuments as unknown as Prisma.InputJsonValue,
       },
     });
 
