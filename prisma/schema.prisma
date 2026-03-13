@@ -75,6 +75,7 @@ model Tenant {
   prerequisites      Prerequisite[]
   resources          Resource[]
   moduleItemProgress ModuleItemProgress[]
+  userProfiles       UserProfile[]
 
   @@map("tenants")
 }
@@ -84,6 +85,11 @@ enum UserRole {
   reviewer
   admin
   super_admin
+}
+
+enum Gender {
+  male
+  female
 }
 
 model User {
@@ -134,6 +140,7 @@ model User {
   applications         Application[]
   reviewedApplications Application[]        @relation("ApplicationReviewer")
   moduleItemProgress   ModuleItemProgress[]
+  userProfile          UserProfile?
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -151,6 +158,41 @@ model RefreshToken {
   replacedByToken String?  @map("replaced_by_token")
 
   @@map("refresh_tokens")
+}
+
+model UserProfile {
+  id     String @id @default(dbgenerated("generate_prefixed_uuid('UPF')")) @db.VarChar(50)
+  userId String @unique @map("user_id") @db.VarChar(50)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tenantId String @map("tenant_id") @db.VarChar(50)
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // --- Personal Information (scalar columns)
+  dateOfBirth DateTime? @map("date_of_birth") @db.Date
+  gender      Gender?
+  nationality String?   @db.VarChar(100)
+  nationalId  String?   @map("national_id") @db.VarChar(50)
+  passportNo  String?   @map("passport_no") @db.VarChar(50)
+
+  // --- Address (multilingual JSON object)
+  address Json? @default("{}")
+
+  // --- Guardian Information (multilingual JSON object)
+  guardian Json? @default("{}")
+
+  // --- Education Details (array of multilingual JSON objects)
+  education Json? @default("[]")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Soft Delete
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  deletedBy String?   @map("deleted_by") @db.VarChar(50)
+
+  @@index([tenantId])
+  @@map("user_profiles")
 }
 
 // Course Category
