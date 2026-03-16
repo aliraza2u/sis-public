@@ -36,7 +36,7 @@ export class UserProfileController {
   constructor(private readonly userProfileService: UserProfileService) {}
 
   @Post()
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.student)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Create a new user profile' })
   @ApiResponse({
     status: 201,
@@ -51,7 +51,7 @@ export class UserProfileController {
   }
 
   @Get()
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'List all user profiles with filtering and pagination' })
   @ApiQuery({
     name: 'search',
@@ -137,7 +137,7 @@ export class UserProfileController {
   }
 
   @Get('by-user/:userId')
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer, UserRole.student)
+  @Roles(UserRole.admin, UserRole.super_admin, UserRole.student)
   @ApiOperation({ summary: 'Get user profile by user ID' })
   @ApiParam({
     name: 'userId',
@@ -161,11 +161,11 @@ export class UserProfileController {
   }
 
   @Get(':id')
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer, UserRole.student)
+  @Roles(UserRole.admin, UserRole.super_admin, UserRole.student)
   @ApiOperation({ summary: 'Get user profile by ID' })
   @ApiParam({
     name: 'id',
-    description: 'User Profile ID',
+    description: 'User Profile ID', 
     example: 'UPF-123e4567',
   })
   @ApiResponse({
@@ -181,7 +181,7 @@ export class UserProfileController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.student)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Update user profile by ID' })
   @ApiParam({
     name: 'id',
@@ -202,7 +202,7 @@ export class UserProfileController {
   }
 
   @Patch('by-user/:userId')
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.student)
+  @Roles(UserRole.admin, UserRole.super_admin)
   @ApiOperation({ summary: 'Update user profile by user ID' })
   @ApiParam({
     name: 'userId',
