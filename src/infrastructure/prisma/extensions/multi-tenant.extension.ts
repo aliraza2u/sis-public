@@ -16,7 +16,14 @@ export const multiTenantExtension = (cls: ClsService) => {
           async $allOperations({ model, operation, args, query }) {
             // 1. Exclude global models and recursion
             const globalModels = ['Tenant', 'SupportedLanguage', 'RefreshToken'];
-            if (globalModels.includes(model) || (args as any)[SKIP_TENANT]) {
+            let skipTenant = false;
+            
+            if (args && (args as any)[SKIP_TENANT]) {
+              skipTenant = true;
+              delete (args as any)[SKIP_TENANT];
+            }
+
+            if (globalModels.includes(model as string) || skipTenant) {
               return query(args);
             }
 
@@ -95,7 +102,6 @@ export const multiTenantExtension = (cls: ClsService) => {
               return (client as any)[model][targetOperation]({
                 ...args,
                 where: { ...where, tenantId },
-                [SKIP_TENANT]: true,
               });
             }
 

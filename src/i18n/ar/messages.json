@@ -58,10 +58,13 @@
   },
   "batch": {
     "notFound": "الدفعة غير موجودة",
-    "enrollmentClosed": "فترة التسجيل مغلقة"
+    "enrollmentClosed": "فترة التسجيل مغلقة",
+    "noAssignedBatch": "لم يتم العثور على دفعة معينة. يرجى التأكد من الموافقة على طلبك.",
+    "codeExists": "رمز الدفعة '{code}' موجود بالفعل"
   },
   "course": {
     "notFound": "الدورة غير موجودة",
+    "codeExists": "رمز الدورة '{code}' موجود بالفعل",
     "introVideoFileRequired": "ملف الفيديو التعريفي مطلوب عندما يكون المصدر 'تحميل'",
     "introVideoLinkRequired": "رابط الفيديو التعريفي مطلوب عندما يكون المصدر 'رابط'",
     "invalidIntroVideoSource": "مصدر الفيديو التعريفي غير صالح. يجب أن يكون 'تحميل' أو 'رابط'"
@@ -108,5 +111,8 @@
   "bootstrap": {
     "databaseNotEmpty": "قاعدة البيانات ليست فارغة. لا يمكن تشغيل استيراد التمهيد.",
     "success": "تم استيراد التمهيد بنجاح."
+  },
+  "upload": {
+    "invalidJsonFormat": "الحقل {field} يحتوي على تنسيق JSON غير صالح."
   }
 }

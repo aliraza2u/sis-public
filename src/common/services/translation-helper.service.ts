@@ -25,4 +25,35 @@ export class TranslationHelperService {
   async translate(key: string, args?: Record<string, any>): Promise<string> {
     return this.i18n.translate(key, { args: args || {} });
   }
+
+  async translateAll(keys: Record<string, string | { key: string; args?: any }>, lang?: string) {
+    const results: Record<string, string> = {};
+    for (const [prop, value] of Object.entries(keys)) {
+      if (typeof value === 'string') {
+        results[prop] = (await this.i18n.translate(value, { lang })) as any;
+      } else {
+        results[prop] = (await this.i18n.translate(value.key, {
+          args: value.args,
+          lang,
+        })) as any;
+      }
+    }
+    return results;
+  }
+
+  getLocalizedText(obj: any, preferredLang?: string): string {
+    if (!obj) return '';
+    if (typeof obj === 'string') return obj;
+    if (preferredLang && obj[preferredLang]) {
+      return obj[preferredLang];
+    }
+    return obj['en'] || obj['ar'] || Object.values(obj)[0] || '';
+  }
+
+  getLocale(lang?: string): string {
+    if (lang === 'ar') {
+      return 'ar-SA';
+    }
+    return 'en-US';
+  }
 }

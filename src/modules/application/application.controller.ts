@@ -15,6 +15,7 @@ import {
   ApiBearerAuth,
   ApiParam,
   ApiQuery,
+  ApiBody,
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiUnauthorizedResponse,
@@ -30,30 +31,18 @@ import { UserEntity } from '../user/entities/user.entity';
 export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
 
-  @Post('batches/:batchId/apply')
+  @Get('my-applications')
   @Roles(UserRole.student)
-  @ApiOperation({ summary: 'Submit application to a batch (Students only)' })
-  @ApiParam({
-    name: 'batchId',
-    description: 'Unique identifier of the batch to apply to',
-    example: 'BAT-123e4567-e89b-12d3',
-  })
+  @ApiOperation({ summary: 'Get current user applications (Student only)' })
   @ApiResponse({
-    status: 201,
-    description: 'Application submitted successfully with auto-generated application number',
-    type: ApplicationEntity,
+    status: 200,
+    description: 'List of applications for the current user',
+    type: [ApplicationEntity],
   })
-  @ApiBadRequestResponse({ description: 'Invalid data or enrollment window closed' })
-  @ApiNotFoundResponse({ description: 'Batch not found' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Requires student role' })
-  apply(
-    @Param('batchId') batchId: string,
-    @Body() createDto: CreateApplicationDto,
-    @IpAddress() ipAddress: string,
-    @UserAgent() userAgent: string,
-  ) {
-    return this.applicationService.apply(batchId, createDto, ipAddress, userAgent);
+  findMyApplications(@CurrentUser() user: UserEntity) {
+    return this.applicationService.findMyApplications(user.id);
   }
 
   @Get('applications')
@@ -93,35 +82,7 @@ export class ApplicationController {
   @ApiNotFoundResponse({ description: 'Application not found' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   findOne(@Param('id') id: string) {
-    // TODO: Add ownership check if applicant
+    // TODO: Add ownership check if student
     return this.applicationService.findOne(id);
-  }
-
-  @Patch('applications/:id/status')
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer)
-  @ApiOperation({
-    summary:
-      'Update application status - auto-generates roll number on approval (Admin/Reviewer only)',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Application ID',
-    example: 'APP-123e4567-e89b-12d3',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Status updated. Roll number generated if approved',
-    type: ApplicationEntity,
-  })
-  @ApiBadRequestResponse({ description: 'Invalid status transition or missing rejection reason' })
-  @ApiNotFoundResponse({ description: 'Application not found' })
-  @ApiUnauthorizedResponse({ description: 'Authentication required' })
-  @ApiForbiddenResponse({ description: 'Requires admin, super_admin, or reviewer role' })
-  updateStatus(
-    @Param('id') id: string,
-    @Body() dto: UpdateApplicationStatusDto,
-    @CurrentUser() user: UserEntity,
-  ) {
-    return this.applicationService.updateStatus(id, dto, user.id);
   }
 }

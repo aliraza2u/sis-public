@@ -48,14 +48,23 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
     }
 
+    let finalMessage = message;
+    if (typeof message === 'object' && message !== null) {
+      if ('message' in message) {
+        finalMessage = (message as any).message;
+      }
+    }
+
+    // If message is an array (typical for ValidationPipe), join it into a string
+    if (Array.isArray(finalMessage)) {
+      finalMessage = finalMessage.join(', ');
+    }
+
     const responseBody = {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(ctx.getRequest<any>()) as string,
-      message:
-        typeof message === 'object' && message !== null && 'message' in message
-          ? (message as any).message
-          : message,
+      message: finalMessage,
     };
 
     if (httpStatus === (HttpStatus.INTERNAL_SERVER_ERROR as number)) {
