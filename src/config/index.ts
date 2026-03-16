@@ -5,3 +5,4 @@ export { default as JwtConfig } from './jwt.config';
 export { default as HashingConfig } from './hashing.config';
 export { default as AuthConfig } from './auth.config';
 export { default as DataTransferConfig } from './data-transfer.config';
+export { default as UploadConfig } from './upload.config';
