@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
-import { CreateCourseDto, UpdateCourseDto } from './dto/course.dto';
+import { CreateCourseDto, UpdateCourseDto, CourseQueryDto } from './dto';
 import { CourseEntity } from './entities/course.entity';
 import { CategoryEntity } from '@/modules/category/entities/category.entity';
 import { I18nService } from 'nestjs-i18n';
@@ -136,12 +136,80 @@ export class CourseService {
     return this.toCourseEntity(course);
   }
 
-  async findAll() {
-    const courses = await this.prisma.course.findMany({
-      include: { category: true },
-      orderBy: { createdAt: 'desc' },
-    });
-    return courses.map((course) => this.toCourseEntity(course));
+  async findAll(query: CourseQueryDto = {}) {
+    const {
+      search,
+      categoryId,
+      level,
+      isPublished,
+      isActive,
+      isFeatured,
+      page = 1,
+      limit = 20,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = query;
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.CourseWhereInput = {
+      deletedAt: null,
+    };
+
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+
+    if (level) {
+      where.level = level;
+    }
+
+    if (isPublished !== undefined) {
+      where.isPublished = isPublished;
+    }
+
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    }
+
+    if (isFeatured !== undefined) {
+      where.isFeatured = isFeatured;
+    }
+
+    if (search) {
+      where.OR = [
+        {
+          title: {
+            path: ['en'],
+            string_contains: search,
+          },
+        },
+        {
+          title: {
+            path: ['ar'],
+            string_contains: search,
+          },
+        },
+      ];
+    }
+
+    const [courses, total] = await Promise.all([
+      this.prisma.course.findMany({
+        where,
+        include: { category: true },
+        orderBy: { [sortBy]: sortOrder },
+        skip,
+        take: limit,
+      }),
+      this.prisma.course.count({ where }),
+    ]);
+
+    return {
+      courses: courses.map((course) => this.toCourseEntity(course)),
+      total,
+      page,
+      limit,
+    };
   }
 
   async findOne(id: string) {

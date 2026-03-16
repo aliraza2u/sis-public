@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
-import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
+import {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  CategoryQueryDto,
+  CategorySortBy,
+} from './dto/category.dto';
 import { CategoryEntity } from './entities/category.entity';
 import { ClsService } from 'nestjs-cls';
 import { I18nNotFoundException, I18nConflictException } from '@/common/exceptions/i18n.exception';
@@ -24,7 +29,6 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto) {
     // Check for duplicate slug within tenant
-    // findFirst is automatically scoped to the current tenant by the multi-tenant extension
     const existing = await this.prisma.category.findFirst({
       where: {
         slug: createCategoryDto.slug,
@@ -35,18 +39,72 @@ export class CategoryService {
       throw new I18nConflictException('messages.category.slugExists');
     }
 
+    const { name, description, slug, isActive, sortOrder } = createCategoryDto;
+
     const category = await this.prisma.category.create({
-      data: createCategoryDto as unknown as Prisma.CategoryUncheckedCreateInput,
+      data: {
+        name: name as unknown as Prisma.JsonObject,
+        description: description as unknown as Prisma.JsonObject,
+        slug,
+        isActive,
+        sortOrder,
+      } as Prisma.CategoryUncheckedCreateInput,
     });
 
     return this.toCategoryEntity(category);
   }
 
-  async findAll() {
-    const categories = await this.prisma.category.findMany({
-      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-    });
-    return categories.map((cat) => this.toCategoryEntity(cat));
+  async findAll(query?: CategoryQueryDto) {
+    const {
+      search,
+      isActive,
+      page = 1,
+      limit = 20,
+      sortBy = CategorySortBy.CREATED_AT,
+      sortOrder = 'desc',
+    } = query || {};
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.CategoryWhereInput = {};
+
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    }
+
+    if (search) {
+      where.OR = [
+        {
+          name: {
+            path: ['en'],
+            string_contains: search,
+          },
+        },
+        {
+          name: {
+            path: ['ar'],
+            string_contains: search,
+          },
+        },
+      ];
+    }
+
+    const [categories, total] = await Promise.all([
+      this.prisma.category.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
+      }),
+      this.prisma.category.count({ where }),
+    ]);
+
+    return {
+      categories: categories.map((cat) => this.toCategoryEntity(cat)),
+      total,
+      page,
+      limit,
+    };
   }
 
   async findOne(id: string) {
@@ -78,9 +136,19 @@ export class CategoryService {
       }
     }
 
+    const { name, description, slug, isActive, sortOrder } = updateCategoryDto;
+
     const updatedCategory = await this.prisma.category.update({
       where: { id },
-      data: updateCategoryDto,
+      data: {
+        ...(name && { name: name as unknown as Prisma.JsonObject }),
+        ...(description !== undefined && {
+          description: description as unknown as Prisma.JsonObject,
+        }),
+        ...(slug && { slug }),
+        ...(isActive !== undefined && { isActive }),
+        ...(sortOrder !== undefined && { sortOrder }),
+      } as Prisma.CategoryUncheckedUpdateInput,
     });
 
     return this.toCategoryEntity(updatedCategory);
@@ -89,8 +157,10 @@ export class CategoryService {
   async remove(id: string) {
     await this.findOne(id);
 
-    return this.prisma.category.delete({
+    await this.prisma.category.delete({
       where: { id },
     });
+
+    return { success: true };
   }
 }

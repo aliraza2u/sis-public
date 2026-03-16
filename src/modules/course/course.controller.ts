@@ -9,10 +9,11 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFiles,
+  Query,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CourseService } from './course.service';
-import { CreateCourseDto, UpdateCourseDto } from './dto/course.dto';
+import { CreateCourseDto, UpdateCourseDto, CourseQueryDto, CourseListResponseDto } from './dto';
 import {
   ApiTags,
   ApiOperation,
@@ -80,14 +81,14 @@ export class CourseController {
 
   @Get()
   @Public()
-  @ApiOperation({ summary: 'List all courses (Public)' })
+  @ApiOperation({ summary: 'List all courses with filters and pagination (Public)' })
   @ApiResponse({
     status: 200,
-    description: 'List of all courses sorted by creation date',
-    type: [CourseEntity],
+    description: 'Paginated list of courses with total count',
+    type: CourseListResponseDto,
   })
-  findAll() {
-    return this.courseService.findAll();
+  findAll(@Query() query: CourseQueryDto) {
+    return this.courseService.findAll(query);
   }
 
   @Get(':id')

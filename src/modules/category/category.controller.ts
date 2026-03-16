@@ -1,6 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
+import {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  CategoryQueryDto,
+  CategoryListResponseDto,
+} from './dto/category.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -44,14 +59,14 @@ export class CategoryController {
 
   @Get()
   @Public()
-  @ApiOperation({ summary: 'List all categories (Public)' })
+  @ApiOperation({ summary: 'List categories with filters and pagination (Public)' })
   @ApiResponse({
     status: 200,
-    description: 'List of all categories sorted by sort order',
-    type: [CategoryEntity],
+    description: 'Paginated list of categories',
+    type: CategoryListResponseDto,
   })
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(@Query() query: CategoryQueryDto) {
+    return this.categoryService.findAll(query);
   }
 
   @Get(':id')
