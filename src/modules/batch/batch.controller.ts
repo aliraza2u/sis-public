@@ -1,6 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { BatchService } from './batch.service';
-import { CreateBatchDto, UpdateBatchDto } from './dto/batch.dto';
+import {
+  CreateBatchDto,
+  UpdateBatchDto,
+  BatchQueryDto,
+  BatchListResponseDto,
+} from './dto/batch.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
@@ -29,30 +44,30 @@ export class BatchController {
 
   @Get('batches')
   @Public()
-  @ApiOperation({ summary: 'List all active batches open for enrollment (Public)' })
+  @ApiOperation({ summary: 'List all batches with filters and pagination (Public)' })
   @ApiResponse({
     status: 200,
-    description: 'List of active batches with enrollment windows open',
-    type: [BatchEntity],
+    description: 'Paginated list of batches',
+    type: BatchListResponseDto,
   })
-  findAllActive() {
-    return this.batchService.findAllActive();
+  findAll(@Query() query: BatchQueryDto) {
+    return this.batchService.findAll(query);
   }
 
   @Get('my-batch')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.student)
-  @ApiOperation({ summary: 'Get the batch assigned to the current student' })
+  @ApiOperation({ summary: 'Get the batches assigned to the current student' })
   @ApiResponse({
     status: 200,
-    description: 'The assigned batch for the student',
-    type: BatchEntity,
+    description: 'Paginated list of approved batches for the student',
+    type: BatchListResponseDto,
   })
   @ApiNotFoundResponse({ description: 'No assigned batch found' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Requires student role' })
-  findMyBatch(@CurrentUser() user: UserEntity) {
-    return this.batchService.findStudentBatch(user.id);
+  findMyBatch(@CurrentUser() user: UserEntity, @Query() query: BatchQueryDto) {
+    return this.batchService.findStudentBatches(user.id, query);
   }
 
   @Post('courses/:courseId/batches')
@@ -78,7 +93,7 @@ export class BatchController {
   }
 
   @Get('courses/:courseId/batches')
-  @ApiOperation({ summary: 'List all batches for a specific course' })
+  @ApiOperation({ summary: 'List batches for a course with filters and pagination' })
   @ApiParam({
     name: 'courseId',
     description: 'Course ID',
@@ -86,11 +101,11 @@ export class BatchController {
   })
   @ApiResponse({
     status: 200,
-    description: 'List of batches for the course sorted by start date',
-    type: [BatchEntity],
+    description: 'Paginated list of batches for the course',
+    type: BatchListResponseDto,
   })
-  findAll(@Param('courseId') courseId: string) {
-    return this.batchService.findAll(courseId);
+  findAllForCourse(@Param('courseId') courseId: string, @Query() query: BatchQueryDto) {
+    return this.batchService.findAll({ ...query, courseId });
   }
 
   @Get('batches/:id')

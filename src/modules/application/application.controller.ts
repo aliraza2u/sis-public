@@ -1,22 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Query } from '@nestjs/common';
 import { ApplicationService } from './application.service';
-import { CreateApplicationDto, UpdateApplicationStatusDto } from './dto/application.dto';
+import { ApplicationListResponseDto, ApplicationQueryDto } from './dto/application.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import { IpAddress } from '@/common/decorators/ip-address.decorator';
-import { UserAgent } from '@/common/decorators/user-agent.decorator';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
-  ApiQuery,
-  ApiBody,
-  ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
@@ -36,35 +31,29 @@ export class ApplicationController {
   @ApiOperation({ summary: 'Get current user applications (Student only)' })
   @ApiResponse({
     status: 200,
-    description: 'List of applications for the current user',
-    type: [ApplicationEntity],
+    description: 'Paginated list of applications for the current user',
+    type: ApplicationListResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Requires student role' })
-  findMyApplications(@CurrentUser() user: UserEntity) {
-    return this.applicationService.findMyApplications(user.id);
+  findMyApplications(@CurrentUser() user: UserEntity, @Query() query: ApplicationQueryDto) {
+    return this.applicationService.findMyApplications(user.id, query);
   }
 
   @Get('applications')
   @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer)
   @ApiOperation({
-    summary: 'List all applications with optional batch filter (Admin/Reviewer only)',
-  })
-  @ApiQuery({
-    name: 'batchId',
-    required: false,
-    description: 'Filter by batch ID',
-    example: 'BAT-123e4567-e89b-12d3',
+    summary: 'List all applications with filters and pagination (Admin/Reviewer only)',
   })
   @ApiResponse({
     status: 200,
-    description: 'List of applications sorted by creation date',
-    type: [ApplicationEntity],
+    description: 'Paginated list of applications',
+    type: ApplicationListResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Requires admin, super_admin, or reviewer role' })
-  findAll(@Query('batchId') batchId?: string) {
-    return this.applicationService.findAll(batchId);
+  findAll(@Query() query: ApplicationQueryDto) {
+    return this.applicationService.findAll(query);
   }
 
   @Get('applications/:id')
