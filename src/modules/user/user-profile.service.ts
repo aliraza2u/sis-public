@@ -63,6 +63,7 @@ export class UserProfileService {
         ...(createUserProfileDto.passportNo !== undefined && {
           passportNo: createUserProfileDto.passportNo,
         }),
+        ...(createUserProfileDto.status !== undefined && { status: createUserProfileDto.status }),
         ...(createUserProfileDto.address !== undefined && {
           address: createUserProfileDto.address as any,
         }),
@@ -131,7 +132,7 @@ export class UserProfileService {
     totalPages: number;
   }> {
     const tenantId = this.cls.get<string>('tenantId');
-    const { search, gender, nationality, userId, page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = filterDto;
+    const { search, gender, nationality, userId, status, page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = filterDto;
 
     // Build where clause
     const where: Prisma.UserProfileWhereInput = {
@@ -152,6 +153,10 @@ export class UserProfileService {
 
     if (userId) {
       where.userId = userId;
+    }
+
+    if (status) {
+      (where as any).status = status;
     }
 
     // Add search functionality
@@ -225,6 +230,7 @@ export class UserProfileService {
         ...(updateUserProfileDto.passportNo !== undefined && {
           passportNo: updateUserProfileDto.passportNo,
         }),
+        ...(updateUserProfileDto.status !== undefined && { status: updateUserProfileDto.status }),
         ...(updateUserProfileDto.address !== undefined && {
           address: updateUserProfileDto.address as any,
         }),

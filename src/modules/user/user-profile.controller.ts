@@ -79,6 +79,13 @@ export class UserProfileController {
     example: 'USR-123e4567',
   })
   @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter by status',
+    enum: ['active', 'inactive', 'graduated'],
+    example: 'active',
+  })
+  @ApiQuery({
     name: 'page',
     required: false,
     description: 'Page number (1-indexed)',

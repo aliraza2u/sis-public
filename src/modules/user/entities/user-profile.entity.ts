@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UserProfile, Gender } from '@/infrastructure/prisma/client/client';
+import { UserProfile, Gender, UserProfileStatus } from '@/infrastructure/prisma/client/client';
 import { Exclude } from 'class-transformer';
-import { Gender as GenderDto } from '../dto/user-profile.dto';
+import { Gender as GenderDto, UserProfileStatus as UserProfileStatusDto } from '../dto/user-profile.dto';
 
 export class UserProfileEntity implements UserProfile {
   @ApiProperty({ example: 'UPF-123e4567-e89b-12d3' })
@@ -27,6 +27,9 @@ export class UserProfileEntity implements UserProfile {
 
   @ApiPropertyOptional({ description: 'Passport Number', example: 'A12345678' })
   passportNo: string | null;
+
+  @ApiPropertyOptional({ description: 'Status', enum: UserProfileStatusDto, example: UserProfileStatusDto.ACTIVE })
+  status: UserProfileStatus;
 
   @ApiPropertyOptional({
     description: 'Address (multilingual JSON object)',
