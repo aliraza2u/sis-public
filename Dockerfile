@@ -28,6 +28,7 @@ ENV NODE_ENV=production
 RUN apk add --no-cache dumb-init
 
 # Use non-root user for security
+RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
 USER node
 
 # Copy application files with correct permissions

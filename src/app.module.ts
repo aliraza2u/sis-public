@@ -17,6 +17,7 @@ import {
   HashingConfig,
   AuthConfig,
   DataTransferConfig,
+  UploadConfig,
 } from './config';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -51,6 +52,7 @@ import { ApplicationModule } from './modules/application/application.module';
         HashingConfig,
         AuthConfig,
         DataTransferConfig,
+        UploadConfig,
       ],
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
@@ -75,6 +77,7 @@ import { ApplicationModule } from './modules/application/application.module';
         ADMIN_LAST_NAME: Joi.string().optional(),
         DEFAULT_TENANT_SLUG: Joi.string().default('al-mkki'),
         BOOTSTRAP_SECRET: Joi.string().required(),
+        UPLOAD_DIR: Joi.string().default('./uploads'),
       }),
     }),
     LoggerModule.forRootAsync({
