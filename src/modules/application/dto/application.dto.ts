@@ -3,21 +3,31 @@ import {
   IsArray,
   IsDateString,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsObject,
   IsOptional,
   IsString,
+  Max,
+  Min,
   ValidateNested,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiHideProperty } from '@nestjs/swagger';
+import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
+import { ApplicationStatus } from '@/common/enums';
+import { ApplicationEntity } from '../entities/application.entity';
 
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
 }
 
-import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
+export enum ApplicationSortBy {
+  CREATED_AT = 'createdAt',
+  SUBMITTED_AT = 'submittedAt',
+  APPLICATION_NUMBER = 'applicationNumber',
+}
 
 export class PersonalInfoDto {
   @ApiProperty({ description: 'Date of Birth', example: '2010-01-01' })
@@ -135,8 +145,6 @@ export class CreateApplicationDto {
   educationInfo?: EducationInfoDto[];
 }
 
-import { ApplicationStatus } from '@/common/enums';
-
 export class UpdateApplicationStatusDto {
   @ApiProperty({
     description: 'New status for the application',
@@ -167,4 +175,79 @@ export class UpdateApplicationStatusDto {
   @ValidateNested()
   @Type(() => LocalizedStringDto)
   rejectionReason?: LocalizedStringDto;
+}
+
+export class ApplicationQueryDto {
+  @ApiPropertyOptional({ description: 'Filter by Course ID' })
+  @IsOptional()
+  @IsString()
+  courseId?: string;
+
+  @ApiPropertyOptional({ description: 'Filter by Batch ID' })
+  @IsOptional()
+  @IsString()
+  batchId?: string;
+
+  @ApiPropertyOptional({ description: 'Filter by Application Number' })
+  @IsOptional()
+  @IsString()
+  applicationNumber?: string;
+
+  @ApiPropertyOptional({ description: 'Filter by Roll Number' })
+  @IsOptional()
+  @IsString()
+  rollNumber?: string;
+
+  @ApiHideProperty()
+  @IsOptional()
+  @IsEnum(ApplicationStatus)
+  status?: ApplicationStatus;
+
+  @ApiPropertyOptional({ description: 'Search term for name, email or number' })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @ApiPropertyOptional({ description: 'Page number', default: 1 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiPropertyOptional({ description: 'Items per page', default: 20 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number = 20;
+
+  @ApiPropertyOptional({
+    description: 'Field to sort by',
+    enum: ApplicationSortBy,
+    default: ApplicationSortBy.CREATED_AT,
+  })
+  @IsOptional()
+  @IsEnum(ApplicationSortBy)
+  sortBy?: ApplicationSortBy = ApplicationSortBy.CREATED_AT;
+
+  @ApiPropertyOptional({ description: 'Sort order', enum: ['asc', 'desc'], default: 'desc' })
+  @IsOptional()
+  @IsString()
+  sortOrder?: 'asc' | 'desc' = 'desc';
+}
+
+export class ApplicationListResponseDto {
+  @ApiProperty({ type: [ApplicationEntity] })
+  applications: ApplicationEntity[];
+
+  @ApiProperty({ example: 100 })
+  total: number;
+
+  @ApiProperty({ example: 1 })
+  page: number;
+
+  @ApiProperty({ example: 20 })
+  limit: number;
 }

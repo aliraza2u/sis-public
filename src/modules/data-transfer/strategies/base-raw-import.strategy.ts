@@ -136,10 +136,10 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
 
         if (isFKViolation) {
           field = this.detectFKField(error, config.foreignKeyFields) || 'unknown';
-          message = t_('prisma.foreignKeyConstraint', { field });
+          message = t_('messages.prisma.foreignKeyConstraint', { field });
         } else if (isUniqueViolation) {
           field = this.detectUniqueField(error) || 'unknown';
-          message = t_('prisma.uniqueConstraint', { field });
+          message = t_('messages.prisma.uniqueConstraint', { field });
         }
 
         errors.push({
@@ -250,6 +250,7 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
    * Check if error is a foreign key violation
    */
   protected isForeignKeyViolation(error: unknown, foreignKeyFields?: string[]): boolean {
+    if ((error as any)?.code === 'P2003') return true;
     if (!(error instanceof Error)) return false;
 
     const msg = error.message.toLowerCase();
@@ -267,6 +268,12 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
    * Detect which FK field caused the violation
    */
   protected detectFKField(error: unknown, foreignKeyFields?: string[]): string | null {
+    const meta = (error as any)?.meta;
+    if (meta?.field_name) {
+      // Prisma error output usually includes field_name in meta
+      return meta.field_name;
+    }
+
     if (!(error instanceof Error) || !foreignKeyFields) return null;
 
     const msg = error.message.toLowerCase();
@@ -283,17 +290,17 @@ export abstract class BaseRawImportStrategy implements RawImportStrategy {
    * Check if error is a unique constraint violation
    */
   protected isUniqueConstraintViolation(error: unknown): boolean {
+    if ((error as any)?.code === 'P2002') return true;
     if (!(error instanceof Error)) return false;
     const msg = error.message.toLowerCase();
-    return msg.includes('unique constraint') || (error as any).code === 'P2002';
+    return msg.includes('unique constraint');
   }
 
   /**
    * Detect which field caused the unique constraint violation
    */
   protected detectUniqueField(error: unknown): string | null {
-    if (!(error instanceof Error)) return null;
-    const meta = (error as any).meta;
+    const meta = (error as any)?.meta;
     if (meta && meta.target) {
       return Array.isArray(meta.target) ? meta.target.join(', ') : meta.target;
     }
