@@ -58,10 +58,13 @@
   },
   "batch": {
     "notFound": "Batch not found",
-    "enrollmentClosed": "Enrollment window is closed"
+    "enrollmentClosed": "Enrollment window is closed",
+    "noAssignedBatch": "No assigned batch found. Please ensure your application is approved.",
+    "codeExists": "Batch code '{code}' already exists"
   },
   "course": {
     "notFound": "Course not found",
+    "codeExists": "Course code '{code}' already exists",
     "introVideoFileRequired": "Intro video file is required when source is 'upload'",
     "introVideoLinkRequired": "Intro video link is required when source is 'link'",
     "invalidIntroVideoSource": "Invalid intro video source. Must be 'upload' or 'link'"
@@ -108,5 +111,8 @@
   "bootstrap": {
     "databaseNotEmpty": "Database is not empty. Cannot run bootstrap import.",
     "success": "Bootstrap import completed successfully."
+  },
+  "upload": {
+    "invalidJsonFormat": "The field {field} contains invalid JSON format."
   }
 }

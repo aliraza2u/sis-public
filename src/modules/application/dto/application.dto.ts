@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -126,40 +127,44 @@ export class CreateApplicationDto {
   @Type(() => GuardianInfoDto)
   guardianInfo?: GuardianInfoDto;
 
-  @ApiProperty({ description: 'Education Information', type: EducationInfoDto, required: false })
+  @ApiProperty({ description: 'Education Information', type: [EducationInfoDto], required: false })
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
+  @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => EducationInfoDto)
-  educationInfo?: EducationInfoDto;
+  educationInfo?: EducationInfoDto[];
 }
 
-export enum ApplicationStatus {
-  DRAFT = 'draft',
-  SUBMITTED = 'submitted',
-  UNDER_REVIEW = 'under_review',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
-  WITHDRAWN = 'withdrawn',
-}
+import { ApplicationStatus } from '@/common/enums';
 
 export class UpdateApplicationStatusDto {
-  @ApiProperty({ description: 'New Status', enum: ApplicationStatus, example: 'approved' })
+  @ApiProperty({
+    description: 'New status for the application',
+    enum: ApplicationStatus,
+    enumName: 'ApplicationStatus',
+    example: ApplicationStatus.approved,
+  })
   @IsNotEmpty()
   @IsEnum(ApplicationStatus)
   status: ApplicationStatus;
 
   @ApiProperty({
-    description: 'Review Notes',
+    description: 'Internal review notes (not visible to applicant)',
     required: false,
-    example: 'Approved after verification',
+    example: 'Documents verified, applicant meets all criteria.',
   })
   @IsOptional()
   @IsString()
   reviewNotes?: string;
 
-  @ApiProperty({ description: 'Rejection Reason JSON', required: false })
+  @ApiProperty({
+    description: 'Reason for rejection (localized, required if status is rejected)',
+    required: false,
+    type: LocalizedStringDto,
+    example: { en: 'Incomplete documents', ar: 'مستندات غير مكتملة' },
+  })
   @IsOptional()
-  @IsObject()
-  rejectionReason?: any;
+  @ValidateNested()
+  @Type(() => LocalizedStringDto)
+  rejectionReason?: LocalizedStringDto;
 }

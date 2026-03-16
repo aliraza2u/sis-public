@@ -71,7 +71,8 @@ export class CourseService {
       introVideoFile?: Express.Multer.File;
     },
   ) {
-    const { introVideoSource, ...dto } = createCourseDto;
+    const { introVideoSource, introVideoFile, thumbnailFile, bannerFile, ...dto } =
+      createCourseDto as any;
     let { introVideoUrl } = dto;
     let thumbnailUrl: string | undefined;
     let bannerUrl: string | undefined;
@@ -103,6 +104,18 @@ export class CourseService {
       }
     } else if (introVideoSource) {
       throw new I18nBadRequestException('messages.course.invalidIntroVideoSource');
+    }
+
+    // Check if course code exists
+    const existingCode = await this.prisma.course.findFirst({
+      where: {
+        code: dto.code,
+        deletedAt: null,
+      },
+    });
+
+    if (existingCode) {
+      throw new I18nBadRequestException('messages.course.codeExists', { code: dto.code });
     }
 
     const course = await this.prisma.course.create({
@@ -157,7 +170,8 @@ export class CourseService {
     // Check if exists
     const existing = await this.findOne(id);
 
-    const { introVideoSource, ...dto } = updateCourseDto;
+    const { introVideoSource, introVideoFile, thumbnailFile, bannerFile, ...dto } =
+      updateCourseDto as any;
     let { introVideoUrl } = dto;
     let thumbnailUrl: string | undefined;
     let bannerUrl: string | undefined;
@@ -188,6 +202,21 @@ export class CourseService {
     } else if (introVideoSource === 'link') {
       if (!introVideoUrl) {
         throw new I18nBadRequestException('messages.course.introVideoLinkRequired');
+      }
+    }
+
+    // Check if new code already exists
+    if (dto.code && dto.code !== existing.code) {
+      const existingCode = await this.prisma.course.findFirst({
+        where: {
+          code: dto.code,
+          deletedAt: null,
+          id: { not: id },
+        },
+      });
+
+      if (existingCode) {
+        throw new I18nBadRequestException('messages.course.codeExists', { code: dto.code });
       }
     }
 

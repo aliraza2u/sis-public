@@ -5,6 +5,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRole } from '@/common/enums';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { UserEntity } from '../user/entities/user.entity';
 import { Public } from '@/common/decorators/public.decorator';
 import {
   ApiTags,
@@ -35,6 +37,22 @@ export class BatchController {
   })
   findAllActive() {
     return this.batchService.findAllActive();
+  }
+
+  @Get('my-batch')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.student)
+  @ApiOperation({ summary: 'Get the batch assigned to the current student' })
+  @ApiResponse({
+    status: 200,
+    description: 'The assigned batch for the student',
+    type: BatchEntity,
+  })
+  @ApiNotFoundResponse({ description: 'No assigned batch found' })
+  @ApiUnauthorizedResponse({ description: 'Authentication required' })
+  @ApiForbiddenResponse({ description: 'Requires student role' })
+  findMyBatch(@CurrentUser() user: UserEntity) {
+    return this.batchService.findStudentBatch(user.id);
   }
 
   @Post('courses/:courseId/batches')

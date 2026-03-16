@@ -1,14 +1,31 @@
 import { BaseSoftDeleteEntity } from '@/common/entities/base.entity';
-import {
-  Application,
-  Batch,
-  Course,
-  Tenant,
-  User,
-  ApplicationStatus,
-} from '@/infrastructure/prisma/client/client';
-import { Exclude, Expose } from 'class-transformer';
+import { Application, Batch, Course, Tenant, User } from '@/infrastructure/prisma/client/client';
+import { ApplicationStatus } from '@/common/enums';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { LocalizedStringDto } from '@/common/dto/localized-string.dto';
+
+export class EducationInfo {
+  @ApiProperty({ description: 'Previous School Name', type: LocalizedStringDto })
+  @Expose()
+  @Type(() => LocalizedStringDto)
+  previousSchool: LocalizedStringDto;
+
+  @ApiProperty({ description: 'Last Grade Completed', type: LocalizedStringDto })
+  @Expose()
+  @Type(() => LocalizedStringDto)
+  lastGradeCompleted: LocalizedStringDto;
+
+  @ApiProperty({ description: 'Year of Completion', example: 2024 })
+  @Expose()
+  yearOfCompletion: number;
+
+  @ApiProperty({ description: 'Percentage / Grade / GPA', required: false, example: 95 })
+  @Expose()
+  percentage?: number;
+
+  [key: string]: any;
+}
 
 export class ApplicationEntity extends BaseSoftDeleteEntity implements Application {
   constructor(partial: Partial<ApplicationEntity>) {
@@ -56,9 +73,14 @@ export class ApplicationEntity extends BaseSoftDeleteEntity implements Applicati
   @Expose()
   guardianInfo: any;
 
-  @ApiProperty({ description: 'Education Information JSON', required: false })
+  @ApiProperty({
+    description: 'Education Information JSON (Array)',
+    required: false,
+    type: [EducationInfo],
+  })
   @Expose()
-  educationInfo: any;
+  @Type(() => EducationInfo)
+  educationInfo: EducationInfo[];
 
   @ApiProperty({ description: 'Application Status', enum: ApplicationStatus, example: 'submitted' })
   @Expose()

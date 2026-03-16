@@ -1,6 +1,7 @@
 import { Catch, ExceptionFilter, ArgumentsHost, Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import { I18nService } from 'nestjs-i18n';
+import { HttpAdapterHost } from '@nestjs/core';
 import { I18nException } from '../exceptions/i18n.exception';
 
 /**
@@ -10,9 +11,13 @@ import { I18nException } from '../exceptions/i18n.exception';
 @Catch(I18nException)
 @Injectable()
 export class I18nExceptionFilter implements ExceptionFilter {
-  constructor(private readonly i18n: I18nService) {}
+  constructor(
+    private readonly i18n: I18nService,
+    private readonly httpAdapterHost: HttpAdapterHost,
+  ) {}
 
   async catch(exception: I18nException, host: ArgumentsHost) {
+    const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
@@ -27,6 +32,7 @@ export class I18nExceptionFilter implements ExceptionFilter {
       statusCode: status,
       message,
       timestamp: new Date().toISOString(),
+      path: httpAdapter.getRequestUrl(ctx.getRequest<any>()) as string,
     });
   }
 }

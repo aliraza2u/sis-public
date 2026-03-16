@@ -35,6 +35,8 @@ import { QueueModule } from './modules/queue/queue.module';
 import { DataTransferModule } from './modules/data-transfer/data-transfer.module';
 import { SystemModule } from './modules/system/system.module';
 import { SYSTEM_ROUTES } from './common/constants/routes';
+import { BatchModule } from './modules/batch/batch.module';
+import { ApplicationModule } from './modules/application/application.module';
 
 @Module({
   imports: [
@@ -99,6 +101,8 @@ import { SYSTEM_ROUTES } from './common/constants/routes';
     UserModule,
     CategoryModule,
     CourseModule,
+    BatchModule,
+    ApplicationModule,
     CommonModule,
     QueueModule,
     DataTransferModule,

@@ -275,6 +275,7 @@ model Course {
   applications Application[]
   modules      Module[]
 
+  @@unique([tenantId, code])
   @@index([tenantId])
   @@map("courses")
 }
@@ -314,6 +315,7 @@ model Batch {
 
   applications Application[]
 
+  @@unique([tenantId, code])
   @@index([tenantId])
   @@index([courseId])
   @@map("batches")
