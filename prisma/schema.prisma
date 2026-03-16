@@ -92,6 +92,12 @@ enum Gender {
   female
 }
 
+enum UserProfileStatus {
+  active
+  inactive
+  graduated
+}
+
 model User {
   id       String @id @default(dbgenerated("generate_prefixed_uuid('USR')")) @db.VarChar(50)
   tenantId String @map("tenant_id") @db.VarChar(50)
@@ -174,6 +180,7 @@ model UserProfile {
   nationality String?   @db.VarChar(100)
   nationalId  String?   @map("national_id") @db.VarChar(50)
   passportNo  String?   @map("passport_no") @db.VarChar(50)
+  status      UserProfileStatus @default(active)
 
   // --- Address (multilingual JSON object)
   address Json? @default("{}")

@@ -20,6 +20,12 @@ export enum Gender {
   FEMALE = 'female',
 }
 
+export enum UserProfileStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  GRADUATED = 'graduated',
+}
+
 export class AddressDto {
   @ApiProperty({ description: 'Street Address', type: LocalizedStringDto })
   @IsNotEmpty()
@@ -142,6 +148,11 @@ export class CreateUserProfileDto {
   @IsString()
   passportNo?: string;
 
+  @ApiPropertyOptional({ description: 'Status', enum: UserProfileStatus, example: UserProfileStatus.ACTIVE })
+  @IsOptional()
+  @IsEnum(UserProfileStatus)
+  status?: UserProfileStatus;
+
   @ApiPropertyOptional({ description: 'Address', type: AddressDto })
   @IsOptional()
   @IsObject()
@@ -190,6 +201,11 @@ export class UpdateUserProfileDto {
   @IsString()
   passportNo?: string;
 
+  @ApiPropertyOptional({ description: 'Status', enum: UserProfileStatus, example: UserProfileStatus.ACTIVE })
+  @IsOptional()
+  @IsEnum(UserProfileStatus)
+  status?: UserProfileStatus;
+
   @ApiPropertyOptional({ description: 'Address', type: AddressDto })
   @IsOptional()
   @IsObject()
@@ -232,6 +248,11 @@ export class FilterUserProfileDto {
   @IsOptional()
   @IsString()
   userId?: string;
+
+  @ApiPropertyOptional({ description: 'Filter by status', enum: UserProfileStatus, example: UserProfileStatus.ACTIVE })
+  @IsOptional()
+  @IsEnum(UserProfileStatus)
+  status?: UserProfileStatus;
 
   @ApiPropertyOptional({ description: 'Page number (1-indexed)', example: 1, default: 1 })
   @IsOptional()
