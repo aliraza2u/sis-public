@@ -72,11 +72,19 @@ export class GradesService {
 
   /**
    * Get transcript for a student: list of course grades (breakdown + final per course).
-   * This grades info is included in generate and verify transcript responses.
+   * When courseId is provided, returns only that course's grade for the user.
    */
-  async getTranscript(tenantId: string, userId: string): Promise<TranscriptCourseDto[]> {
+  async getTranscript(
+    tenantId: string,
+    userId: string,
+    courseId?: string,
+  ): Promise<TranscriptCourseDto[]> {
     const grades = await this.prisma.studentCourseGrade.findMany({
-      where: { tenantId, userId },
+      where: {
+        tenantId,
+        userId,
+        ...(courseId ? { courseId } : {}),
+      },
       include: {
         course: { select: { title: true } },
       },
@@ -123,10 +131,12 @@ export class GradesService {
 
   /**
    * Generate a transcript for a student. If one already exists, return it with the same token.
+   * When courseId is provided, the transcript array contains only that course's grade.
    */
   async generateTranscript(
     tenantId: string,
     userId: string,
+    courseId?: string,
   ): Promise<GenerateTranscriptResponseDto> {
     const existing = await this.prisma.transcript.findUnique({
       where: {
@@ -134,7 +144,7 @@ export class GradesService {
       },
     });
 
-    const transcriptData = await this.getTranscript(tenantId, userId);
+    const transcriptData = await this.getTranscript(tenantId, userId, courseId);
 
     if (existing) {
       if (!existing.isActive || existing.isRevoked) {

@@ -98,9 +98,14 @@ export class GradesController {
   @ApiOperation({
     summary: 'Generate transcript for a student',
     description:
-      'Generates a transcript (or returns existing) for the student. Returns a verification token and URL for public verification.',
+      'Generates a transcript (or returns existing). Pass optional courseId to get only that course\'s grade; otherwise all courses for the user.',
   })
   @ApiParam({ name: 'userId', description: 'Student user ID' })
+  @ApiQuery({
+    name: 'courseId',
+    required: false,
+    description: 'If provided, response transcript array contains only this course\'s grade for the user',
+  })
   @ApiResponse({
     status: 201,
     description: 'Transcript generated or existing returned',
@@ -110,6 +115,7 @@ export class GradesController {
   async generateTranscript(
     @Param('userId') userId: string,
     @CurrentUser() user: UserEntity,
+    @Query('courseId') courseId?: string,
   ): Promise<GenerateTranscriptResponseDto> {
     const tenantId = this.cls.get<string>('tenantId');
     const canGenerateForOthers = [UserRole.admin, UserRole.super_admin, UserRole.reviewer].some(
@@ -118,6 +124,6 @@ export class GradesController {
     if (!canGenerateForOthers && user.id !== userId) {
       throw new I18nForbiddenException('messages.forbidden');
     }
-    return this.gradesService.generateTranscript(tenantId, userId);
+    return this.gradesService.generateTranscript(tenantId, userId, courseId);
   }
 }
