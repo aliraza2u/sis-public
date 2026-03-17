@@ -114,5 +114,13 @@
   },
   "upload": {
     "invalidJsonFormat": "The field {field} contains invalid JSON format."
+  },
+  "transcript": {
+    "notFound": "Transcript not found",
+    "tokenOrIdRequired": "Verification token or transcript ID is required",
+    "invalidTokenFormat": "Invalid verification token format",
+    "invalidOrExpiredToken": "Invalid or expired verification token",
+    "revoked": "This transcript has been revoked",
+    "inactive": "This transcript is no longer active"
   }
 }

@@ -114,5 +114,13 @@
   },
   "upload": {
     "invalidJsonFormat": "الحقل {field} يحتوي على تنسيق JSON غير صالح."
+  },
+  "transcript": {
+    "notFound": "البيان الدراسي غير موجود",
+    "tokenOrIdRequired": "رمز التحقق أو معرف البيان الدراسي مطلوب",
+    "invalidTokenFormat": "تنسيق رمز التحقق غير صالح",
+    "invalidOrExpiredToken": "رمز التحقق غير صالح أو منتهي الصلاحية",
+    "revoked": "تم إبطال هذا البيان الدراسي",
+    "inactive": "هذا البيان الدراسي لم يعد نشطاً"
   }
 }

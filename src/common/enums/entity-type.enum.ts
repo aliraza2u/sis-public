@@ -18,4 +18,5 @@ export enum EntityType {
   RESOURCE = 'resource',
   SUPPORTED_LANGUAGE = 'supported_language',
   MODULE_ITEM_PROGRESS = 'module_item_progress',
+  STUDENT_GRADES = 'student_grades',
 }

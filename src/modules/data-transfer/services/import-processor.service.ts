@@ -77,7 +77,31 @@ export class ImportProcessorService implements OnModuleInit {
 
       // Read and parse the CSV file
       const fileBuffer = await this.fileStorage.readFile(filePath);
-      const { rows, totalRows, headers } = await this.csvParser.parseBuffer(fileBuffer);
+      let { rows, totalRows, headers } = await this.csvParser.parseBuffer(fileBuffer);
+
+      // Normalize headers and row keys if strategy provides aliases (e.g. student grades LMS export)
+      const rawStrategy = strategy as RawImportStrategy;
+      const aliases = rawStrategy.getHeaderAliases?.();
+      if (aliases) {
+        const aliasToCanonical = new Map<string, string>();
+        for (const [canonical, names] of Object.entries(aliases)) {
+          for (const name of names) {
+            aliasToCanonical.set(name.trim().toLowerCase(), canonical);
+          }
+        }
+        headers = headers.map((h) => {
+          const key = h.trim().toLowerCase();
+          return aliasToCanonical.get(key) ?? h;
+        });
+        rows = rows.map((row) => {
+          const normalized: Record<string, unknown> = {};
+          for (const [key, value] of Object.entries(row)) {
+            const canonical = aliasToCanonical.get(String(key).trim().toLowerCase()) ?? key;
+            normalized[canonical] = value;
+          }
+          return normalized;
+        });
+      }
 
       // Validate headers
       const requiredHeaders = strategy.getExpectedHeaders().slice(0, -1); // Exclude optional fields
@@ -105,27 +129,66 @@ export class ImportProcessorService implements OnModuleInit {
         return; // Exit early, don't throw
       }
 
-      // Process in batches
+      // Full-file strategy (e.g. student grades): validate all rows, then import once
       const allErrors: ImportError[] = [];
       let totalSuccess = 0;
-      let totalProcessed = 0;
+      const useFullFile = (strategy as { requiresFullFile?: () => boolean }).requiresFullFile?.();
 
-      for (let i = 0; i < rows.length; i += this.batchSize) {
-        const batch = rows.slice(i, i + this.batchSize);
-        const { successCount, errors } = await this.processBatch(batch, i, strategy, tenantId);
+      if (useFullFile) {
+        const validatedRows: ValidatedRow[] = [];
+        const existingKeys = new Set<string>();
 
-        totalSuccess += successCount;
-        totalProcessed += batch.length;
-        allErrors.push(...errors);
+        for (let i = 0; i < rows.length; i++) {
+          const rowIndex = i + 2;
+          const result = await strategy.validate(rows[i], rowIndex, existingKeys);
 
-        // Update progress
+          if (result.isValid && result.normalizedData) {
+            validatedRows.push({ rowIndex, data: result.normalizedData });
+          } else {
+            for (const err of result.errors) {
+              allErrors.push({
+                row: rowIndex,
+                field: err.field,
+                message: err.message,
+                data: rows[i],
+              });
+            }
+          }
+        }
+
+        if (validatedRows.length > 0) {
+          const result = await strategy.importBatch(validatedRows, tenantId);
+          totalSuccess = result.successCount;
+          allErrors.push(...result.errors);
+        }
+
         await this.importJobService.updateProgress(
           jobId,
-          totalProcessed,
+          rows.length,
           totalSuccess,
           allErrors.length,
           totalRows,
         );
+      } else {
+        // Process in batches
+        let totalProcessed = 0;
+
+        for (let i = 0; i < rows.length; i += this.batchSize) {
+          const batch = rows.slice(i, i + this.batchSize);
+          const { successCount, errors } = await this.processBatch(batch, i, strategy, tenantId);
+
+          totalSuccess += successCount;
+          totalProcessed += batch.length;
+          allErrors.push(...errors);
+
+          await this.importJobService.updateProgress(
+            jobId,
+            totalProcessed,
+            totalSuccess,
+            allErrors.length,
+            totalRows,
+          );
+        }
       }
 
       // Save failed rows if any

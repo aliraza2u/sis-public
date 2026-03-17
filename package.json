@@ -22,7 +22,8 @@
     "prisma:format": "prisma format",
     "prisma:studio": "prisma studio",
     "seed:languages": "ts-node -r tsconfig-paths/register src/scripts/seed-languages.ts",
-    "seed:users-tenants": "ts-node -r tsconfig-paths/register src/scripts/seed-users-tenants.ts"
+    "seed:users-tenants": "ts-node -r tsconfig-paths/register src/scripts/seed-users-tenants.ts",
+    "seed:student-grades": "ts-node -r tsconfig-paths/register src/scripts/seed-student-grades.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
