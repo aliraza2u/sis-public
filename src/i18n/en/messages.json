@@ -1,4 +1,5 @@
 {
+  "forbidden": "You do not have permission to perform this action",
   "auth": {
     "userExists": "User already exists",
     "userOrOrgExists": "User or Organization already exists",
@@ -114,6 +115,9 @@
   },
   "upload": {
     "invalidJsonFormat": "The field {field} contains invalid JSON format."
+  },
+  "grades": {
+    "userIdRequiredForStaff": "Query parameter userId is required to view a student's overview"
   },
   "transcript": {
     "notFound": "Transcript not found",

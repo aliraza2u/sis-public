@@ -764,6 +764,12 @@ enum GradeResult {
   fail
 }
 
+enum CourseProgressStatus {
+  not_started
+  in_progress
+  completed
+}
+
 model StudentCourseGrade {
   id       String @id @default(dbgenerated("generate_prefixed_uuid('GRD')")) @db.VarChar(50)
   tenantId String @map("tenant_id") @db.VarChar(50)
@@ -780,6 +786,9 @@ model StudentCourseGrade {
   finalGrade  String?    @map("final_grade") @db.VarChar(10)  // e.g. A, B+
   finalScore  Decimal?   @map("final_score") @db.Decimal(5, 2) // e.g. 85.00
   breakdown   Json?      @default("[]") // [{ type, name, score, maxScore }]
+
+  courseProgressStatus   CourseProgressStatus @default(not_started) @map("course_progress_status")
+  overallProgressPercent Int?                 @map("overall_progress_percent") // 0-100 from CSV
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz

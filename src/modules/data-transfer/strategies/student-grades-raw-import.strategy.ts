@@ -24,6 +24,8 @@ interface NormalizedGradeRow {
   itemType: string;
   score: number;
   maxScore: number | null;
+  courseProgressStatus?: 'not_started' | 'in_progress' | 'completed';
+  overallProgressPercent?: number | null;
 }
 
 /** Expected CSV headers (order: required first, last one optional for validation) */
@@ -33,6 +35,8 @@ const EXPECTED_HEADERS = [
   'Course ID',
   'Course Name',
   'Course Progress %',
+  'Course Progress Status',
+  'Overall Progress %',
   'Course Passed',
   'Module_Item Title',
   'Item Type',
@@ -47,6 +51,8 @@ const HEADER_ALIASES: Record<string, string[]> = {
   'Course ID': ['Course ID', 'Course Id', 'course_id', 'CourseID'],
   'Course Name': ['Course Name', 'Course name', 'course_name'],
   'Course Progress %': ['Course Progress %', 'Course Progress', 'course_progress'],
+  'Course Progress Status': ['Course Progress Status', 'Course Status'],
+  'Overall Progress %': ['Overall Progress %', 'Overall Progress', 'overall_progress'],
   'Course Passed': ['Course Passed', 'course_passed'],
   // LMS exports often use "Module" + "Item Title" as separate columns; we use Item Title for the grade item name
   'Module_Item Title': ['Module_Item Title', 'Module Item Title', 'module_item_title', 'Item Title'],
@@ -116,6 +122,8 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
     const courseId = RawValueParser.parseString(row['Course ID']);
     const courseName = RawValueParser.parseString(row['Course Name']);
     const courseProgressPct = RawValueParser.parseNumber(row['Course Progress %']);
+    const courseProgressStatusRaw = RawValueParser.parseString(row['Course Progress Status']);
+    const overallProgressPctRaw = RawValueParser.parseNumber(row['Overall Progress %']);
     const coursePassedRaw = RawValueParser.parseString(row['Course Passed']);
     const moduleItemTitle = RawValueParser.parseString(row['Module_Item Title']);
     const itemType = RawValueParser.parseString(row['Item Type']);
@@ -145,6 +153,23 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
         ? maxScoreRaw
         : null;
 
+    let courseProgressStatus: 'not_started' | 'in_progress' | 'completed' = 'not_started';
+    if (courseProgressStatusRaw) {
+      const normalized = courseProgressStatusRaw.toLowerCase().replace(/\s+/g, '_');
+      if (normalized === 'in_progress' || normalized === 'completed' || normalized === 'not_started') {
+        courseProgressStatus = normalized as any;
+      } else if (normalized === 'done' || normalized === 'finished') {
+        courseProgressStatus = 'completed';
+      }
+    }
+
+    const overallProgressPercent =
+      typeof overallProgressPctRaw === 'number' && !isNaN(overallProgressPctRaw)
+        ? overallProgressPctRaw
+        : courseProgressPct != null && !isNaN(courseProgressPct)
+          ? courseProgressPct
+          : null;
+
     if (errors.length > 0) {
       return { isValid: false, errors, normalizedData: undefined };
     }
@@ -160,6 +185,8 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
       itemType: (itemType ?? '').toLowerCase().replace(/\s+/g, '_'),
       score,
       maxScore,
+      courseProgressStatus,
+      overallProgressPercent,
     };
 
     return {
@@ -220,6 +247,13 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
             finalResult: first.coursePassed === 'pass' ? GradeResult.pass : GradeResult.fail,
             finalScore,
             breakdown: breakdown as unknown as object[],
+            courseProgressStatus: first.courseProgressStatus ?? 'not_started',
+            overallProgressPercent:
+              first.overallProgressPercent != null && !isNaN(first.overallProgressPercent)
+                ? Math.round(first.overallProgressPercent)
+                : finalScore != null && !isNaN(finalScore)
+                  ? Math.round(finalScore)
+                  : null,
             updatedAt: new Date(),
           },
           create: {
@@ -230,6 +264,13 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
             finalResult: first.coursePassed === 'pass' ? GradeResult.pass : GradeResult.fail,
             finalScore,
             breakdown: breakdown as unknown as object[],
+            courseProgressStatus: first.courseProgressStatus ?? 'not_started',
+            overallProgressPercent:
+              first.overallProgressPercent != null && !isNaN(first.overallProgressPercent)
+                ? Math.round(first.overallProgressPercent)
+                : finalScore != null && !isNaN(finalScore)
+                  ? Math.round(finalScore)
+                  : null,
           },
         });
         successCount++;

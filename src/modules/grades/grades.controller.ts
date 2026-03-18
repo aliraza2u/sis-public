@@ -14,13 +14,14 @@ import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { UserRole } from '@/infrastructure/prisma/client/client';
-import { I18nForbiddenException } from '@/common/exceptions/i18n.exception';
+import { I18nForbiddenException, I18nBadRequestException } from '@/common/exceptions/i18n.exception';
 import { UserEntity } from '@/modules/user/entities/user.entity';
 import { Public } from '@/common/decorators/public.decorator';
 import { UpsertManualGradeDto } from './dto';
 import { TranscriptCourseDto } from './dto/transcript.dto';
 import { GenerateTranscriptResponseDto } from './dto/generate-transcript.dto';
 import { VerifyTranscriptResponseDto } from './dto/verify-transcript.dto';
+import { StudentOverviewResponseDto } from './dto/student-overview.dto';
 
 @ApiTags('Grades')
 @Controller('grades')
@@ -66,6 +67,7 @@ export class GradesController {
   ): Promise<VerifyTranscriptResponseDto> {
     return this.gradesService.verifyTranscript(token, transcriptId);
   }
+
 
   @Get('transcript/:userId')
   @UseGuards(RolesGuard)

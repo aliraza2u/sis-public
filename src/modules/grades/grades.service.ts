@@ -3,13 +3,19 @@ import { ConfigService } from '@nestjs/config';
 import { I18nService } from 'nestjs-i18n';
 import * as crypto from 'crypto';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
-import { GradeSource, GradeResult } from '@/infrastructure/prisma/client/client';
+import {
+  GradeSource,
+  GradeResult,
+  ApplicationStatus,
+} from '@/infrastructure/prisma/client/client';
 import { I18nNotFoundException } from '@/common/exceptions/i18n.exception';
 import type { UpsertManualGradeDto } from './dto';
 import type {
   TranscriptCourseDto,
   GenerateTranscriptResponseDto,
   VerifyTranscriptResponseDto,
+  StudentOverviewResponseDto,
+  StudentOverviewEnrollmentDto,
 } from './dto';
 
 @Injectable()
@@ -336,5 +342,135 @@ export class GradesService {
       this.configService.get<string>('app.frontendUrl') ||
       'https://yourapp.com';
     return `${baseUrl}/transcript/verify?token=${token}`;
+  }
+
+  /**
+   * Student dashboard: enrollments, batches, grades, progress.
+   * Same shape for student (self) and admin (any student in tenant).
+   */
+  async getStudentOverview(tenantId: string, targetUserId: string): Promise<StudentOverviewResponseDto> {
+    const user = await this.prisma.user.findFirst({
+      where: { id: targetUserId, tenantId, deletedAt: null },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        roles: true,
+      },
+    });
+    if (!user) {
+      throw new I18nNotFoundException('messages.user.userNotFound');
+    }
+
+    const applications = await this.prisma.application.findMany({
+      where: {
+        tenantId,
+        applicantId: targetUserId,
+        status: ApplicationStatus.approved,
+        deletedAt: null,
+      },
+      include: {
+        batch: true,
+        course: true,
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    const byCourse = new Map<string, (typeof applications)[0]>();
+    for (const app of applications) {
+      if (!byCourse.has(app.courseId)) byCourse.set(app.courseId, app);
+    }
+    const uniqueEnrollments = Array.from(byCourse.values());
+
+    const grades = await this.prisma.studentCourseGrade.findMany({
+      where: { tenantId, userId: targetUserId },
+    });
+    const gradeByCourse = new Map(grades.map((g) => [g.courseId, g]));
+
+    const buildEnrollmentRow = (
+      app: (typeof applications)[0] | null,
+      courseId: string,
+      courseRow: { code: string; title: unknown },
+    ): StudentOverviewEnrollmentDto => {
+      const g = gradeByCourse.get(courseId);
+      const courseProgressStatus = g
+        ? (g.courseProgressStatus as 'not_started' | 'in_progress' | 'completed')
+        : 'not_started';
+
+      const batch = app?.batch;
+      return {
+        applicationId: app?.id ?? null,
+        courseId,
+        courseCode: courseRow.code,
+        courseTitle: (courseRow.title as Record<string, string>) ?? {},
+        batchId: app?.batchId ?? null,
+        batchCode: batch?.code ?? null,
+        batchName: (batch?.name as Record<string, string>) ?? {},
+        batchStartDate: batch?.startDate ?? null,
+        batchEndDate: batch?.endDate ?? null,
+        rollNumber: app?.rollNumber ?? null,
+        gradeSource: g ? (g.source === GradeSource.manual ? 'manual' : 'import') : null,
+        finalResult: g ? (g.finalResult === GradeResult.pass ? 'pass' : 'fail') : null,
+        finalGrade: g?.finalGrade ?? null,
+        finalScore: g?.finalScore != null ? Number(g.finalScore) : null,
+        courseProgressStatus,
+        overallProgressPercent: g?.overallProgressPercent ?? null,
+      };
+    };
+
+    const enrollments: StudentOverviewEnrollmentDto[] = [];
+
+    for (const app of uniqueEnrollments) {
+      enrollments.push(
+        buildEnrollmentRow(app, app.courseId, {
+          code: app.course.code,
+          title: app.course.title,
+        }),
+      );
+    }
+
+    const enrolledCourseIds = new Set(uniqueEnrollments.map((e) => e.courseId));
+    const gradeOnlyCourseIds = [...new Set(grades.map((g) => g.courseId).filter((id) => !enrolledCourseIds.has(id)))];
+    const extraCourses =
+      gradeOnlyCourseIds.length > 0
+        ? await this.prisma.course.findMany({
+            where: { id: { in: gradeOnlyCourseIds }, tenantId, deletedAt: null },
+            select: { id: true, code: true, title: true },
+          })
+        : [];
+    const extraCourseById = new Map(extraCourses.map((c) => [c.id, c]));
+    for (const cid of gradeOnlyCourseIds) {
+      const course = extraCourseById.get(cid);
+      if (!course) continue;
+      enrollments.push(buildEnrollmentRow(null, cid, course));
+    }
+
+    const summary = {
+      totalEnrollments: uniqueEnrollments.length,
+      byProgressStatus: { not_started: 0, in_progress: 0, completed: 0 },
+      byResult: { pass: 0, fail: 0, pending: 0 },
+      coursesWithGradeRecord: grades.length,
+      coursesListed: 0,
+    };
+
+    for (const e of enrollments) {
+      summary.byProgressStatus[e.courseProgressStatus]++;
+      if (e.finalResult === 'pass') summary.byResult.pass++;
+      else if (e.finalResult === 'fail') summary.byResult.fail++;
+      else summary.byResult.pending++;
+    }
+    summary.coursesListed = enrollments.length;
+
+    return {
+      student: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName as Record<string, string>,
+        lastName: user.lastName as Record<string, string>,
+      },
+      summary,
+      enrollments,
+    };
   }
 }
