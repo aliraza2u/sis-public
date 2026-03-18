@@ -24,6 +24,12 @@
   "user": {
     "userNotFound": "المستخدم غير موجود"
   },
+  "userProfile": {
+    "notFound": "ملف المستخدم غير موجود",
+    "tenantMismatch": "ملف المستخدم لا ينتمي إلى هذا المستأجر",
+    "alreadyExists": "ملف المستخدم موجود بالفعل",
+    "userIdRequired": "معرّف المستخدم (userId) مطلوب"
+  },
   "email": {
     "transporterNotInitialized": "لم يتم تهيئة ناقل البريد الإلكتروني",
     "verifyEmailSubject": "تحقق من عنوان بريدك الإلكتروني",

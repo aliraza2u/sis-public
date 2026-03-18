@@ -24,9 +24,13 @@ import {
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { UserProfileEntity } from './entities/user-profile.entity';
+import { UserProfileDetailResponseDto } from './dto/user-profile-detail.dto';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { UserEntity } from './entities/user.entity';
 import { UserRole } from '@/common/enums';
+import { I18nForbiddenException } from '@/common/exceptions/i18n.exception';
 
 @ApiTags('User Profiles')
 @Controller('user-profiles')
@@ -41,7 +45,7 @@ export class UserProfileController {
   @ApiResponse({
     status: 201,
     description: 'User profile created successfully',
-    type: UserProfileEntity,
+    type: UserProfileDetailResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Invalid data or profile already exists' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
@@ -137,7 +141,7 @@ export class UserProfileController {
   }
 
   @Get('by-user/:userId')
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.student)
+  @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer, UserRole.student)
   @ApiOperation({ summary: 'Get user profile by user ID' })
   @ApiParam({
     name: 'userId',
@@ -146,22 +150,24 @@ export class UserProfileController {
   })
   @ApiResponse({
     status: 200,
-    description: 'User profile found',
-    type: UserProfileEntity,
+    description: 'User + profile (profile null if not created yet)',
+    type: UserProfileDetailResponseDto,
   })
-  @ApiResponse({
-    status: 204,
-    description: 'User profile not found (returns null)',
-  })
-  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiNotFoundResponse({ description: 'User not found in tenant' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
-  findByUserId(@Param('userId') userId: string) {
+  findByUserId(@Param('userId') userId: string, @CurrentUser() current: UserEntity) {
+    const isStaff = [UserRole.admin, UserRole.super_admin, UserRole.reviewer].some((r) =>
+      current.roles?.includes(r),
+    );
+    if (!isStaff && current.id !== userId) {
+      throw new I18nForbiddenException('messages.forbidden');
+    }
     return this.userProfileService.findByUserId(userId);
   }
 
   @Get(':id')
-  @Roles(UserRole.admin, UserRole.super_admin, UserRole.student)
+  @Roles(UserRole.admin, UserRole.super_admin, UserRole.reviewer, UserRole.student)
   @ApiOperation({ summary: 'Get user profile by ID' })
   @ApiParam({
     name: 'id',
@@ -170,14 +176,14 @@ export class UserProfileController {
   })
   @ApiResponse({
     status: 200,
-    description: 'User profile details',
-    type: UserProfileEntity,
+    description: 'User + profile details',
+    type: UserProfileDetailResponseDto,
   })
   @ApiNotFoundResponse({ description: 'User profile not found' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
-  findOne(@Param('id') id: string) {
-    return this.userProfileService.findOne(id);
+  findOne(@Param('id') id: string, @CurrentUser() current: UserEntity) {
+    return this.userProfileService.findOneForViewer(id, current);
   }
 
   @Patch(':id')
@@ -191,7 +197,7 @@ export class UserProfileController {
   @ApiResponse({
     status: 200,
     description: 'User profile updated successfully',
-    type: UserProfileEntity,
+    type: UserProfileDetailResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Invalid data' })
   @ApiNotFoundResponse({ description: 'User profile not found' })
@@ -212,7 +218,7 @@ export class UserProfileController {
   @ApiResponse({
     status: 200,
     description: 'User profile updated successfully',
-    type: UserProfileEntity,
+    type: UserProfileDetailResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Invalid data' })
   @ApiNotFoundResponse({ description: 'User profile not found' })

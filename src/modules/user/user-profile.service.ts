@@ -7,8 +7,14 @@ import {
   I18nNotFoundException,
   I18nForbiddenException,
 } from '@/common/exceptions/i18n.exception';
-import { Prisma } from '@/infrastructure/prisma/client/client';
+import { Prisma, User } from '@/infrastructure/prisma/client/client';
 import { GradesService } from '@/modules/grades/grades.service';
+import { UserPublicDto } from './dto/user-public.dto';
+import {
+  UserProfileDetailResponseDto,
+  UserProfileDataDto,
+} from './dto/user-profile-detail.dto';
+import { UserRole } from '@/common/enums';
 
 @Injectable()
 export class UserProfileService {
@@ -18,7 +24,114 @@ export class UserProfileService {
     private readonly gradesService: GradesService,
   ) {}
 
-  async create(createUserProfileDto: CreateUserProfileDto): Promise<UserProfileEntity> {
+  private toUserPublic(u: User): UserPublicDto {
+    return {
+      id: u.id,
+      tenantId: u.tenantId,
+      email: u.email,
+      firstName: (u.firstName as Record<string, string>) ?? {},
+      lastName: (u.lastName as Record<string, string>) ?? {},
+      phone: u.phone,
+      roles: u.roles as UserRole[],
+      avatarUrl: u.avatarUrl,
+      emailVerified: u.emailVerified,
+      emailVerifiedAt: u.emailVerifiedAt,
+      preferredLanguageCode: u.preferredLanguageCode,
+      lastLoginAt: u.lastLoginAt,
+      isActive: u.isActive,
+      isPasswordCreated: u.isPasswordCreated,
+      createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
+      createdBy: u.createdBy,
+      updatedBy: u.updatedBy,
+    };
+  }
+
+  private toProfileData(p: {
+    id: string;
+    userId: string;
+    tenantId: string;
+    dateOfBirth: Date | null;
+    gender: UserProfileDataDto['gender'];
+    nationality: string | null;
+    nationalId: string | null;
+    passportNo: string | null;
+    status: UserProfileDataDto['status'];
+    address: unknown;
+    guardian: unknown;
+    education: unknown;
+    createdAt: Date;
+    updatedAt: Date;
+  }): UserProfileDataDto {
+    return {
+      id: p.id,
+      userId: p.userId,
+      tenantId: p.tenantId,
+      dateOfBirth: p.dateOfBirth,
+      gender: p.gender,
+      nationality: p.nationality,
+      nationalId: p.nationalId,
+      passportNo: p.passportNo,
+      status: p.status,
+      address: p.address,
+      guardian: p.guardian,
+      education: p.education,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    };
+  }
+
+  private async buildProfileDetailResponse(
+    user: User,
+    profile: {
+      id: string;
+      userId: string;
+      tenantId: string;
+      dateOfBirth: Date | null;
+      gender: UserProfileDataDto['gender'];
+      nationality: string | null;
+      nationalId: string | null;
+      passportNo: string | null;
+      status: UserProfileDataDto['status'];
+      address: unknown;
+      guardian: unknown;
+      education: unknown;
+      createdAt: Date;
+      updatedAt: Date;
+    } | null,
+  ): Promise<UserProfileDetailResponseDto> {
+    const out: UserProfileDetailResponseDto = {
+      user: this.toUserPublic(user),
+      profile: profile ? this.toProfileData(profile) : null,
+    };
+    if (!user.deletedAt) {
+      try {
+        const overview = await this.gradesService.getStudentOverview(user.tenantId, user.id);
+        out.academicSummary = overview.summary;
+        out.academicEnrollments = overview.enrollments;
+      } catch {
+        /* user may be invalid for overview */
+      }
+    }
+    return out;
+  }
+
+  private async loadProfileWithUserForTenant(profileId: string) {
+    const tenantId = this.cls.get<string>('tenantId');
+    const profile = await this.prisma.userProfile.findUnique({
+      where: { id: profileId },
+      include: { user: true },
+    });
+    if (!profile) {
+      throw new I18nNotFoundException('messages.userProfile.notFound');
+    }
+    if (profile.tenantId !== tenantId) {
+      throw new I18nForbiddenException('messages.userProfile.tenantMismatch');
+    }
+    return profile;
+  }
+
+  async create(createUserProfileDto: CreateUserProfileDto): Promise<UserProfileDetailResponseDto> {
     const tenantId = this.cls.get<string>('tenantId');
     const userId = createUserProfileDto.userId || this.cls.get<string>('userId');
 
@@ -26,7 +139,6 @@ export class UserProfileService {
       throw new I18nForbiddenException('messages.userProfile.userIdRequired');
     }
 
-    // Check if profile already exists
     const existingProfile = await this.prisma.userProfile.findUnique({
       where: { userId },
     });
@@ -35,7 +147,6 @@ export class UserProfileService {
       throw new I18nForbiddenException('messages.userProfile.alreadyExists');
     }
 
-    // Verify user belongs to the same tenant
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -78,44 +189,26 @@ export class UserProfileService {
       },
     });
 
-    return new UserProfileEntity(profile as any);
+    return this.buildProfileDetailResponse(user, profile);
   }
 
-  async findOne(id: string): Promise<UserProfileEntity> {
-    const tenantId = this.cls.get<string>('tenantId');
-    const profile = await this.prisma.userProfile.findUnique({
-      where: { id },
-      include: { user: true },
-    });
-
-    if (!profile) {
-      throw new I18nNotFoundException('messages.userProfile.notFound');
+  async findOneForViewer(
+    profileId: string,
+    current: { id: string; roles?: UserRole[] },
+  ): Promise<UserProfileDetailResponseDto> {
+    const profile = await this.loadProfileWithUserForTenant(profileId);
+    const isStaff = [UserRole.admin, UserRole.super_admin, UserRole.reviewer].some((r) =>
+      current.roles?.includes(r),
+    );
+    if (!isStaff && profile.userId !== current.id) {
+      throw new I18nForbiddenException('messages.forbidden');
     }
-
-    if (profile.tenantId !== tenantId) {
-      throw new I18nForbiddenException('messages.userProfile.tenantMismatch');
-    }
-
-    let academicSummary: Awaited<ReturnType<GradesService['getStudentOverview']>>['summary'] | undefined;
-    let academicEnrollments: Awaited<ReturnType<GradesService['getStudentOverview']>>['enrollments'] | undefined;
-    const linkedUser = profile.user;
-    if (linkedUser && !linkedUser.deletedAt) {
-      const overview = await this.gradesService.getStudentOverview(profile.tenantId, profile.userId);
-      academicSummary = overview.summary;
-      academicEnrollments = overview.enrollments;
-    }
-
-    return new UserProfileEntity({
-      ...profile,
-      academicSummary,
-      academicEnrollments,
-    } as any);
+    return this.buildProfileDetailResponse(profile.user, profile);
   }
 
-  async findByUserId(userId: string): Promise<UserProfileEntity | null> {
+  async findByUserId(userId: string): Promise<UserProfileDetailResponseDto> {
     const tenantId = this.cls.get<string>('tenantId');
 
-    // Verify user belongs to the same tenant
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -132,11 +225,7 @@ export class UserProfileService {
       where: { userId },
     });
 
-    if (!profile) {
-      return null;
-    }
-
-    return new UserProfileEntity(profile as any);
+    return this.buildProfileDetailResponse(user, profile);
   }
 
   async findAll(filterDto: FilterUserProfileDto = {}): Promise<{
@@ -147,14 +236,22 @@ export class UserProfileService {
     totalPages: number;
   }> {
     const tenantId = this.cls.get<string>('tenantId');
-    const { search, gender, nationality, userId, status, page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = filterDto;
+    const {
+      search,
+      gender,
+      nationality,
+      userId,
+      status,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = filterDto;
 
-    // Build where clause
     const where: Prisma.UserProfileWhereInput = {
       tenantId,
     };
 
-    // Add filters
     if (gender) {
       where.gender = gender;
     }
@@ -174,7 +271,6 @@ export class UserProfileService {
       (where as any).status = status;
     }
 
-    // Add search functionality
     if (search) {
       where.OR = [
         { nationality: { contains: search, mode: 'insensitive' } },
@@ -183,7 +279,6 @@ export class UserProfileService {
       ];
     }
 
-    // Build orderBy
     const orderBy: Prisma.UserProfileOrderByWithRelationInput = {};
     if (sortBy === 'dateOfBirth') {
       orderBy.dateOfBirth = sortOrder;
@@ -193,10 +288,8 @@ export class UserProfileService {
       orderBy.createdAt = sortOrder;
     }
 
-    // Calculate pagination
     const skip = (page - 1) * limit;
 
-    // Execute queries
     const [data, total] = await Promise.all([
       this.prisma.userProfile.findMany({
         where,
@@ -218,7 +311,7 @@ export class UserProfileService {
     ]);
 
     return {
-      data: data.map((profile) => new UserProfileEntity(profile)),
+      data: data.map((p) => new UserProfileEntity(p as any)),
       total,
       page,
       limit,
@@ -226,9 +319,8 @@ export class UserProfileService {
     };
   }
 
-  async update(id: string, updateUserProfileDto: UpdateUserProfileDto): Promise<UserProfileEntity> {
-    // Check if profile exists and belongs to tenant (findOne already validates tenant)
-    await this.findOne(id);
+  async update(id: string, updateUserProfileDto: UpdateUserProfileDto): Promise<UserProfileDetailResponseDto> {
+    await this.loadProfileWithUserForTenant(id);
     const updatedProfile = await this.prisma.userProfile.update({
       where: { id },
       data: {
@@ -257,20 +349,25 @@ export class UserProfileService {
         }),
       },
     });
-
-    return new UserProfileEntity(updatedProfile);
+    const user = await this.prisma.user.findUnique({
+      where: { id: updatedProfile.userId },
+    });
+    if (!user) {
+      throw new I18nNotFoundException('messages.user.userNotFound');
+    }
+    return this.buildProfileDetailResponse(user, updatedProfile);
   }
 
   async updateByUserId(
     userId: string,
     updateUserProfileDto: UpdateUserProfileDto,
-  ): Promise<UserProfileEntity> {
+  ): Promise<UserProfileDetailResponseDto> {
     const tenantId = this.cls.get<string>('tenantId');
-    
-    // Verify user belongs to the same tenant
+
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
+    console.log("🚀 ~ UserProfileService ~ updateByUserId ~ user:", user)
 
     if (!user) {
       throw new I18nNotFoundException('messages.user.userNotFound');
@@ -292,11 +389,9 @@ export class UserProfileService {
   }
 
   async remove(id: string): Promise<void> {
-    // Check if profile exists and belongs to tenant
-    await this.findOne(id);
+    await this.loadProfileWithUserForTenant(id);
     await this.prisma.userProfile.delete({
       where: { id },
     });
   }
 }
-
