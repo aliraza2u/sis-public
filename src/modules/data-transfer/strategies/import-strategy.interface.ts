@@ -34,6 +34,11 @@ export interface ImportStrategy {
   getExpectedHeaders(): string[];
 
   /**
+   * Headers not required on the CSV. Defaults to only the last header from getExpectedHeaders().
+   */
+  getOptionalHeaders?(): string[];
+
+  /**
    * Get a sample CSV row for template download
    */
   getSampleRow(): Record<string, string>;
