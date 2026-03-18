@@ -29,31 +29,52 @@ export class GradesService {
   ) {}
 
   /**
-   * Set or update manual grade for an enrollment (application).
+   * Set or update manual grade by student user and course (tenant-scoped).
+   * Links applicationId when an approved application exists for that user + course.
    */
   async upsertManualGrade(tenantId: string, dto: UpsertManualGradeDto) {
-    const application = await this.prisma.application.findFirst({
-      where: { id: dto.applicationId, tenantId },
-      select: { applicantId: true, courseId: true },
-    });
+    const [student, course] = await Promise.all([
+      this.prisma.user.findFirst({
+        where: { id: dto.userId, tenantId },
+        select: { id: true },
+      }),
+      this.prisma.course.findFirst({
+        where: { id: dto.courseId, tenantId },
+        select: { id: true },
+      }),
+    ]);
 
-    if (!application) {
-      throw new I18nNotFoundException('messages.application.notFound');
+    if (!student) {
+      throw new I18nNotFoundException('messages.user.userNotFound');
+    }
+    if (!course) {
+      throw new I18nNotFoundException('messages.course.notFound');
     }
 
-    const finalScore =
-      dto.finalScore != null ? dto.finalScore : null;
+    const enrollment = await this.prisma.application.findFirst({
+      where: {
+        tenantId,
+        applicantId: dto.userId,
+        courseId: dto.courseId,
+        status: ApplicationStatus.approved,
+      },
+      orderBy: { updatedAt: 'desc' },
+      select: { id: true },
+    });
+    const applicationId = enrollment?.id ?? null;
+
+    const finalScore = dto.finalScore != null ? dto.finalScore : null;
 
     const grade = await this.prisma.studentCourseGrade.upsert({
       where: {
         tenantId_userId_courseId: {
           tenantId,
-          userId: application.applicantId,
-          courseId: application.courseId,
+          userId: dto.userId,
+          courseId: dto.courseId,
         },
       },
       update: {
-        applicationId: dto.applicationId,
+        applicationId,
         source: GradeSource.manual,
         finalResult: dto.finalResult === 'pass' ? GradeResult.pass : GradeResult.fail,
         finalGrade: dto.finalGrade ?? null,
@@ -62,9 +83,9 @@ export class GradesService {
       },
       create: {
         tenantId,
-        userId: application.applicantId,
-        courseId: application.courseId,
-        applicationId: dto.applicationId,
+        userId: dto.userId,
+        courseId: dto.courseId,
+        applicationId,
         source: GradeSource.manual,
         finalResult: dto.finalResult === 'pass' ? GradeResult.pass : GradeResult.fail,
         finalGrade: dto.finalGrade ?? null,
@@ -97,16 +118,64 @@ export class GradesService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    return grades.map((g) => this.toTranscriptCourse(g));
+    const courseIds = [...new Set(grades.map((g) => g.courseId))];
+    const appByCourse = new Map<
+      string,
+      {
+        rollNumber: string | null;
+        batch: {
+          code: string | null;
+          name: unknown;
+          startDate: Date;
+          endDate: Date | null;
+        } | null;
+      }
+    >();
+
+    if (courseIds.length > 0) {
+      const apps = await this.prisma.application.findMany({
+        where: {
+          tenantId,
+          applicantId: userId,
+          courseId: { in: courseIds },
+          status: ApplicationStatus.approved,
+        },
+        include: { batch: true },
+        orderBy: { updatedAt: 'desc' },
+      });
+      for (const a of apps) {
+        if (!appByCourse.has(a.courseId)) {
+          appByCourse.set(a.courseId, {
+            rollNumber: a.rollNumber,
+            batch: a.batch,
+          });
+        }
+      }
+    }
+
+    return grades.map((g) => {
+      const app = appByCourse.get(g.courseId);
+      const batch = app?.batch;
+      return {
+        courseId: g.courseId,
+        ...this.toTranscriptCourseCore(g),
+        rollNumber: app?.rollNumber ?? null,
+        batchCode: batch?.code ?? null,
+        batchName: (batch?.name as Record<string, string>) ?? null,
+        batchStartDate: batch?.startDate ?? null,
+        batchEndDate: batch?.endDate ?? null,
+      };
+    });
   }
 
-  private toTranscriptCourse(g: {
+  /** Course title + breakdown + final only; caller adds courseId, roll, batch. */
+  private toTranscriptCourseCore(g: {
     course: { title: unknown };
     finalResult: GradeResult;
     finalGrade: string | null;
     finalScore: unknown;
     breakdown: unknown;
-  }): TranscriptCourseDto {
+  }): Pick<TranscriptCourseDto, 'course' | 'breakdown' | 'final'> {
     const title = g.course?.title as Record<string, string> | null;
     const courseName =
       (title && (typeof title === 'object' && ('en' in title ? title.en : Object.values(title)[0]))) ||

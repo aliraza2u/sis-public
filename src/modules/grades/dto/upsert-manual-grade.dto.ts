@@ -1,10 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsOptional, IsString, IsUUID, Min, Max } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Min, Max } from 'class-validator';
 
 export class UpsertManualGradeDto {
-  @ApiProperty({ description: 'Application (enrollment) ID', example: 'APP-xxx' })
+  @ApiProperty({ description: 'Student user ID', example: 'USR-xxx' })
   @IsString()
-  applicationId: string;
+  userId: string;
+
+  @ApiProperty({ description: 'Course ID', example: 'CRS-xxx' })
+  @IsString()
+  courseId: string;
 
   @ApiProperty({ enum: ['pass', 'fail'], description: 'Final result' })
   @IsEnum(['pass', 'fail'])

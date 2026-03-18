@@ -36,9 +36,13 @@ export class GradesController {
   @Post('manual')
   @UseGuards(RolesGuard)
   @Roles(UserRole.admin, UserRole.super_admin)
-  @ApiOperation({ summary: 'Set or update manual grade for an enrollment (Admin only)' })
+  @ApiOperation({
+    summary: 'Set or update manual grade by student user ID and course ID (Admin only)',
+    description:
+      'Body: userId, courseId, finalResult, optional finalGrade/finalScore. Application is linked when an approved enrollment exists.',
+  })
   @ApiResponse({ status: 201, description: 'Grade saved' })
-  @ApiResponse({ status: 404, description: 'Application not found' })
+  @ApiResponse({ status: 404, description: 'User or course not found in tenant' })
   async upsertManualGrade(
     @CurrentUser() user: UserEntity,
     @Body() dto: UpsertManualGradeDto,
@@ -72,15 +76,25 @@ export class GradesController {
   @Get('transcript/:userId')
   @UseGuards(RolesGuard)
   @Roles(UserRole.admin, UserRole.super_admin, UserRole.student, UserRole.reviewer)
-  @ApiOperation({ summary: 'Get transcript (course grades) for a student' })
+  @ApiOperation({
+    summary: 'Get transcript (course grades) for a student',
+    description:
+      'Returns all graded courses for the user, or only the given course when courseId query is set.',
+  })
   @ApiParam({ name: 'userId', description: 'Student user ID' })
+  @ApiQuery({
+    name: 'courseId',
+    required: false,
+    description: 'If provided, returns grades for this course only (for that user)',
+  })
   @ApiResponse({
     status: 200,
-    description: 'List of course grades in transcript format',
+    description: 'List of course grades in transcript format (0 or 1 items when courseId is set)',
     type: [TranscriptCourseDto],
   })
   async getTranscript(
     @Param('userId') userId: string,
+    @Query('courseId') courseId: string | undefined,
     @CurrentUser() user: UserEntity,
   ): Promise<TranscriptCourseDto[]> {
     const canViewOthers = [UserRole.admin, UserRole.super_admin, UserRole.reviewer].some(
@@ -90,7 +104,8 @@ export class GradesController {
       throw new I18nForbiddenException('messages.forbidden');
     }
     const tenantId = this.cls.get<string>('tenantId');
-    return this.gradesService.getTranscript(tenantId, userId);
+    const cid = courseId?.trim() || undefined;
+    return this.gradesService.getTranscript(tenantId, userId, cid);
   }
 
   @Post('transcript/generate/:userId')
