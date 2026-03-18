@@ -32,6 +32,8 @@
   },
   "email": {
     "transporterNotInitialized": "Email transporter not initialized",
+    "templateNotFound": "Email template not found: {template}",
+    "sendingFailed": "Failed to send email to {email}",
     "verifyEmailSubject": "Verify your email address",
     "resetPasswordSubject": "Reset your password",
     "setupAccountSubject": "Setup your SIS account",
@@ -61,7 +63,17 @@
     "accessLmsButton": "Access LMS",
     "seeYouOn": "We look forward to seeing you on {batchStartDate}. If you have any questions, please don't hesitate to contact us.",
     "footerAutomated": "This is an automated message. Please do not reply to this email.",
-    "footerSupport": "For support, contact us at {supportEmail}"
+    "footerSupport": "For support, contact us at {supportEmail}",
+    "adminCreatedSubject": "Welcome to SIS - Admin Account Created",
+    "adminCreatedHeader": "Account Created",
+    "adminCreatedBody": "An admin account has been created for you. Please click the button below to log in.",
+    "adminCreatedButton": "Log In",
+    "adminUpdatedSubject": "SIS Admin Account Updated",
+    "adminUpdatedHeader": "Profile Updated",
+    "adminUpdatedBody": "Your admin account details have been successfully updated.",
+    "adminDeletedSubject": "SIS Admin Account Deleted",
+    "adminDeletedHeader": "Account Deleted",
+    "adminDeletedBody": "Your admin account has been deleted by a system administrator."
   },
   "batch": {
     "notFound": "Batch not found",

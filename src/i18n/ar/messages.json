@@ -32,6 +32,8 @@
   },
   "email": {
     "transporterNotInitialized": "لم يتم تهيئة ناقل البريد الإلكتروني",
+    "templateNotFound": "قالب البريد الإلكتروني غير موجود: {template}",
+    "sendingFailed": "فشل إرسال البريد الإلكتروني إلى {email}",
     "verifyEmailSubject": "تحقق من عنوان بريدك الإلكتروني",
     "resetPasswordSubject": "إعادة تعيين كلمة المرور",
     "setupAccountSubject": "إعداد حساب SIS الخاص بك",
@@ -61,7 +63,17 @@
     "accessLmsButton": "الوصول إلى LMS",
     "seeYouOn": "نتطلع لرؤيتك في {batchStartDate}. إذا كان لديك أي أسئلة، فلا تتردد في الاتصال بنا.",
     "footerAutomated": "هذه رسالة تلقائية. يرجى عدم الرد على هذا البريد الإلكتروني.",
-    "footerSupport": "للدعم، اتصل بنا على {supportEmail}"
+    "footerSupport": "للدعم، اتصل بنا على {supportEmail}",
+    "adminCreatedSubject": "مرحباً بك في SIS - تم إنشاء حساب مسؤول",
+    "adminCreatedHeader": "تم إنشاء الحساب",
+    "adminCreatedBody": "تم إنشاء حساب مسؤول لك. يرجى النقر على الزر أدناه لتسجيل الدخول.",
+    "adminCreatedButton": "تسجيل الدخول",
+    "adminUpdatedSubject": "تم تحديث حساب المسؤول في SIS",
+    "adminUpdatedHeader": "تم تحديث الملف الشخصي",
+    "adminUpdatedBody": "تم تحديث تفاصيل حساب المسؤول الخاص بك بنجاح.",
+    "adminDeletedSubject": "تم حذف حساب المسؤول في SIS",
+    "adminDeletedHeader": "تم حذف الحساب",
+    "adminDeletedBody": "تم حذف حساب المسؤول الخاص بك بواسطة مسؤول النظام."
   },
   "batch": {
     "notFound": "الدفعة غير موجودة",

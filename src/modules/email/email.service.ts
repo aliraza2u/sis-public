@@ -5,6 +5,7 @@ import sgMail from '@sendgrid/mail';
 import * as fs from 'fs';
 import * as path from 'path';
 import { TranslationHelperService } from '@/common/services/translation-helper.service';
+import { I18nInternalServerErrorException } from '@/common/exceptions/i18n.exception';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const handlebars = require('handlebars');
 
@@ -80,6 +81,18 @@ export class EmailService {
     return results;
   }
 
+  private getTemplate(templateName: string) {
+    const templatePath = path.join(__dirname, 'templates', templateName);
+    if (!fs.existsSync(templatePath)) {
+      this.logger.error(`Template not found at: ${templatePath}`);
+      throw new I18nInternalServerErrorException('messages.email.templateNotFound', {
+        template: templateName,
+      });
+    }
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+    return handlebars.compile(templateSource);
+  }
+
   async sendPasswordResetEmail(to: string, token: string, lang = 'en') {
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
@@ -99,9 +112,7 @@ export class EmailService {
       token,
     });
 
-    const templatePath = path.join(__dirname, 'templates', 'reset-password.hbs');
-    const templateSource = fs.readFileSync(templatePath, 'utf8');
-    const template = handlebars.compile(templateSource);
+    const template = this.getTemplate('reset-password.hbs');
 
     const html = template(context);
 
@@ -127,9 +138,7 @@ export class EmailService {
       token,
     });
 
-    const templatePath = path.join(__dirname, 'templates', 'reset-password.hbs');
-    const templateSource = fs.readFileSync(templatePath, 'utf8');
-    const template = handlebars.compile(templateSource);
+    const template = this.getTemplate('reset-password.hbs');
 
     const html = template(context);
 
@@ -179,9 +188,71 @@ export class EmailService {
       supportEmail: data.supportEmail || this.fromEmail,
     });
 
-    const templatePath = path.join(__dirname, 'templates', 'approval-notification.hbs');
-    const templateSource = fs.readFileSync(templatePath, 'utf8');
-    const template = handlebars.compile(templateSource);
+    const template = this.getTemplate('approval-notification.hbs');
+
+    const html = template(context);
+
+    return this.sendEmail(to, translations.subject, html);
+  }
+
+  async sendAdminCongratulationsEmail(to: string, lang = 'en') {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    const loginUrl = `${frontendUrl}/login`;
+
+    const translations = await this.translateAll(lang, {
+      subject: 'messages.email.adminCreatedSubject',
+      header: 'messages.email.adminCreatedHeader',
+      body: 'messages.email.adminCreatedBody',
+      buttonText: 'messages.email.adminCreatedButton',
+      footerMessage: 'messages.email.footerAutomated',
+    });
+
+    const context = await this.getTemplateContext(lang, {
+      ...translations,
+      loginUrl,
+    });
+
+    const template = this.getTemplate('admin-congratulations.hbs');
+
+    const html = template(context);
+
+    return this.sendEmail(to, translations.subject, html);
+  }
+
+  async sendAdminUpdatedEmail(to: string, lang = 'en') {
+    const translations = await this.translateAll(lang, {
+      subject: 'messages.email.adminUpdatedSubject',
+      header: 'messages.email.adminUpdatedHeader',
+      body: 'messages.email.adminUpdatedBody',
+      footerMessage: 'messages.email.footerAutomated',
+    });
+
+    const context = await this.getTemplateContext(lang, {
+      ...translations,
+      loginUrl: null,
+    });
+
+    const template = this.getTemplate('admin-congratulations.hbs');
+
+    const html = template(context);
+
+    return this.sendEmail(to, translations.subject, html);
+  }
+
+  async sendAdminDeletedEmail(to: string, lang = 'en') {
+    const translations = await this.translateAll(lang, {
+      subject: 'messages.email.adminDeletedSubject',
+      header: 'messages.email.adminDeletedHeader',
+      body: 'messages.email.adminDeletedBody',
+      footerMessage: 'messages.email.footerAutomated',
+    });
+
+    const context = await this.getTemplateContext(lang, {
+      ...translations,
+      loginUrl: null,
+    });
+
+    const template = this.getTemplate('admin-congratulations.hbs');
 
     const html = template(context);
 

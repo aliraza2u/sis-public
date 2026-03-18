@@ -5,9 +5,10 @@ import { UserProfileService } from './user-profile.service';
 import { UserProfileController } from './user-profile.controller';
 import { PrismaModule } from '@/infrastructure/prisma/prisma.module';
 import { GradesModule } from '@/modules/grades/grades.module';
+import { EmailModule } from '@/modules/email/email.module';
 
 @Module({
-  imports: [PrismaModule, GradesModule],
+  imports: [PrismaModule, GradesModule, EmailModule],
   controllers: [UserController, UserProfileController],
   providers: [UserService, UserProfileService],
   exports: [UserService, UserProfileService],
