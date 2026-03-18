@@ -38,6 +38,7 @@ import { SystemModule } from './modules/system/system.module';
 import { SYSTEM_ROUTES } from './common/constants/routes';
 import { BatchModule } from './modules/batch/batch.module';
 import { ApplicationModule } from './modules/application/application.module';
+import { GradesModule } from './modules/grades/grades.module';
 
 @Module({
   imports: [
@@ -106,6 +107,7 @@ import { ApplicationModule } from './modules/application/application.module';
     CourseModule,
     BatchModule,
     ApplicationModule,
+    GradesModule,
     CommonModule,
     QueueModule,
     DataTransferModule,

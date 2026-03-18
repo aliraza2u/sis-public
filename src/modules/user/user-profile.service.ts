@@ -8,12 +8,14 @@ import {
   I18nForbiddenException,
 } from '@/common/exceptions/i18n.exception';
 import { Prisma } from '@/infrastructure/prisma/client/client';
+import { GradesService } from '@/modules/grades/grades.service';
 
 @Injectable()
 export class UserProfileService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cls: ClsService,
+    private readonly gradesService: GradesService,
   ) {}
 
   async create(createUserProfileDto: CreateUserProfileDto): Promise<UserProfileEntity> {
@@ -94,7 +96,20 @@ export class UserProfileService {
       throw new I18nForbiddenException('messages.userProfile.tenantMismatch');
     }
 
-    return new UserProfileEntity(profile as any);
+    let academicSummary: Awaited<ReturnType<GradesService['getStudentOverview']>>['summary'] | undefined;
+    let academicEnrollments: Awaited<ReturnType<GradesService['getStudentOverview']>>['enrollments'] | undefined;
+    const linkedUser = profile.user;
+    if (linkedUser && !linkedUser.deletedAt) {
+      const overview = await this.gradesService.getStudentOverview(profile.tenantId, profile.userId);
+      academicSummary = overview.summary;
+      academicEnrollments = overview.enrollments;
+    }
+
+    return new UserProfileEntity({
+      ...profile,
+      academicSummary,
+      academicEnrollments,
+    } as any);
   }
 
   async findByUserId(userId: string): Promise<UserProfileEntity | null> {

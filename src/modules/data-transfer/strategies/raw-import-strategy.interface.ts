@@ -15,6 +15,18 @@ export interface RawImportStrategy extends ImportStrategy {
    * Indicates this is a raw import (uses database IDs)
    */
   isRawImport(): boolean;
+
+  /**
+   * When true, the processor will validate all rows then call importBatch once with the full set.
+   * Use for entity types where one logical record is built from multiple CSV rows (e.g. student grades).
+   */
+  requiresFullFile?(): boolean;
+
+  /**
+   * Optional map of canonical header name -> list of accepted CSV column names (including canonical).
+   * If provided, the processor will normalize CSV headers and row keys to canonical before validation.
+   */
+  getHeaderAliases?(): Record<string, string[]>;
 }
 
 /**

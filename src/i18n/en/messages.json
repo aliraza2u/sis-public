@@ -1,4 +1,5 @@
 {
+  "forbidden": "You do not have permission to perform this action",
   "auth": {
     "userExists": "User already exists",
     "userOrOrgExists": "User or Organization already exists",
@@ -114,5 +115,16 @@
   },
   "upload": {
     "invalidJsonFormat": "The field {field} contains invalid JSON format."
+  },
+  "grades": {
+    "userIdRequiredForStaff": "Query parameter userId is required to view a student's overview"
+  },
+  "transcript": {
+    "notFound": "Transcript not found",
+    "tokenOrIdRequired": "Verification token or transcript ID is required",
+    "invalidTokenFormat": "Invalid verification token format",
+    "invalidOrExpiredToken": "Invalid or expired verification token",
+    "revoked": "This transcript has been revoked",
+    "inactive": "This transcript is no longer active"
   }
 }

@@ -14,6 +14,7 @@ import {
   RAW_IMPORT_STRATEGIES,
   TenantRawImportStrategy,
   UserRawImportStrategy,
+  StudentGradesRawImportStrategy,
   GenericRawImportStrategy,
   RawImportStrategy,
 } from './strategies';
@@ -33,9 +34,10 @@ import { PrismaService } from '@/infrastructure/prisma/prisma.service';
     ExportService,
     CleanupService,
 
-    // Explicit strategies (required for SystemService injection)
+    // Explicit strategies (required for custom logic)
     TenantRawImportStrategy,
     UserRawImportStrategy,
+    StudentGradesRawImportStrategy,
 
     // Factory to provide all raw import strategies
     {
@@ -44,19 +46,20 @@ import { PrismaService } from '@/infrastructure/prisma/prisma.service';
         prisma: PrismaService,
         tenantStrategy: TenantRawImportStrategy,
         userStrategy: UserRawImportStrategy,
+        studentGradesStrategy: StudentGradesRawImportStrategy,
       ) => {
         const strategies: RawImportStrategy[] = [];
 
-        // Add explicit strategies
         strategies.push(tenantStrategy);
         strategies.push(userStrategy);
+        strategies.push(studentGradesStrategy);
 
         // Add generic strategies for all other entities
         Object.values(STRATEGY_CONFIGS).forEach(({ config, sampleRow }) => {
-          // Skip if already handled explicitly
           if (
             config.entityType === ImportEntityType.TENANT ||
-            config.entityType === ImportEntityType.USER
+            config.entityType === ImportEntityType.USER ||
+            config.entityType === ImportEntityType.STUDENT_GRADES
           ) {
             return;
           }
@@ -66,9 +69,20 @@ import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 
         return strategies;
       },
-      inject: [PrismaService, TenantRawImportStrategy, UserRawImportStrategy],
+      inject: [
+        PrismaService,
+        TenantRawImportStrategy,
+        UserRawImportStrategy,
+        StudentGradesRawImportStrategy,
+      ],
     },
   ],
-  exports: [DataTransferService, CsvParserService, TenantRawImportStrategy, UserRawImportStrategy],
+  exports: [
+    DataTransferService,
+    CsvParserService,
+    TenantRawImportStrategy,
+    UserRawImportStrategy,
+    StudentGradesRawImportStrategy,
+  ],
 })
 export class DataTransferModule {}

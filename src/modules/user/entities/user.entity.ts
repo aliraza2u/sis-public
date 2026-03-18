@@ -1,8 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from '@/infrastructure/prisma/client/client';
 import { Exclude } from 'class-transformer';
 import { TenantEntity } from './tenant.entity';
 import { UserRole } from '@/common/enums';
+import {
+  StudentOverviewSummaryDto,
+  StudentOverviewEnrollmentDto,
+} from '@/modules/grades/dto/student-overview.dto';
 
 export class UserEntity implements User {
   @ApiProperty({ example: '56d259ae-179d-464e-9d3c-b28da6055b85' })
@@ -68,6 +72,18 @@ export class UserEntity implements User {
 
   @ApiProperty({ type: () => TenantEntity, required: false })
   tenant?: TenantEntity;
+
+  @ApiPropertyOptional({
+    type: StudentOverviewSummaryDto,
+    description: 'Enrollment & grade summary (same as grades student-overview)',
+  })
+  academicSummary?: StudentOverviewSummaryDto;
+
+  @ApiPropertyOptional({
+    type: [StudentOverviewEnrollmentDto],
+    description: 'Per-course enrollments, batches, grades, progress from StudentCourseGrade',
+  })
+  academicEnrollments?: StudentOverviewEnrollmentDto[];
 
   @ApiProperty()
   createdAt: Date;

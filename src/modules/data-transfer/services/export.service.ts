@@ -55,6 +55,7 @@ export class ExportService {
       [ExportEntityType.RESOURCE]: Prisma.ModelName.Resource,
       [ExportEntityType.SUPPORTED_LANGUAGE]: Prisma.ModelName.SupportedLanguage,
       [ExportEntityType.MODULE_ITEM_PROGRESS]: Prisma.ModelName.ModuleItemProgress,
+      [ExportEntityType.STUDENT_GRADES]: Prisma.ModelName.StudentCourseGrade,
     };
 
     return mapping[entityType];

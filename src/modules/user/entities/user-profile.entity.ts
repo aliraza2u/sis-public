@@ -2,6 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserProfile, Gender, UserProfileStatus } from '@/infrastructure/prisma/client/client';
 import { Exclude } from 'class-transformer';
 import { Gender as GenderDto, UserProfileStatus as UserProfileStatusDto } from '../dto/user-profile.dto';
+import {
+  StudentOverviewSummaryDto,
+  StudentOverviewEnrollmentDto,
+} from '@/modules/grades/dto/student-overview.dto';
 
 export class UserProfileEntity implements UserProfile {
   @ApiProperty({ example: 'UPF-123e4567-e89b-12d3' })
@@ -62,6 +66,18 @@ export class UserProfileEntity implements UserProfile {
 
   @Exclude()
   deletedBy: string | null;
+
+  @ApiPropertyOptional({
+    type: StudentOverviewSummaryDto,
+    description: 'Enrollment & grade summary (same as grades student-overview)',
+  })
+  academicSummary?: StudentOverviewSummaryDto;
+
+  @ApiPropertyOptional({
+    type: [StudentOverviewEnrollmentDto],
+    description: 'Per-course enrollments, batches, grades, progress from StudentCourseGrade',
+  })
+  academicEnrollments?: StudentOverviewEnrollmentDto[];
 
   constructor(partial: Partial<UserProfileEntity>) {
     Object.assign(this, partial);
