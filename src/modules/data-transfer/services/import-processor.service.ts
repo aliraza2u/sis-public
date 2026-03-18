@@ -103,8 +103,12 @@ export class ImportProcessorService implements OnModuleInit {
         });
       }
 
-      // Validate headers
-      const requiredHeaders = strategy.getExpectedHeaders().slice(0, -1); // Exclude optional fields
+      // Validate headers (optional columns via strategy.getOptionalHeaders or last header only)
+      const expectedHeaders = strategy.getExpectedHeaders();
+      const optional = new Set(
+        strategy.getOptionalHeaders?.() ?? [expectedHeaders[expectedHeaders.length - 1]],
+      );
+      const requiredHeaders = expectedHeaders.filter((h) => !optional.has(h));
       const headerValidation = this.csvParser.validateHeaders(headers, requiredHeaders);
       if (!headerValidation.isValid) {
         // Create a header validation error

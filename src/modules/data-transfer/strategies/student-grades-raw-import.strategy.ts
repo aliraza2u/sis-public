@@ -95,6 +95,11 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
     return { ...HEADER_ALIASES };
   }
 
+  /** Course Progress % is optional when Overall Progress % is present; Roll Number optional. */
+  getOptionalHeaders(): string[] {
+    return ['Course Progress %', 'Roll Number'];
+  }
+
   getSampleRow(): Record<string, string> {
     return {
       'Tenant ID': 'TNT-7301032-915b-4140-9d87-xxxx',
@@ -121,13 +126,20 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
     const userId = RawValueParser.parseString(row['Student ID']);
     const courseId = RawValueParser.parseString(row['Course ID']);
     const courseName = RawValueParser.parseString(row['Course Name']);
-    const courseProgressPct = RawValueParser.parseNumber(row['Course Progress %']);
-    const courseProgressStatusRaw = RawValueParser.parseString(row['Course Progress Status']);
     const overallProgressPctRaw = RawValueParser.parseNumber(row['Overall Progress %']);
+    const courseProgressPct =
+      RawValueParser.parseNumber(row['Course Progress %']) ??
+      (overallProgressPctRaw != null && !isNaN(overallProgressPctRaw) ? overallProgressPctRaw : null);
+    const courseProgressStatusRaw = RawValueParser.parseString(row['Course Progress Status']);
     const coursePassedRaw = RawValueParser.parseString(row['Course Passed']);
     const moduleItemTitle = RawValueParser.parseString(row['Module_Item Title']);
     const itemType = RawValueParser.parseString(row['Item Type']);
-    const scoreRaw = RawValueParser.parseNumber(row['Score']);
+    const scoreCell = row['Score'];
+    const scoreEmpty =
+      scoreCell === null ||
+      scoreCell === undefined ||
+      (typeof scoreCell === 'string' && scoreCell.trim() === '');
+    const scoreRaw = scoreEmpty ? 0 : RawValueParser.parseNumber(scoreCell);
     const maxScoreRaw = row['Max Score'] != null ? RawValueParser.parseNumber(row['Max Score']) : null;
 
     if (!tenantId) errors.push({ field: 'Tenant ID', message: 'Tenant ID is required' });
@@ -137,8 +149,8 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
     if (moduleItemTitle == null || moduleItemTitle === '')
       errors.push({ field: 'Module_Item Title', message: 'Module_Item Title is required' });
     if (!itemType) errors.push({ field: 'Item Type', message: 'Item Type is required' });
-    if (scoreRaw == null || (typeof scoreRaw === 'number' && isNaN(scoreRaw)))
-      errors.push({ field: 'Score', message: 'Score is required and must be a number' });
+    if (!scoreEmpty && (scoreRaw == null || (typeof scoreRaw === 'number' && isNaN(scoreRaw))))
+      errors.push({ field: 'Score', message: 'Score must be a number when provided' });
 
     const coursePassed =
       coursePassedRaw == null
@@ -147,7 +159,8 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
           ? 'pass'
           : 'fail';
 
-    const score = typeof scoreRaw === 'number' && !isNaN(scoreRaw) ? scoreRaw : 0;
+    const score =
+      scoreEmpty ? 0 : typeof scoreRaw === 'number' && !isNaN(scoreRaw) ? scoreRaw : 0;
     const maxScore =
       maxScoreRaw != null && typeof maxScoreRaw === 'number' && !isNaN(maxScoreRaw)
         ? maxScoreRaw
@@ -231,7 +244,9 @@ export class StudentGradesRawImportStrategy implements RawImportStrategy {
       const finalScore =
         first.courseProgressPct != null && !isNaN(first.courseProgressPct)
           ? first.courseProgressPct
-          : null;
+          : first.overallProgressPercent != null && !isNaN(first.overallProgressPercent)
+            ? first.overallProgressPercent
+            : null;
 
       try {
         await this.prisma.studentCourseGrade.upsert({

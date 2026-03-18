@@ -3,6 +3,7 @@ import { I18nService } from 'nestjs-i18n';
 import { ClsService } from 'nestjs-cls';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { UserEntity } from './entities/user.entity';
+import { UserProfileEntity } from './entities/user-profile.entity';
 import {
   I18nNotFoundException,
   I18nBadRequestException,
@@ -37,11 +38,16 @@ export class UserService {
       academicEnrollments = overview.enrollments;
     }
 
+    const userProfile = await this.prisma.userProfile.findUnique({
+      where: { userId: user.id },
+    });
+
     return new UserEntity({
       ...user,
       tenant: user.tenant,
       academicSummary,
       academicEnrollments,
+      userProfile: userProfile ? new UserProfileEntity(userProfile as any) : null,
     });
   }
 

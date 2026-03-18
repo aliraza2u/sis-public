@@ -3,6 +3,7 @@ import { User } from '@/infrastructure/prisma/client/client';
 import { Exclude } from 'class-transformer';
 import { TenantEntity } from './tenant.entity';
 import { UserRole } from '@/common/enums';
+import { UserProfileEntity } from './user-profile.entity';
 import {
   StudentOverviewSummaryDto,
   StudentOverviewEnrollmentDto,
@@ -84,6 +85,14 @@ export class UserEntity implements User {
     description: 'Per-course enrollments, batches, grades, progress from StudentCourseGrade',
   })
   academicEnrollments?: StudentOverviewEnrollmentDto[];
+
+  @ApiPropertyOptional({
+    type: () => UserProfileEntity,
+    description: 'User profile row (if created)',
+    nullable: true,
+    required: false,
+  })
+  userProfile?: UserProfileEntity | null;
 
   @ApiProperty()
   createdAt: Date;
