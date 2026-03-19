@@ -116,6 +116,21 @@ export class UserProfileService {
     return out;
   }
 
+  /** Shared field mapping for create / upsert via POST. */
+  private buildCreateProfileData(dto: CreateUserProfileDto) {
+    return {
+      ...(dto.dateOfBirth && { dateOfBirth: new Date(dto.dateOfBirth) }),
+      ...(dto.gender !== undefined && { gender: dto.gender }),
+      ...(dto.nationality !== undefined && { nationality: dto.nationality }),
+      ...(dto.nationalId !== undefined && { nationalId: dto.nationalId }),
+      ...(dto.passportNo !== undefined && { passportNo: dto.passportNo }),
+      ...(dto.status !== undefined && { status: dto.status }),
+      ...(dto.address !== undefined && { address: dto.address as any }),
+      ...(dto.guardian !== undefined && { guardian: dto.guardian as any }),
+      ...(dto.education !== undefined && { education: dto.education as any }),
+    };
+  }
+
   private async loadProfileWithUserForTenant(profileId: string) {
     const tenantId = this.cls.get<string>('tenantId');
     const profile = await this.prisma.userProfile.findUnique({
@@ -143,10 +158,6 @@ export class UserProfileService {
       where: { userId },
     });
 
-    if (existingProfile) {
-      throw new I18nForbiddenException('messages.userProfile.alreadyExists');
-    }
-
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -159,35 +170,20 @@ export class UserProfileService {
       throw new I18nForbiddenException('messages.userProfile.tenantMismatch');
     }
 
-    const profile = await this.prisma.userProfile.create({
-      data: {
-        userId,
-        tenantId,
-        ...(createUserProfileDto.dateOfBirth && {
-          dateOfBirth: new Date(createUserProfileDto.dateOfBirth),
-        }),
-        ...(createUserProfileDto.gender !== undefined && { gender: createUserProfileDto.gender }),
-        ...(createUserProfileDto.nationality !== undefined && {
-          nationality: createUserProfileDto.nationality,
-        }),
-        ...(createUserProfileDto.nationalId !== undefined && {
-          nationalId: createUserProfileDto.nationalId,
-        }),
-        ...(createUserProfileDto.passportNo !== undefined && {
-          passportNo: createUserProfileDto.passportNo,
-        }),
-        ...(createUserProfileDto.status !== undefined && { status: createUserProfileDto.status }),
-        ...(createUserProfileDto.address !== undefined && {
-          address: createUserProfileDto.address as any,
-        }),
-        ...(createUserProfileDto.guardian !== undefined && {
-          guardian: createUserProfileDto.guardian as any,
-        }),
-        ...(createUserProfileDto.education !== undefined && {
-          education: createUserProfileDto.education as any,
-        }),
-      },
-    });
+    const patch = this.buildCreateProfileData(createUserProfileDto);
+
+    const profile = existingProfile
+      ? await this.prisma.userProfile.update({
+          where: { id: existingProfile.id },
+          data: patch,
+        })
+      : await this.prisma.userProfile.create({
+          data: {
+            userId,
+            tenantId,
+            ...patch,
+          } as Prisma.UserProfileUncheckedCreateInput,
+        });
 
     return this.buildProfileDetailResponse(user, profile);
   }
@@ -367,7 +363,6 @@ export class UserProfileService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
-    console.log("🚀 ~ UserProfileService ~ updateByUserId ~ user:", user)
 
     if (!user) {
       throw new I18nNotFoundException('messages.user.userNotFound');
