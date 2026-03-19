@@ -41,13 +41,16 @@ export class UserProfileController {
 
   @Post()
   @Roles(UserRole.admin, UserRole.super_admin)
-  @ApiOperation({ summary: 'Create a new user profile' })
+  @ApiOperation({
+    summary: 'Create or update user profile',
+    description: 'Creates a profile if none exists; otherwise updates the existing profile for that user.',
+  })
   @ApiResponse({
     status: 201,
-    description: 'User profile created successfully',
+    description: 'User profile created or updated successfully',
     type: UserProfileDetailResponseDto,
   })
-  @ApiBadRequestResponse({ description: 'Invalid data or profile already exists' })
+  @ApiBadRequestResponse({ description: 'Invalid data' })
   @ApiUnauthorizedResponse({ description: 'Authentication required' })
   @ApiForbiddenResponse({ description: 'Insufficient permissions' })
   create(@Body() createUserProfileDto: CreateUserProfileDto) {
