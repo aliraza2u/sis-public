@@ -21,10 +21,7 @@ export class EmailService {
   ) {
     this.fromEmail = this.configService.get<string>(
       'SENDGRID_FROM_EMAIL',
-      this.configService.get<string>(
-        'FROM_EMAIL',
-        '"Student Information System" <noreply@example.com>',
-      ),
+      '"Student Information System" <noreply@example.com>',
     );
 
     const apiKey = this.configService.get<string>('SENDGRID_API_KEY');

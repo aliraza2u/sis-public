@@ -71,7 +71,6 @@ import { GradesModule } from './modules/grades/grades.module';
         FRONTEND_URL: Joi.string().required(),
         SENDGRID_API_KEY: Joi.string().required(),
         SENDGRID_FROM_EMAIL: Joi.string().optional(),
-        FROM_EMAIL: Joi.string().optional(),
         ADMIN_EMAIL: Joi.string().email().optional(),
         ADMIN_PASSWORD: Joi.string().optional(),
         ADMIN_FIRST_NAME: Joi.string().optional(),

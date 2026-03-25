@@ -18,8 +18,6 @@ services:
         sync: false
       - key: SENDGRID_FROM_EMAIL
         sync: false
-      - key: FROM_EMAIL
-        sync: false
       - key: FRONTEND_URL
         sync: false
       - key: ADMIN_EMAIL
