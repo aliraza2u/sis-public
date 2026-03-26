@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupSwagger } from './setup-swagger';
 import { join } from 'path';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
@@ -40,17 +40,7 @@ async function bootstrap() {
   );
 
   // Swagger
-  if (configService.get<boolean>('swagger.enabled')) {
-    const config = new DocumentBuilder()
-      .setTitle(configService.get<string>('swagger.title') ?? 'SIS API')
-      .setDescription(configService.get<string>('swagger.description') ?? 'API Documentation')
-      .setVersion(configService.get<string>('swagger.version') ?? '1.0')
-      .addBearerAuth()
-      .build();
-
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(configService.get<string>('swagger.path') ?? 'api/docs', app, document);
-  }
+  setupSwagger(app, configService);
 
   const port = configService.get<number>('app.port') ?? 3000;
   await app.listen(port, '0.0.0.0');

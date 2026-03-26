@@ -26,6 +26,7 @@ export class TenantMiddleware implements NestMiddleware {
 
     // 1. Check for X-Tenant-ID header (Dev/Testing priority)
     let tenantSlug = req.headers[TENANT_HEADER] as string;
+    const isFromHeader = !!tenantSlug;
 
     // 2. Check if this is the Render deployment URL and use default tenant
     if (!tenantSlug) {
@@ -63,9 +64,16 @@ export class TenantMiddleware implements NestMiddleware {
     });
 
     if (!tenant) {
-      throw new NotFoundException(
-        this.i18n.t('messages.tenant.notFound', { args: { slug: tenantSlug } }),
-      );
+      if (isFromHeader) {
+        // Only throw 404 if the user explicitly provided an invalid tenant header
+        throw new NotFoundException(
+          this.i18n.t('messages.tenant.notFound', { args: { slug: tenantSlug } }),
+        );
+      }
+      
+      // If it wasn't from a header, it was extracted from subdomain. It might be the central API domain.
+      // E.g. almkki-sis-api.perceviolabs.space -> extracts 'almkki-sis-api'
+      return next();
     }
 
     if (!tenant.isActive) {
